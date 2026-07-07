@@ -1,0 +1,516 @@
+/* ==========================================================================
+   1. REGISTRATION OF GLOBAL LUXURY DESIGN TOKENS (INHERITED MATCH)
+   ========================================================================== */
+:host {
+  /* Premium Balanced Palette Matrix matching home layout tokens */
+  --co-bg-clean: #FAFAFA;
+  --co-bg-card: #FFFFFF;
+  --co-sage: #5B7065;
+  --co-sage-soft: #EEF2F0;
+  --co-charcoal: #1C2421;
+  --co-muted: #606C66;
+  --co-gold: #C5A059;
+  --co-gold-light: #FAF6EE;
+  --co-border-light: #EBEFEF;
+
+  /* commanding luxury dark accent canvas inherited from signature footer */
+  --co-dark-canvas: #141B18;
+
+  /* Premium Typography Engine Rules */
+  --font-serif-luxury: 'Playfair Display', Georgia, serif;
+  --font-sans-clean: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  display: block;
+  background-color: var(--co-bg-clean);
+  font-family: var(--font-sans-clean);
+}
+
+.admin-dashboard-container {
+  min-height: 100vh;
+  background-color: var(--co-bg-clean);
+  color: var(--co-charcoal);
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.admin-dashboard-container *,
+.admin-dashboard-container *::before,
+.admin-dashboard-container *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. GATEWAY 1: SECURITY PRIVACY SHIELD (LOGIN CONTAINER)
+   ========================================================================== */
+.login-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem 1.25rem;
+  background: linear-gradient(135deg, var(--co-bg-clean) 0%, var(--co-sage-soft) 100%);
+}
+
+.login-shield-box {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 440px;
+  padding: 3.5rem 2.5rem;
+  box-shadow: 0 20px 50px rgba(28, 36, 33, 0.05);
+}
+
+.shield-branding {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.lock-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--co-gold);
+}
+
+.shield-branding h2 {
+  font-family: var(--font-serif-luxury);
+  color: var(--co-charcoal);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.shield-branding p {
+  color: var(--co-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.security-form-layer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-field-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--co-charcoal);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.input-field-group input {
+  font-family: var(--font-sans-clean);
+  font-size: 0.95rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid var(--co-border-light);
+  background-color: var(--co-bg-clean);
+  color: var(--co-charcoal);
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.input-field-group input:focus {
+  border-color: var(--co-sage);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(91, 112, 101, 0.08);
+}
+
+.security-error-alert {
+  background: rgba(174, 88, 70, 0.06);
+  border: 1px solid #AE5846;
+  color: #AE5846;
+  padding: 0.85rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.btn-auth-commit {
+  font-family: var(--font-sans-clean);
+  font-size: 0.95rem;
+  font-weight: 600;
+  background-color: var(--co-sage);
+  color: #FFFFFF;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 54px;
+  box-shadow: 0 4px 14px rgba(91, 112, 101, 0.16);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-auth-commit:hover {
+  background-color: #4A5C53;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(91, 112, 101, 0.24);
+}
+
+/* ==========================================================================
+   3. GATEWAY 2: PRINCIPAL CANVAS INTERFACE & HEADER CONTROL LAYOUT
+   ========================================================================== */
+.dashboard-core-canvas {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+}
+
+.dashboard-control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--co-border-light);
+  padding-bottom: 1.5rem;
+  margin-bottom: 3rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.branding-group h1 {
+  font-family: var(--font-serif-luxury);
+  color: var(--co-charcoal);
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.branding-group p {
+  color: var(--co-muted);
+  margin: 0.35rem 0 0 0;
+  font-size: 0.95rem;
+}
+
+.btn-terminate-session {
+  font-family: var(--font-sans-clean);
+  font-size: 0.88rem;
+  font-weight: 600;
+  background-color: transparent;
+  border: 2px solid #AE5846;
+  color: #AE5846;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-terminate-session:hover {
+  background-color: rgba(174, 88, 70, 0.06);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   4. TELEMETRY CARDS SYSTEM WIDGETS
+   ========================================================================== */
+.telemetry-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.metric-summary-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
+}
+
+.card-meta {
+  color: var(--co-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.card-value-display {
+  font-family: var(--font-serif-luxury);
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin: 0.75rem 0;
+  line-height: 1.1;
+}
+
+.card-caption {
+  color: var(--co-muted);
+  font-size: 0.85rem;
+}
+
+/* Luxury Card Thematic Accents */
+.text-blue { color: #4B738C; }
+.text-green { color: var(--co-sage); }
+.text-gold { color: var(--co-gold); }
+.text-purple { color: #84719C; }
+
+/* ==========================================================================
+   5. ANALYTICAL CUSTOM SVG CHARTS WRAPPER BOARDS
+   ========================================================================== */
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 540px) {
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-wrapper-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  padding: 2.5rem 1.75rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
+}
+
+.chart-wrapper-card h3 {
+  font-family: var(--font-serif-luxury);
+  font-size: 1.35rem;
+  color: var(--co-charcoal);
+  margin: 0;
+  font-weight: 700;
+}
+
+.chart-sub {
+  color: var(--co-muted);
+  font-size: 0.88rem;
+  margin: 0.35rem 0 2rem 0;
+}
+
+.svg-chart-container {
+  min-height: 180px;
+  position: relative;
+}
+
+.display-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Vector SVG Component Refinement Resets */
+.svg-chart-container line {
+  stroke: var(--co-border-light);
+}
+
+.svg-chart-container text {
+  font-family: var(--font-sans-clean);
+  font-weight: 500;
+}
+
+/* Donut Geometry Vector Engine */
+.donut-vector {
+  transform: rotate(-90deg);
+}
+
+.donut-hole {
+  fill: var(--co-bg-card);
+}
+
+.donut-ring {
+  stroke: var(--co-sage-soft);
+}
+
+.chart-legend-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--co-charcoal);
+}
+
+.color-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Chart Segment Colors mapping light luxury styles */
+.bg-pink { background-color: var(--co-gold); }
+.bg-blue { background-color: var(--co-sage); }
+
+/* ==========================================================================
+   6. LIVE CUSTOMER DATA PLATFORM MATRIX TABLE
+   ========================================================================== */
+.data-table-card-wrapper {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  padding: 2.5rem 1.75rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
+}
+
+.table-header-context {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-header-context h3 {
+  font-family: var(--font-serif-luxury);
+  font-size: 1.35rem;
+  color: var(--co-charcoal);
+  margin: 0;
+  font-weight: 700;
+}
+
+.badge-total-records {
+  background-color: var(--co-gold-light);
+  color: var(--co-gold);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.responsive-table-scroll-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--co-border-light);
+}
+
+.dashboard-native-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.92rem;
+  background-color: #FFFFFF;
+}
+
+.dashboard-native-table th {
+  background-color: var(--co-bg-clean);
+  border-bottom: 2px solid var(--co-border-light);
+  padding: 1rem 1.25rem;
+  color: var(--co-charcoal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.dashboard-native-table td {
+  border-bottom: 1px solid var(--co-border-light);
+  padding: 1.25rem;
+  vertical-align: middle;
+}
+
+.table-row-hover:hover {
+  background-color: rgba(91, 112, 101, 0.015);
+}
+
+/* Custom Block Segments inside Table Cells */
+.identity-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.primary-name {
+  color: var(--co-charcoal);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.sub-contact {
+  color: var(--co-muted);
+  font-size: 0.82rem;
+}
+
+.metrics-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--co-charcoal);
+  font-weight: 500;
+}
+
+.package-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.plan-label-badge {
+  color: var(--co-charcoal);
+  font-weight: 600;
+}
+
+.plan-revenue-metric {
+  color: var(--co-gold);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.country-text-label {
+  color: var(--co-charcoal);
+  font-weight: 500;
+}
+
+/* Strategic Integration Badge Pill States */
+.status-pill-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  text-align: center;
+}
+
+.status-pill-badge.paid {
+  background-color: var(--co-sage-soft);
+  color: var(--co-sage);
+  border: 1px solid rgba(91, 112, 101, 0.2);
+}
+
+.status-pill-badge.pending {
+  background-color: var(--co-gold-light);
+  color: var(--co-gold);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.timestamp-field {
+  font-size: 0.82rem;
+  color: var(--co-muted);
+}
+
+.empty-state-notice {
+  text-align: center;
+  padding: 3.5rem !important;
+  color: var(--co-muted);
+  font-style: italic;
+  font-size: 0.95rem;
+}

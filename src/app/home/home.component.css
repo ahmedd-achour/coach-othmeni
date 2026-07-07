@@ -1,0 +1,1284 @@
+/* ==========================================================================
+   1. GLOBAL ENGINE DESIGN TOKENS (LIGHT LUXURY RESETS)
+   ========================================================================== */
+:host {
+  /* Premium Balanced Palette */
+  --co-bg-clean: #FAFAFA;
+  --co-bg-card: #FFFFFF;
+  --co-sage: #5B7065;
+  --co-sage-soft: #EEF2F0;
+  --co-charcoal: #1C2421;
+  --co-muted: #606C66;
+  --co-gold: #C5A059;
+  --co-gold-light: #FAF6EE;
+  --co-border-light: #EBEFEF;
+
+  /* Premium Typography Rules */
+  --font-serif-luxury: 'Playfair Display', Georgia, serif;
+  --font-sans-clean: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  display: block;
+  background-color: var(--co-bg-clean);
+}
+
+/* Base View Wrapper Mapping */
+.home-page {
+  font-family: var(--font-sans-clean);
+  color: var(--co-charcoal);
+  line-height: 1.6;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.home-page *,
+.home-page *::before,
+.home-page *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. REUSABLE SYSTEM ATOMICS (BUTTONS & CARD TYPOGRAPHY)
+   ========================================================================== */
+.section-headline {
+  font-family: var(--font-serif-luxury);
+  font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--co-charcoal);
+  max-width: 850px;
+  margin: 0 auto 2rem auto;
+}
+
+/* Touch Action Strategy (Mobile Optimized Targets) */
+.btn {
+  font-family: var(--font-sans-clean);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  padding: 1rem 1.75rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px; /* Native mobile target sizing */
+  width: 100%; /* Dynamic mobile expansion default */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+@media (min-width: 480px) {
+  .btn { width: auto; }
+}
+
+.btn-solid {
+  background-color: var(--co-sage);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(91, 112, 101, 0.16);
+}
+
+.btn-solid:hover {
+  background-color: #4A5C53;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(91, 112, 101, 0.24);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--co-sage);
+  border: 2px solid var(--co-sage);
+}
+
+.btn-outline:hover {
+  background-color: var(--co-sage-soft);
+}
+
+/* ==========================================================================
+   3. SECTION 1 & 2: HERO VIEW PORTAL & METRICS
+   ========================================================================== */
+.hero {
+  padding: 2.5rem 1.25rem 0 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1.15fr 0.85fr;
+    padding: 3rem 0;
+  }
+}
+
+.hero-headline {
+  font-family: var(--font-serif-luxury);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.15;
+  color: var(--co-charcoal);
+  margin: 0 0 1.5rem 0;
+  font-weight: 700;
+}
+
+.hero-subheadline {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--co-muted);
+  margin: 0 0 2.25rem 0;
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 480px) {
+  .hero-actions {
+    flex-direction: row;
+  }
+}
+
+.hero-visual {
+  width: 100%;
+}
+
+.visual-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  padding: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.015);
+}
+
+.image-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background-color: var(--co-sage-soft);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--co-sage);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Section 2: Banner Integrated Space Mapping */
+.metrics-banner {
+  margin-top: 3.5rem;
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
+}
+
+@media (min-width: 768px) {
+  .metrics-banner {
+    padding: 2.25rem;
+  }
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+.metric-item {
+  text-align: center;
+}
+
+.metric-value {
+  font-family: var(--font-serif-luxury);
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 700;
+  color: var(--co-sage);
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--co-muted);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   4. SECTION 3: PERSONAL EDITORIAL QUOTE
+   ========================================================================== */
+.quote-section {
+  padding: 4rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.quote-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  padding: 2.25rem 1.5rem;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.005);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .quote-card {
+    padding: 4rem;
+  }
+}
+
+.quote-text {
+  font-family: var(--font-serif-luxury);
+  font-size: clamp(1.25rem, 3.2vw, 1.65rem);
+  line-height: 1.65;
+  color: var(--co-charcoal);
+  font-style: italic;
+  margin: 0 0 2.25rem 0;
+  padding: 0;
+  border: none;
+}
+
+.quote-attribution {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.signature-line {
+  width: 44px;
+  height: 1px;
+  background-color: var(--co-gold);
+}
+
+.coach-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   5. SECTION 4 & 5: WHY WE FAIL & THE METHOD BLUEPRINTGRID
+   ========================================================================== */
+.why-fail-section {
+  padding: 4.5rem 1.25rem;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-body {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: var(--co-muted);
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Section 5 Matrix Arrangement */
+.method-section {
+  padding: 4rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.method-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .method-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .method-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.method-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 16px;
+  padding: 2.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-number {
+  font-family: var(--font-sans-clean);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--co-sage-soft);
+  position: absolute;
+  top: 0.75rem;
+  right: 1.25rem;
+  line-height: 1;
+}
+
+.step-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--co-charcoal);
+  margin: 0 0 0.85rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.step-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--co-muted);
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   6. SECTION 6: TRANSFORMATIONS REAL-TIME GALLERY
+   ========================================================================== */
+.results-section {
+  padding: 5rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* ==========================================================================
+   10. REVISED PREMIUM SIGNATURE FOOTER SYSTEM (DARK LUXURY PATTERN)
+   ========================================================================== */
+.main-footer {
+  /* Shift to a commanding luxury dark canvas */
+  background-color: #141B18; /* Rich, deep charcoal olive */
+  padding: 5rem 1.5rem 2rem 1.5rem;
+  margin-top: 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gold top border accent to tie into the coaching brand identity */
+.main-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #C5A059 0%, #EAD4A8 50%, #C5A059 100%);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3.5rem;
+}
+
+/* Fluid responsive breakpoint handling */
+@media (min-width: 768px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-container {
+    grid-template-columns: 1.2fr 0.9fr 0.9fr;
+    gap: 4rem;
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column 1: Brand Hero Typography */
+.footer-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #FFFFFF; /* High contrast clean white */
+  margin: 0 0 1.25rem 0;
+  letter-spacing: 0.02em;
+}
+
+.footer-bio {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #A3B0A9; /* Muted slate text for elegant readability */
+  margin: 0;
+  max-width: 360px;
+}
+
+/* Column titles styled to match the light luxury design rules */
+.column-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #C5A059; /* Classic Champagne Gold */
+  margin: 0 0 1.75rem 0;
+}
+
+/* Column 2: Minimal Direct Contact Channels */
+.contact-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-links li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contact-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6E8276; /* Soft muted sage for structure headers */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contact-value {
+  font-size: 1rem;
+  color: #FAFAFA;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+/* Smooth desktop interactive state */
+a.contact-value:hover {
+  color: #C5A059;
+  transform: translateX(2px);
+}
+
+/* Column 3: Premium Integrated Map Viewport */
+.map-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(235, 239, 239, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  background-color: #1A2320;
+}
+
+@media (min-width: 1024px) {
+  .map-wrapper {
+    height: 170px;
+    aspect-ratio: auto;
+  }
+}
+
+/* Clean, dark map integration utility filter */
+.map-wrapper iframe {
+  filter: grayscale(1) invert(0.92) contrast(1.15); /* Seamlessly embeds maps into a dark interface */
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.map-wrapper:hover iframe {
+  opacity: 1;
+}
+
+/* Bottom Copyright Section */
+.footer-bottom {
+  max-width: 1200px;
+  margin: 5rem auto 0 auto;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(110, 130, 118, 0.2); /* Soft sage boundary line */
+  text-align: center;
+}
+/* ==========================================================================
+   INTERACTIVE MULTI-STEP POPUP ARCHITECTURE (LIGHT LUXURY TEMPLATE)
+   ========================================================================== */
+
+/* 1. Modal Back Curtain Layer */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(28, 36, 33, 0.6); /* Deep rich charcoal shadow backdrop */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.popup-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 2. Main Window Chassis Box Model */
+.popup-window {
+  background-color: var(--co-bg-card, #FFFFFF);
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2.5rem 1.5rem;
+  box-shadow: 0 24px 60px rgba(28, 36, 33, 0.12);
+  transform: translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.popup-overlay.is-visible .popup-window {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .popup-window {
+    padding: 3.5rem 3rem;
+  }
+}
+
+/* 3. Global Top Close Vector Action Anchor */
+.popup-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--co-muted, #606C66);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+}
+
+.popup-close-btn:hover {
+  color: var(--co-charcoal, #1C2421);
+}
+
+/* 4. Luxury Header Components */
+.popup-header {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.popup-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--co-gold, #C5A059);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.popup-title {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--co-charcoal, #1C2421);
+  margin: 0 0 2rem 0;
+}
+
+/* 5. Precision Elegant Progress Tracker Pipeline */
+.progress-bar-container {
+  max-width: 240px;
+  margin: 0 auto;
+  position: relative;
+  height: 30px;
+}
+
+.progress-indicator-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 2px;
+  background-color: var(--co-sage-soft, #EEF2F0);
+  z-index: 1;
+}
+
+.progress-steps-nodes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+}
+
+.step-node {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--co-bg-card, #FFFFFF);
+  border: 2px solid var(--co-sage-soft, #EEF2F0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.step-node span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--co-muted, #606C66);
+}
+
+.step-node.active {
+  border-color: var(--co-sage, #5B7065);
+  background-color: var(--co-sage, #5B7065);
+}
+
+.step-node.active span {
+  color: #FFFFFF;
+}
+
+/* 6. Form Grid Configuration Matrix */
+.panel-instruction-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--co-muted, #606C66);
+  text-align: center;
+  margin: 0 0 2rem 0;
+}
+
+.form-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 580px) {
+  .form-fields-grid {
+    grid-template-columns: 1fr; /* Stack vertically cleanly on compact mobile layouts */
+  }
+  .form-fields-grid .full-width-mobile {
+    grid-column: span 1;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+@media (max-width: 580px) {
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+}
+
+/* 7. Input Architecture Design Tokens */
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--co-charcoal, #1C2421);
+  letter-spacing: 0.01em;
+}
+
+.form-group label .unit {
+  color: var(--co-muted, #606C66);
+  font-weight: 400;
+}
+
+.form-group label .required {
+  color: #AE5846; /* Accent subtle error tone */
+  margin-left: 0.15rem;
+}
+
+.form-group input {
+  font-family: var(--font-sans-clean, sans-serif);
+  font-size: 0.95rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  background-color: var(--co-bg-clean, #FAFAFA);
+  color: var(--co-charcoal, #1C2421);
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+/* Luxury Soft Highlight Interaction Bounds */
+.form-group input:focus {
+  border-color: var(--co-sage, #5B7065);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(91, 112, 101, 0.08);
+}
+
+/* 8. Step Panel Panel Control Visibility States */
+.popup-window.step-1-active #step2Panel {
+  display: none;
+}
+
+.popup-window.step-2-active #step1Panel {
+  display: none;
+}
+
+/* 9. Bottom Control Layer Buttons */
+.form-actions-panel {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.popup-next-btn {
+  min-width: 160px;
+}
+
+@media (max-width: 480px) {
+  .popup-next-btn {
+    width: 100%; /* Spans full touch viewport width comfortably on mobile smartphones */
+  }
+}
+.footer-bottom p {
+  font-size: 0.8rem;
+  color: #6E8276;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+.transform-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.005);
+}
+
+.before-after {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.photo-slot {
+  aspect-ratio: 3/4;
+  background-color: var(--co-sage-soft);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--co-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.transform-caption {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--co-charcoal);
+  text-align: center;
+  margin: 1rem 0 0.25rem 0;
+}
+
+/* Strategic Badges Sub-Footer */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.badge {
+  background-color: var(--co-gold-light);
+  color: var(--co-gold);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   7. SECTION 7: NUTRITION DIFFERENCE GEOMETRICS
+   ========================================================================== */
+.nutrition-section {
+  padding: 5rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive Structural Fallback for Radial Mapping */
+.radial-matrix {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  margin: 3.5rem auto;
+  max-width: 700px;
+}
+
+.center-core {
+  width: 90px;
+  height: 90px;
+  background-color: var(--co-sage);
+  color: #FFFFFF;
+  font-family: var(--font-serif-luxury);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(91, 112, 101, 0.2);
+}
+
+.leaves-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.nutrition-leaf {
+  background-color: var(--co-bg-card);
+  color: var(--co-charcoal);
+  border: 1px solid var(--co-border-light);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+}
+
+/* Core Strategy Grid Infrastructure */
+.strategy-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .strategy-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .strategy-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.strategy-node {
+  background-color: var(--co-bg-card);
+  border-left: 3px solid var(--co-gold);
+  border-top: 1px solid var(--co-border-light);
+  border-right: 1px solid var(--co-border-light);
+  border-bottom: 1px solid var(--co-border-light);
+  padding: 1.5rem;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--co-charcoal);
+}
+
+/* ==========================================================================
+   8. SECTION 8: PRICING SYSTEM INTERFACE
+   ========================================================================== */
+.pricing-section {
+  padding: 5.5rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+  align-items: stretch; /* Forces clean equal card matching heights on desktop */
+}
+
+@media (min-width: 768px) {
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .pricing-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.pricing-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  padding: 3rem 1.5rem 2.25rem 1.5rem;
+  display: flex;
+  flex-direction: column; /* Controls structural anchoring of bottom items */
+  position: relative;
+}
+
+/* Premium Highlighted Card Strategy Rules */
+.pricing-card.popular {
+  border: 2.5px solid var(--co-sage);
+  box-shadow: 0 12px 40px rgba(91, 112, 101, 0.06);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--co-sage);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 1rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.tier-name {
+  font-family: var(--font-serif-luxury);
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--co-charcoal);
+}
+
+.price {
+  font-family: var(--font-serif-luxury);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--co-charcoal);
+  line-height: 1;
+  margin-bottom: 2rem;
+}
+
+.currency {
+  font-size: 1.6rem;
+  vertical-align: super;
+  font-weight: 600;
+  margin-right: 0.1rem;
+}
+
+.period {
+  font-family: var(--font-sans-clean);
+  font-size: 0.85rem;
+  color: var(--co-muted);
+  font-weight: 500;
+  margin-left: 0.25rem;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  flex-grow: 1; /* Pushes the CTA component down dynamically */
+}
+
+.features-list li {
+  font-size: 0.92rem;
+  color: var(--co-muted);
+  line-height: 1.4;
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+/* Elegant Dot Bullet Implementation */
+.features-list li::before {
+  content: "•";
+  color: var(--co-gold);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Secure Card Base Structural Integration */
+.tier-cta {
+  width: 100% !important;
+  margin-top: auto; /* Solidify alignment cleanly inside bounds */
+}
+
+/* If Outline configuration preferred on standard cards */
+.pricing-card:not(.popular) .tier-cta {
+  background-color: transparent;
+  color: var(--co-sage);
+  border: 2px solid var(--co-sage);
+  box-shadow: none;
+}
+
+.pricing-card:not(.popular) .tier-cta:hover {
+  background-color: var(--co-sage-soft);
+}
+
+/* ==========================================================================
+   9. SECTION 9: CLOSING FINISHING SYSTEM CTA
+   ========================================================================== */
+.final-cta {
+  background-color: var(--co-gold-light);
+  border: 1px solid rgba(197, 160, 89, 0.12);
+  border-radius: 28px;
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  max-width: 1160px;
+  margin: 4rem auto 2.5rem auto;
+}
+
+@media (min-width: 768px) {
+  .final-cta {
+    padding: 5rem 3rem;
+  }
+}
+/* ==========================================================================
+   UPDATED TRANSFORMATIONS GRID (IMAGE-SAFE STRUCTURE)
+   ========================================================================== */
+
+/* 1. Main Section Bounds */
+.results-section {
+  padding: 5rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 2. Gallery Responsive Columns */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3. The Card Shell */
+.transform-card {
+  background-color: var(--co-bg-card, #FFFFFF);
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.005);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 4. Side-by-Side Flex Layout (Stays split evenly) */
+.before-after {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* 5. Precision Image Formatting */
+.photo-slot {
+  flex: 1; /* Forces both images to perfectly share 50% width */
+  width: 50%; /* Explicit base fallback */
+  min-width: 0; /* Prevents image flex-overflow engines from breaking */
+  aspect-ratio: 3/4; /* Maintains uniform sizing shape even with distinct image sources */
+  object-fit: cover; /* Centers & crops images without squishing or skewing */
+  object-position: center top; /* Keeps focus on upper body/torso changes */
+  background-color: var(--co-sage-soft, #EEF2F0); /* Fallback block color while asset loads */
+  border-radius: 12px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  transition: transform 0.3s ease;
+}
+
+/* Subtle interactive premium pop */
+.transform-card:hover .photo-slot {
+  transform: scale(1.015);
+}
+
+/* 6. Text Elements & Structural Badge Footer */
+.transform-caption {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--co-charcoal, #1C2421);
+  text-align: center;
+  margin: 1.25rem 0 0 0;
+  letter-spacing: 0.01em;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 3.5rem;
+}
+
+.badge {
+  background-color: var(--co-gold-light, #FAF6EE);
+  color: var(--co-gold, #C5A059);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.85rem 1.75rem;
+  border-radius: 9999px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(197, 160, 89, 0.04);
+}
+.final-headline {
+  font-family: var(--font-serif-luxury);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--co-charcoal);
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+}
+
+.final-support {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--co-muted);
+  max-width: 540px;
+  margin: 0 auto 2.25rem auto;
+}
+
+.final-cta-btn {
+  min-width: 270px;
+}
+
+/* ==========================================================================
+   FORM VALIDATION & STRIPE PAYMENTS STYLES
+   ========================================================================== */
+
+/* Styled Input Errors */
+.input-error {
+  color: #AE5846; /* Accent subtle error tone */
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInError 0.2s ease-out forwards;
+}
+
+.input-error small {
+  display: block;
+}
+
+/* Stripe Mounting Node Styles */
+.stripe-input-mounting-node {
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  background-color: var(--co-bg-clean, #FAFAFA);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.stripe-input-mounting-node.StripeElement--focus {
+  border-color: var(--co-sage, #5B7065);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(91, 112, 101, 0.08);
+}
+
+.stripe-input-mounting-node.StripeElement--invalid {
+  border-color: #AE5846;
+}
+
+/* Stripe Inline Error Message */
+.stripe-error-message {
+  color: #AE5846;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* Billing Summary Card */
+.payment-summary-card {
+  background-color: var(--co-sage-soft, #EEF2F0);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--co-charcoal, #1C2421);
+  border: 1px solid rgba(91, 112, 101, 0.1);
+}
+
+.payment-summary-card span {
+  font-weight: 500;
+  color: var(--co-muted, #606C66);
+}
+
+.payment-summary-card strong {
+  font-size: 1.1rem;
+  color: var(--co-sage, #5B7065);
+  font-weight: 700;
+}
+
+@keyframes fadeInError {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

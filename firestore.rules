@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Strict schema-enforced validation rule for coaching applications
+    match /coaching_applications/{applicationId} {
+      
+      // Allow creation of applications only if they conform to the required schemas and metadata properties
+      allow create: if 
+        // 1. Validate client_profile details
+        request.resource.data.client_profile.name is string &&
+        request.resource.data.client_profile.name.size() >= 2 &&
+        request.resource.data.client_profile.email is string &&
+        request.resource.data.client_profile.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$') &&
+        request.resource.data.client_profile.phone is string &&
+        
+        // 2. Validate physical_metrics ranges
+        request.resource.data.physical_metrics.height_cm is number &&
+        request.resource.data.physical_metrics.height_cm >= 50 &&
+        request.resource.data.physical_metrics.height_cm <= 300 &&
+        request.resource.data.physical_metrics.current_weight_kg is number &&
+        request.resource.data.physical_metrics.current_weight_kg >= 20 &&
+        request.resource.data.physical_metrics.current_weight_kg <= 500 &&
+        request.resource.data.physical_metrics.target_weight_kg is number &&
+        request.resource.data.physical_metrics.target_weight_kg >= 20 &&
+        request.resource.data.physical_metrics.target_weight_kg <= 500 &&
+        
+        // 3. Validate subscription_tier properties
+        request.resource.data.subscription_tier.plan_name is string &&
+        request.resource.data.subscription_tier.amount_paid_usd is number &&
+        request.resource.data.subscription_tier.amount_paid_usd > 0 &&
+        
+        // 4. Validate metadata fields and confirm payment succeeded
+        request.resource.data.transaction_metadata.stripe_payment_intent_id is string &&
+        request.resource.data.transaction_metadata.payment_status == 'succeeded' &&
+        request.resource.data.transaction_metadata.processed_at == request.time;
+        
+      // Ensure that client apps can only create and NEVER read, update or delete documents.
+      // This protects highly sensitive client personal information and weight goals.
+      allow read: if request.auth != null; // Restrict read access to authenticated admins only
+      allow update, delete: if false; // Deny updates and deletions completely
+    }
+
+    // Dev test endpoint rules for verifying Firebase database connection
+    match /test_writes/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

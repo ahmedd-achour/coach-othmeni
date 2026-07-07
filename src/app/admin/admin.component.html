@@ -1,0 +1,199 @@
+<div class="admin-dashboard-container">
+
+  <!-- ==================== GATEWAY 1: SECURITY SECURE LOGIN VIEW ==================== -->
+  <div class="login-card-wrapper" *ngIf="!isAuthenticated">
+    <div class="login-shield-box">
+      <div class="shield-branding">
+        <span class="lock-icon">🔒</span>
+        <h2>Othmani Elite Coaching</h2>
+        <p>Administration Access Pipeline Gateway</p>
+      </div>
+
+      <form (ngSubmit)="handleAdminLogin()" class="security-form-layer">
+        <div class="input-field-group">
+          <label>Secured Operator Email</label>
+          <input type="email" [(ngModel)]="credentials.email" name="email" required placeholder="admin@domain.com">
+        </div>
+
+        <div class="input-field-group">
+          <label>Security Keyphrase</label>
+          <input type="password" [(ngModel)]="credentials.password" name="password" required placeholder="••••••••">
+        </div>
+
+        <div class="security-error-alert" *ngIf="loginErrorMessage">
+          ⚠️ {{ loginErrorMessage }}
+        </div>
+
+        <button type="submit" class="btn-auth-commit">Authorize Terminal Session</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== GATEWAY 2: LIVE ADMINISTRATIVE HUB DASHBOARD ==================== -->
+  <div class="dashboard-core-canvas" *ngIf="isAuthenticated">
+
+    <!-- Top Action Control Bar Navigation -->
+    <header class="dashboard-control-header">
+      <div class="branding-group">
+        <h1>Control Console</h1>
+        <p>Real-Time Ingestion Tracking Analytics Panel</p>
+      </div>
+      <button class="btn-terminate-session" (click)="handleAdminLogout()">Terminate Session (Logout)</button>
+    </header>
+
+    <!-- Row 1: Key Performance Metric Summaries -->
+    <section class="telemetry-metrics-grid">
+      <div class="metric-summary-card">
+        <div class="card-meta">Total Ingested Leads</div>
+        <div class="card-value-display text-blue">{{ totalLeadsCount }}</div>
+        <div class="card-caption">All raw form submissions</div>
+      </div>
+      <div class="metric-summary-card">
+        <div class="card-meta">Paid Conversions</div>
+        <div class="card-value-display text-green">{{ paidConversionsCount }}</div>
+        <div class="card-caption">Stripe validation hooks verified</div>
+      </div>
+      <div class="metric-summary-card">
+        <div class="card-meta">Gross Sales Architecture</div>
+        <div class="card-value-display text-gold">${{ grossRevenueUsd }}</div>
+        <div class="card-caption">Total accumulated billing cycles</div>
+      </div>
+      <div class="metric-summary-card">
+        <div class="card-meta">Conversion Efficiency</div>
+        <div class="card-value-display text-purple">{{ conversionRatePercent }}%</div>
+        <div class="card-caption">Ratio of checkouts to drop-offs</div>
+      </div>
+    </section>
+
+    <!-- Row 2: Interactive SVG-Driven Charts -->
+    <section class="analytics-charts-grid">
+
+      <!-- Chart A: Conversion Funnel Status Output -->
+      <div class="chart-wrapper-card">
+        <h3>Conversion Status Split</h3>
+        <p class="chart-sub">Real-time ratio between pending leads and confirmed checkouts</p>
+
+        <div class="svg-chart-container">
+          <svg width="100%" height="200" viewBox="0 0 300 200" preserveAspectRatio="none">
+            <!-- Grid Background Lines -->
+            <line x1="40" y1="20" x2="280" y2="20" stroke="#333" stroke-width="1" stroke-dasharray="4" />
+            <line x1="40" y1="90" x2="280" y2="90" stroke="#333" stroke-width="1" stroke-dasharray="4" />
+            <line x1="40" y1="160" x2="280" y2="160" stroke="#444" stroke-width="1" />
+
+            <!-- Bar 1: Paid Conversions -->
+            <rect [attr.x]="70" [attr.y]="160 - paidVolumeHeight" width="45" [attr.height]="paidVolumeHeight" fill="#10b981" rx="4"/>
+            <text [attr.x]="92" [attr.y]="150 - paidVolumeHeight" fill="#fff" text-anchor="middle" font-size="12">{{ paidConversionsCount }}</text>
+
+            <!-- Bar 2: Pending Leads Drop-off -->
+            <rect [attr.x]="185" [attr.y]="160 - pendingVolumeHeight" width="45" [attr.height]="pendingVolumeHeight" fill="#f59e0b" rx="4"/>
+            <text [attr.x]="207" [attr.y]="150 - pendingVolumeHeight" fill="#fff" text-anchor="middle" font-size="12">{{ totalLeadsCount - paidConversionsCount }}</text>
+
+            <!-- Labels Axis -->
+            <text x="92" y="180" fill="#999" text-anchor="middle" font-size="11">Paid Pack</text>
+            <text x="207" y="180" fill="#999" text-anchor="middle" font-size="11">Pending Drop</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Chart B: Client Target Goal Ingestion Proportions -->
+      <div class="chart-wrapper-card">
+        <h3>Transformation Goals</h3>
+        <p class="chart-sub">Ingested intent breakdown based on user current vs target weight calculations</p>
+
+        <div class="svg-chart-container display-flex-center">
+          <!-- Donut Segment Visual Component -->
+          <svg width="160" height="160" viewBox="0 0 42 42" class="donut-vector">
+            <circle class="donut-hole" cx="21" cy="21" r="15.915" fill="#1e1e1e"></circle>
+            <circle class="donut-ring" cx="21" cy="21" r="15.915" fill="transparent" stroke="#3b82f6" stroke-width="4.2"></circle>
+            <circle class="donut-segment" cx="21" cy="21" r="15.915" fill="transparent" stroke="#ec4899" stroke-width="4.2"
+                    [attr.stroke-dasharray]="lossGoalPercent + ' ' + (100 - lossGoalPercent)"
+                    stroke-dashoffset="25"></circle>
+          </svg>
+
+          <!-- Graph Data Legend Matrix -->
+          <div class="chart-legend-labels">
+            <div class="legend-item">
+              <span class="color-swatch bg-pink"></span>
+              <span class="legend-text">Weight Loss Strategy: <strong>{{ lossGoalPercent }}%</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="color-swatch bg-blue"></span>
+              <span class="legend-text">Muscle Gain / Recomp: <strong>{{ gainMusclePercent }}%</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 3: Live Application Structured Data Matrix Table -->
+    <section class="data-table-card-wrapper">
+      <div class="table-header-context">
+        <h3>Live Customer Ingestion Inbound Stream</h3>
+        <span class="badge-total-records">{{ totalLeadsCount }} Active Database Documents Linked</span>
+      </div>
+
+      <div class="responsive-table-scroll-container">
+        <table class="dashboard-native-table">
+          <thead>
+            <tr>
+              <th>Client Information</th>
+              <th>Physical Baselines</th>
+              <th>Selected Package</th>
+              <th>Region</th>
+              <th>Status</th>
+              <th>Ingested At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of applications" class="table-row-hover">
+              <td>
+                <div class="identity-block">
+                  <span class="primary-name">{{ client.client_profile?.name }}</span>
+                  <span class="sub-contact">{{ client.client_profile?.email }} | {{ client.client_profile?.phone }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="metrics-block">
+                  <span>📏 {{ client.physical_metrics?.height_cm }} cm</span>
+                  <span>⚖️ {{ client.physical_metrics?.current_weight_kg }}kg ➔ 🎯 {{ client.physical_metrics?.target_weight_kg }}kg</span>
+                </div>
+              </td>
+              <td>
+                <div class="package-block">
+                  <span class="plan-label-badge">{{ client.subscription_tier?.plan_name }}</span>
+                  <span class="plan-revenue-metric">${{ client.subscription_tier?.amount_paid_usd }} USD</span>
+                </div>
+              </td>
+              <td>
+                <span class="country-text-label">📍 {{ client.client_profile?.country || 'Not Set' }}</span>
+              </td>
+              <!-- Locate this specific section inside the live application matrix layout table -->
+<td>
+  <div class="status-action-cell" (click)="togglePaymentStatus(client)" title="Click to switch tracking state context">
+    <span class="status-pill-badge clickable-badge" [ngClass]="client.transaction_metadata?.payment_status">
+      {{ client.transaction_metadata?.payment_status | uppercase }}
+    </span>
+    <span class="badge-action-hint">Click to change</span>
+  </div>
+</td>
+              <td>
+                <span class="status-pill-badge" [ngClass]="client.transaction_metadata?.payment_status">
+                  {{ client.transaction_metadata?.payment_status | uppercase }}
+                </span>
+              </td>
+              <td class="timestamp-field">
+                {{ client.transaction_metadata?.processed_at?.seconds * 1000 | date:'medium' }}
+              </td>
+            </tr>
+            <tr *ngIf="applications.length === 0">
+              <td colspan="6" class="empty-state-notice">
+                No client intake applications records tracked inside the connected Firestore schema instances.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>

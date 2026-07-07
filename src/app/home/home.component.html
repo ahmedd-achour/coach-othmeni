@@ -1,0 +1,260 @@
+<section class="home-page">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-headline">THE #1 WEIGHT LOSS COACH IN DUBAI.</h1>
+        <p class="hero-subheadline">
+          +22 years of experience. 1000+ real transformations. One coach who builds a plan around YOU not the other way around.
+        </p>
+        <div class="hero-actions">
+          <button (click)="scrollToSection('pricing')" class="btn btn-outline">View My Packs</button>
+          <button (click)="openPopup()" class="btn btn-solid">Apply Now</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="visual-card">
+          <img class="image-placeholder" src="assets/othmeniCoach.jpg" alt="Coach Aymen Othmani">
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-banner">
+      <div class="metrics-grid">
+        <div *ngFor="let metric of metrics" class="metric-item">
+          <div class="metric-value">{{ metric.value }}</div>
+          <div class="metric-label">{{ metric.label }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote-section">
+    <div class="quote-card">
+      <blockquote class="quote-text">
+        "I've coached hundreds of people through the same struggle you're facing right now and I've learned one thing: the plan was never the problem. Give me your habits, your schedule, your food, your restrictions, and I'll build the one plan that actually works for YOUR life."
+      </blockquote>
+      <div class="quote-attribution">
+        <div class="signature-line"></div>
+        <p class="coach-name">Coach Aymen Othmani</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-fail-section">
+    <h2 class="section-headline">YOU'VE TRIED BEFORE. THE PLAN WASN'T THE PROBLEM - THE COACH WAS.</h2>
+    <p class="section-body">
+      Generic diet plans and copy-pasted workout programs fail because they ignore who you actually are: your schedule, your food culture, your allergies, your injuries, your relationship with food. Real, lasting transformation only happens when every part of your plan – training, nutrition, mindset, and follow-up – is built specifically around you, and adjusted every single month as you change.
+    </p>
+  </section>
+
+  <section class="method-section">
+    <h2 class="section-headline">THE METHOD</h2>
+    <div class="method-grid">
+      <div *ngFor="let step of methodSteps" class="method-card">
+        <div class="step-number">{{ step.number }}</div>
+        <h3 class="step-title">{{ step.title }}</h3>
+        <p class="step-description">{{ step.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <h2 class="section-headline">COACHING RESULTS</h2>
+    <div class="gallery-grid">
+      <div class="transform-card">
+        <div class="before-after">
+          <img class="photo-slot before" src="assets/asset1.png" alt="Before Transformation">
+          <img class="photo-slot after" src="assets/asset2.png" alt="After Transformation">
+        </div>
+        <p class="transform-caption"></p>
+      </div>
+      <div class="transform-card">
+        <div class="before-after">
+          <img class="photo-slot before" src="assets/asset3.png" alt="Before Transformation">
+          <img class="photo-slot after" src="assets/othmeniC.jpg" alt="After Transformation">
+         </div>
+        <p class="transform-caption"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="nutrition-section">
+    <h2 class="section-headline">EVERY DIET. EVERY RESTRICTION. ONE PLAN THAT ACTUALLY FITS YOU.</h2>
+    <div class="radial-matrix">
+      <div class="center-core">YOU</div>
+      <div class="leaves-grid">
+        <div *ngFor="let leaf of nutritionLeaves" class="nutrition-leaf">
+          {{ leaf.name }}
+        </div>
+      </div>
+    </div>
+    <div class="strategy-grid">
+      <div class="strategy-node">Protein Coverage</div>
+      <div class="strategy-node">Allergy-Safe Filters</div>
+      <div class="strategy-node">Halal Alignments</div>
+      <div class="strategy-node">Diabetic/PCOS Tracking</div>
+    </div>
+  </section>
+
+  <section class="pricing-section" id="pricing">
+    <h2 class="section-headline">CHOOSE YOUR PACK. START YOUR TRANSFORMATION.</h2>
+    <div class="pricing-grid">
+      <div *ngFor="let tier of pricingTiers" class="pricing-card" [class.popular]="tier.isPopular">
+        <div *ngIf="tier.isPopular" class="popular-badge">MOST POPULAR</div>
+        <h3 class="tier-name">{{ tier.name }}</h3>
+        <div class="price">
+          <span class="currency">$</span>{{ tier.price }}<span class="period">/mo</span>
+        </div>
+        <ul class="features-list">
+          <li *ngFor="let feature of tier.features">{{ feature }}</li>
+        </ul>
+        <button (click)="openPopup(tier)" class="btn btn-solid tier-cta">{{ tier.ctaText }}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <h2 class="final-headline">STOP STARTING OVER. START FINISHING.</h2>
+    <p class="final-support">600+ people already trusted this method to transform their body for good. Your plan is one form away.</p>
+    <button (click)="openPopup()" class="btn btn-solid final-cta-btn">Apply For Transformation</button>
+  </section>
+</section>
+
+<div class="popup-overlay" [class.is-visible]="isPopupVisible" id="transformationPopup" (click)="closeOnBackdrop($event)">
+  <div class="popup-window">
+
+    <button type="button" class="popup-close-btn" aria-label="Close popup" id="closePopupBtn" (click)="closePopup()">×</button>
+
+    <div class="popup-header">
+      <span class="popup-tag">Selected Plan: {{ selectedPlan?.name || 'Premium Custom Blueprint' }}</span>
+      <h2 class="popup-title">Apply For Coaching</h2>
+
+      <div class="progress-bar-container">
+        <div class="progress-indicator-line"></div>
+        <div class="progress-steps-nodes">
+          <div class="step-node node-1" [class.active]="currentStep >= 1"><span>1</span></div>
+          <div class="step-node node-2" [class.active]="currentStep === 2"><span>2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <form class="popup-form-engine" (ngSubmit)="$event.preventDefault()">
+
+      <div class="form-step-panel" *ngIf="currentStep === 1">
+        <p class="panel-instruction-text">Please provide your core details and baseline body measurements to begin mapping your plan.</p>
+
+        <div class="form-fields-grid">
+          <div class="form-group full-width">
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" [(ngModel)]="formData.name" name="name" required placeholder="e.g., Amine Othmeni">
+          </div>
+
+          <div class="form-group">
+            <label>Email Address <span class="required">*</span></label>
+            <input type="email" [(ngModel)]="formData.email" name="email" required placeholder="name@domain.com">
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number <span class="required">*</span></label>
+            <input type="tel" [(ngModel)]="formData.phone" name="phone" required placeholder="+971 50 000 0000">
+          </div>
+
+          <div class="form-group metric-input-group">
+            <label>Height <span class="unit">(cm)</span> <span class="required">*</span></label>
+            <input type="number" [(ngModel)]="formData.height" name="height" min="100" max="250" required placeholder="180">
+          </div>
+
+          <div class="form-group metric-input-group">
+            <label>Current Weight <span class="unit">(kg)</span> <span class="required">*</span></label>
+            <input type="number" [(ngModel)]="formData.weight" name="weight" min="30" max="300" required placeholder="92">
+          </div>
+
+          <div class="form-group metric-input-group full-width-mobile">
+            <label>Target Weight <span class="unit">(kg)</span> <span class="required">*</span></label>
+            <input type="number" [(ngModel)]="formData.targetWeight" name="targetWeight" min="30" max="300" required placeholder="80">
+          </div>
+        </div>
+
+        <div class="stripe-error-message" *ngIf="stripeErrorMessage" style="margin-top: 15px; color: #ff4d4d; font-size: 14px;">
+          {{ stripeErrorMessage }}
+        </div>
+
+        <div class="form-actions-panel">
+          <button type="button"
+                  class="btn btn-solid popup-next-btn"
+                  [disabled]="!isStep1Valid()"
+                  (click)="goToStep(2)">
+            Next Step
+          </button>
+        </div>
+      </div>
+
+      <div class="form-step-panel" *ngIf="currentStep === 2">
+        <p class="panel-instruction-text">Almost done! Please confirm your location region to match localized diet plans before moving to checkout.</p>
+
+        <div class="form-fields-grid" style="margin-bottom: 20px;">
+          <div class="form-group full-width">
+            <label>Country of Residence <span class="required">*</span></label>
+            <select title="e" [(ngModel)]="formData.country" name="country" required class="form-control" style="width: 100%; padding: 12px; border-radius: 6px; background: #222; color: #fff; border: 1px solid #444;">
+              <option value="" disabled selected>Select your country</option>
+              <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
+              <option value="Tunisia">Tunisia</option>
+              <option value="Saudi Arabia">Saudi Arabia</option>
+              <option value="Qatar">Qatar</option>
+              <option value="Kuwait">Kuwait</option>
+              <option value="United States">United States</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stripe-error-message" *ngIf="stripeErrorMessage" style="margin-top: 15px; color: #ff4d4d; font-size: 14px; text-align: center;">
+          {{ stripeErrorMessage }}
+        </div>
+
+        <div class="form-actions-panel" style="display: flex; gap: 10px; margin-top: 25px;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" [disabled]="isProcessingPayment" (click)="goToStep(1)">
+            Back
+          </button>
+          <button type="button"
+                  class="btn btn-solid"
+                  style="flex: 2;"
+                  [disabled]="!formData.country || isProcessingPayment"
+                  (click)="handlePaymentSubmit()">
+            {{ isProcessingPayment ? 'Saving Lead...' : 'Proceed to Checkout' }}
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<footer class="main-footer">
+  <div class="footer-container">
+    <div class="footer-column brand-info">
+      <h3 class="footer-logo">Coach Aymen Othmani</h3>
+      <p class="footer-bio">
+        Premium tailored results for high-performers. Building sustainable physical transformations through science-backed, personalized blueprints in Dubai.
+      </p>
+    </div>
+    <div class="footer-column contact-info">
+      <h4 class="column-title">Connect Directly</h4>
+      <ul class="contact-links">
+        <li><span class="contact-label">Email:</span> <a href="mailto:contact@aymenothmani.com" class="contact-value">contact&#64;aymenothmani.com</a></li>
+        <li><span class="contact-label">WhatsApp:</span> <div href="https://wa.me/971500000000" target="_blank" class="contact-value">+971 50 000 0000</div></li>
+        <li><span class="contact-label">Location:</span> <span class="contact-value">Fitness First, Dubai, UAE</span></li>
+      </ul>
+    </div>
+    <div class="footer-column map-portal">
+      <h4 class="column-title">Primary Venue</h4>
+      <div class="map-wrapper">
+        <iframe src="https://maps.google.com/maps?q=Fitness%20First%20Dubai&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" title="Location Map"></iframe>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Coach Aymen Othmani. All Rights Reserved. Built for Elite Performance.</p>
+  </div>
+</footer>

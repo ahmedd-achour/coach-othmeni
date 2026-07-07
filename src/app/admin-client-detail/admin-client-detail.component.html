@@ -1,0 +1,111 @@
+<div class="admin-canvas">
+  <div class="admin-wrapper">
+
+    <!-- Top System Header Elements -->
+    <div class="header-container">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <h1 class="client-name-title">{{ client.fullName }}</h1>
+        </div>
+        <p class="dubai-tagline">ONLINE TRANSFORMATION COACHING • DUBAI</p>
+      </div>
+
+      <!-- Premium Glassmorphic Payment Container -->
+      <div class="financial-widget">
+        <div>
+          <p class="widget-label">Transaction</p>
+          <p class="widget-value">{{ client.paymentMethod }} Secure Node</p>
+        </div>
+        <div class="divider-line"></div>
+        <div>
+          <p class="widget-label">Amount</p>
+          <p class="widget-price">{{ client.amountPaid }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Workspace Grid Architecture -->
+    <div class="workspace-grid">
+
+      <!-- LEFT MODULE PANEL: Client Intake Analytics Profile -->
+      <div class="luxury-card">
+        <h2 class="card-title">
+          <span class="gold-accent-dot"></span>
+          Formulaire d'Admission
+        </h2>
+
+        <div class="metrics-row">
+          <div class="metric-box">
+            <p class="widget-label" style="margin-bottom: 0.25rem;">Âge</p>
+            <span style="font-weight: 700; color: var(--luxury-gold);">{{ client.intake.age }} ans</span>
+          </div>
+          <div class="metric-box">
+            <p class="widget-label" style="margin-bottom: 0.25rem;">Poids</p>
+            <span style="font-weight: 700; color: var(--luxury-heading);">{{ client.intake.weight }} kg</span>
+          </div>
+          <div class="metric-box">
+            <p class="widget-label" style="margin-bottom: 0.25rem;">Objectif</p>
+            <span style="font-weight: 700; color: var(--luxury-heading);">{{ client.intake.targetWeight }} kg</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1.25rem; flex-direction: column;">
+          <div>
+            <span class="info-label">Préférence Nutritionnelle</span>
+            <p style="color: var(--luxury-heading); margin: 0.25rem 0 0 0; font-weight: 500;">{{ client.intake.dietaryPreference }}</p>
+          </div>
+
+          <div style="border-t: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+            <span class="info-label">Objectifs Détaillés</span>
+            <p class="goals-quote-box">
+              "{{ client.intake.goals }}"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT MODULE PANEL: Plan Generation Interface -->
+      <div class="luxury-card">
+        <h2 class="card-title">
+          <span class="gold-accent-dot"></span>
+          Conception du Programme
+        </h2>
+
+        <!-- Macro Inputs System Matrix -->
+        <div class="inputs-grid">
+          <div class="input-wrapper">
+            <label>Calories (kcal)</label>
+            <input type="number" placeholder="kcal" [(ngModel)]="customMacros.calories" class="luxury-input">
+          </div>
+          <div class="input-wrapper">
+            <label>Protéines (g)</label>
+            <input type="number" placeholder="g" [(ngModel)]="customMacros.protein" class="luxury-input">
+          </div>
+          <div class="input-wrapper">
+            <label>Glucides (g)</label>
+            <input type="number" placeholder="g" [(ngModel)]="customMacros.carbs" class="luxury-input">
+          </div>
+          <div class="input-wrapper">
+            <label>Lipides (g)</label>
+            <input type="number" placeholder="g" [(ngModel)]="customMacros.fats" class="luxury-input">
+          </div>
+        </div>
+
+        <!-- Routine Builder Entry Area -->
+        <div style="margin-bottom: 1.5rem;">
+          <span class="info-label" style="margin-bottom: 0.5rem;">Plan d'Entraînement Hebdomadaire</span>
+          <textarea placeholder="Décrivez votre plan d'entraînement hebdomadaire ici..." [(ngModel)]="workoutPlanText" rows="8" class="luxury-textarea"></textarea>
+        </div>
+
+        <!-- Interactive Trigger Controls -->
+        <div style="display: flex; justify-content: flex-end;">
+          <button (click)="publishPlan()" [disabled]="isSaving" class="luxury-btn-submit">
+            <span *ngIf="isSaving" class="btn-spinner"></span>
+            {{ isSaving ? 'Publication...' : 'Publier le Programme' }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
