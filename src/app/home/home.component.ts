@@ -208,7 +208,9 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
         },
         subscription: {
           plan_name: this.selectedPlan.name,
-          amount: Number(this.selectedPlan.price)
+          amount: Number(this.selectedPlan.price),
+          stripePriceId: this.selectedPlan.stripePriceId, // ⚠️ Vérifie que ce n'est pas undefined
+          stripePdfPriceId: this.selectedPlan.stripePdfPriceId // ⚠️ Vérifie que ce n'est pas undefined
         }
       };
 
