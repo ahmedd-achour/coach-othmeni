@@ -186,7 +186,7 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
     this.stripeErrorMessage = '';
 
     // 📢 ALERT DEBUG 1 : Formulaire validé localement, envoi au serveur
-    alert(`🔍 [DEBUG 1/3] Data validated! Contacting 'createCheckoutSession' Cloud Function for ${this.formData.email}...`);
+   // alert(`🔍 [DEBUG 1/3] Data validated! Contacting 'createCheckoutSession' Cloud Function for ${this.formData.email}...`);
 
     try {
       const createCheckoutSessionFn = httpsCallable<any, { checkoutUrl: string; applicationId: string }>(
@@ -220,7 +220,7 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
 
       if (result?.data?.checkoutUrl) {
         // 📢 ALERT DEBUG 2 : Succès de la fonction, redirection imminente
-        alert(`✅ [DEBUG 2/3] Success! Application ID created: ${result.data.applicationId}. Redirecting to Stripe URL...`);
+       // alert(`✅ [DEBUG 2/3] Success! Application ID created: ${result.data.applicationId}. Redirecting to Stripe URL...`);
         window.location.href = result.data.checkoutUrl;
       } else {
         throw new Error('The Cloud Function executed but returned an empty checkout URL.');
@@ -234,7 +234,7 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
       const exactErrorMessage = err.message || 'Unknown network error';
 
       // 📢 ALERT DEBUG 3 : Erreur Interne interceptée avec détails réels
-      alert(`❌ [DEBUG 3/3] INTERNAL ERROR DETECTED!\n\nMessage: ${exactErrorMessage}\n\nDetails: ${backendErrorDetails}\n\nPlease check firebase functions:log.`);
+     // alert(`❌ [DEBUG 3/3] INTERNAL ERROR DETECTED!\n\nMessage: ${exactErrorMessage}\n\nDetails: ${backendErrorDetails}\n\nPlease check firebase functions:log.`);
 
       this.stripeErrorMessage = `Backend Error: ${exactErrorMessage}. Check console logs.`;
     } finally {

@@ -9,6 +9,19 @@
         <div class="hero-actions">
           <button (click)="scrollToSection('pricing')" class="btn btn-outline">View My Packs</button>
           <button (click)="openPopup()" class="btn btn-solid">Apply Now</button>
+
+          <!-- Subtle Admin Shortcut Link -->
+          <div class="admin-quick-access">
+            <a routerLink="/admin" class="admin-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="9"></rect>
+                <rect x="14" y="3" width="7" height="5"></rect>
+                <rect x="14" y="12" width="7" height="9"></rect>
+                <rect x="3" y="16" width="7" height="5"></rect>
+              </svg>
+              Go to Dashboard
+            </a>
+          </div>
         </div>
       </div>
       <div class="hero-visual">
@@ -146,7 +159,7 @@
         <div class="form-fields-grid">
           <div class="form-group full-width">
             <label>Full Name <span class="required">*</span></label>
-            <input type="text" [(ngModel)]="formData.name" name="name" required placeholder="e.g., Amine Othmeni">
+            <input type="text" [(ngModel)]="formData.name" name="name" required placeholder="e.g., Aymen Othmeni">
           </div>
 
           <div class="form-group">

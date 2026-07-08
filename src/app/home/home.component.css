@@ -20,7 +20,59 @@
   display: block;
   background-color: var(--co-bg-clean);
 }
+/* ==========================================================================
+   UPDATED HERO ACTIONS CONTAINER WITH QUICK ACCESS SHORTCUT
+   ========================================================================== */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;       /* Drops the admin access box nicely onto the next line */
+  gap: 1rem;
+  align-items: center;
+}
 
+@media (max-width: 479px) {
+  .hero-actions {
+    flex-direction: column; /* Keeps main buttons stacked cleanly on compact mobile layout sizes */
+  }
+}
+
+.admin-quick-access {
+  flex-basis: 100%;       /* Structural layout trick to guarantee full row separation */
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 479px) {
+  .admin-quick-access {
+    text-align: center;   /* Centers the link inline on mobile screens for visual symmetry */
+  }
+}
+
+.admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--co-muted); /* Leverages existing luxury design system variables */
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  opacity: 0.65;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-link svg {
+  stroke: var(--co-muted);
+  transition: stroke 0.2s ease;
+}
+
+.admin-link:hover {
+  opacity: 1;
+  color: var(--co-sage); /* Clean visual accent swap on active interaction states */
+}
+
+.admin-link:hover svg {
+  stroke: var(--co-sage);
+}
 /* Base View Wrapper Mapping */
 .home-page {
   font-family: var(--font-sans-clean);

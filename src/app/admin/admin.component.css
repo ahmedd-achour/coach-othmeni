@@ -1,516 +1,572 @@
 /* ==========================================================================
-   1. REGISTRATION OF GLOBAL LUXURY DESIGN TOKENS (INHERITED MATCH)
+   1. ADMIN CONSOLE DESIGN SYSTEM TOKENS & RESET ROOT HOOKS
    ========================================================================== */
 :host {
-  /* Premium Balanced Palette Matrix matching home layout tokens */
-  --co-bg-clean: #FAFAFA;
-  --co-bg-card: #FFFFFF;
-  --co-sage: #5B7065;
-  --co-sage-soft: #EEF2F0;
-  --co-charcoal: #1C2421;
-  --co-muted: #606C66;
-  --co-gold: #C5A059;
-  --co-gold-light: #FAF6EE;
-  --co-border-light: #EBEFEF;
-
-  /* commanding luxury dark accent canvas inherited from signature footer */
-  --co-dark-canvas: #141B18;
-
-  /* Premium Typography Engine Rules */
-  --font-serif-luxury: 'Playfair Display', Georgia, serif;
-  --font-sans-clean: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
   display: block;
-  background-color: var(--co-bg-clean);
-  font-family: var(--font-sans-clean);
-}
-
-.admin-dashboard-container {
+  background-color: var(--co-bg-clean, #FAFAFA);
   min-height: 100vh;
-  background-color: var(--co-bg-clean);
-  color: var(--co-charcoal);
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+  font-family: var(--font-sans-clean, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
 }
 
-.admin-dashboard-container *,
-.admin-dashboard-container *::before,
-.admin-dashboard-container *::after {
-  box-sizing: border-box;
+/* ==================== GLOBAL REUSABLE COMPONENTS ==================== */
+.btn {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.9rem 1.8rem;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
 }
 
-/* ==========================================================================
-   2. GATEWAY 1: SECURITY PRIVACY SHIELD (LOGIN CONTAINER)
-   ========================================================================== */
-.login-card-wrapper {
+.btn-solid {
+  background-color: var(--co-sage, #5B7065);
+  color: white;
+}
+
+.btn-solid:hover {
+  background-color: #4A5C53;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--co-sage, #5B7065);
+  border: 2px solid var(--co-sage, #5B7065);
+}
+
+.btn-outline:hover {
+  background: var(--co-sage-soft, #EEF2F0);
+}
+
+.btn-full { width: 100%; }
+.btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px; }
+
+/* ==================== LOGIN GATEWAY INTERFACE ==================== */
+.login-screen {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 2rem 1.25rem;
-  background: linear-gradient(135deg, var(--co-bg-clean) 0%, var(--co-sage-soft) 100%);
+  justify-content: center;
+  background: linear-gradient(135deg, #FAFAFA 0%, #EEF2F0 100%);
+  padding: 2rem;
 }
 
-.login-shield-box {
-  background-color: var(--co-bg-card);
-  border: 1px solid var(--co-border-light);
-  border-radius: 24px;
+.login-card {
+  background: #FFFFFF;
+  border-radius: 32px;
+  padding: 3.5rem 3rem;
   width: 100%;
-  max-width: 440px;
-  padding: 3.5rem 2.5rem;
-  box-shadow: 0 20px 50px rgba(28, 36, 33, 0.05);
+  max-width: 460px;
+  box-shadow: 0 20px 50px rgba(28, 36, 33, 0.04);
+  border: 1px solid var(--co-border-light, #EBEFEF);
 }
 
-.shield-branding {
+.login-header {
   text-align: center;
   margin-bottom: 2.5rem;
 }
 
-.lock-icon {
+.brand-icon {
   font-size: 2.5rem;
-  display: block;
+  display: inline-block;
   margin-bottom: 1rem;
-  color: var(--co-gold);
 }
 
-.shield-branding h2 {
-  font-family: var(--font-serif-luxury);
-  color: var(--co-charcoal);
+.login-title {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  font-size: 2rem;
+  color: var(--co-charcoal, #1C2421);
   margin: 0 0 0.5rem 0;
-  font-size: 1.75rem;
-  font-weight: 700;
 }
 
-.shield-branding p {
-  color: var(--co-muted);
-  font-size: 0.9rem;
+.login-subtitle {
+  color: var(--co-muted, #606C66);
   margin: 0;
-}
-
-.security-form-layer {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.input-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.input-field-group label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--co-charcoal);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.input-field-group input {
-  font-family: var(--font-sans-clean);
   font-size: 0.95rem;
-  padding: 0.85rem 1.15rem;
-  border-radius: 12px;
-  border: 1px solid var(--co-border-light);
-  background-color: var(--co-bg-clean);
-  color: var(--co-charcoal);
-  outline: none;
-  transition: all 0.2s ease;
+}
+
+.security-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.security-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--co-charcoal, #1C2421);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.security-form input {
   width: 100%;
-}
-
-.input-field-group input:focus {
-  border-color: var(--co-sage);
-  background-color: #FFFFFF;
-  box-shadow: 0 0 0 4px rgba(91, 112, 101, 0.08);
-}
-
-.security-error-alert {
-  background: rgba(174, 88, 70, 0.06);
-  border: 1px solid #AE5846;
-  color: #AE5846;
-  padding: 0.85rem;
+  padding: 1rem 1.25rem;
   border-radius: 12px;
-  font-size: 0.88rem;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  background: var(--co-bg-clean, #FAFAFA);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.security-form input:focus {
+  outline: none;
+  border-color: var(--co-sage, #5B7065);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(91, 112, 101, 0.06);
+}
+
+.error-message {
+  color: #AE5846;
+  background: #FDF3F1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
   font-weight: 500;
 }
 
-.btn-auth-commit {
-  font-family: var(--font-sans-clean);
-  font-size: 0.95rem;
-  font-weight: 600;
-  background-color: var(--co-sage);
-  color: #FFFFFF;
-  border: none;
-  padding: 1rem;
-  border-radius: 12px;
+.auth-toggle {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.toggle-link {
+  color: var(--co-sage, #5B7065);
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  min-height: 54px;
-  box-shadow: 0 4px 14px rgba(91, 112, 101, 0.16);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: underline;
 }
 
-.btn-auth-commit:hover {
-  background-color: #4A5C53;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(91, 112, 101, 0.24);
-}
-
-/* ==========================================================================
-   3. GATEWAY 2: PRINCIPAL CANVAS INTERFACE & HEADER CONTROL LAYOUT
-   ========================================================================== */
-.dashboard-core-canvas {
-  max-width: 1280px;
+/* ==================== ADMINISTRATIVE WORKSPACE CORE ==================== */
+.dashboard-core {
+  padding: 3rem 4rem;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 3rem 1.25rem;
 }
 
-.dashboard-control-header {
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--co-border-light);
-  padding-bottom: 1.5rem;
   margin-bottom: 3rem;
-  gap: 1.5rem;
-  flex-wrap: wrap;
 }
 
-.branding-group h1 {
-  font-family: var(--font-serif-luxury);
-  color: var(--co-charcoal);
+.header-brand h1 {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--co-charcoal, #1C2421);
+}
+
+.header-subtitle {
+  color: var(--co-muted, #606C66);
   margin: 0;
-  font-size: 2.1rem;
-  font-weight: 700;
+  font-size: 1rem;
 }
 
-.branding-group p {
-  color: var(--co-muted);
-  margin: 0.35rem 0 0 0;
+/* KPI Scoreboard Analytics Layout Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.metric-card {
+  background: #FFFFFF;
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  box-shadow: 0 10px 30px rgba(28, 36, 33, 0.02);
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--co-muted, #606C66);
+  margin-bottom: 0.75rem;
+}
+
+.metric-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--co-charcoal, #1C2421);
+}
+
+.text-success { color: #5B7065 !important; }
+.text-gold { color: #C5A059 !important; }
+
+/* Chart Visualization Quadrants */
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chart-card {
+  background: #FFFFFF;
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+}
+
+.chart-card h3 {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+  width: 100%;
+}
+
+/* Deep Database Segment Layout Breakdown Elements */
+.insights-section {
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  font-size: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 2rem;
+}
+
+.insight-card {
+  background: #FFFFFF;
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+}
+
+.insight-card h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--co-charcoal, #1C2421);
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
   font-size: 0.95rem;
 }
 
-.btn-terminate-session {
-  font-family: var(--font-sans-clean);
-  font-size: 0.88rem;
+.breakdown-row span:first-child {
   font-weight: 600;
-  background-color: transparent;
-  border: 2px solid #AE5846;
-  color: #AE5846;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.25s ease;
 }
 
-.btn-terminate-session:hover {
-  background-color: rgba(174, 88, 70, 0.06);
-  transform: translateY(-1px);
+.breakdown-row span:last-child {
+  color: var(--co-muted, #606C66);
 }
 
-/* ==========================================================================
-   4. TELEMETRY CARDS SYSTEM WIDGETS
-   ========================================================================== */
-.telemetry-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+.goal-progress {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.metric-summary-card {
-  background-color: var(--co-bg-card);
-  border: 1px solid var(--co-border-light);
-  border-radius: 20px;
-  padding: 2rem 1.5rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
-}
-
-.card-meta {
-  color: var(--co-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.card-value-display {
-  font-family: var(--font-serif-luxury);
-  font-size: 2.6rem;
-  font-weight: 700;
-  margin: 0.75rem 0;
-  line-height: 1.1;
-}
-
-.card-caption {
-  color: var(--co-muted);
-  font-size: 0.85rem;
-}
-
-/* Luxury Card Thematic Accents */
-.text-blue { color: #4B738C; }
-.text-green { color: var(--co-sage); }
-.text-gold { color: var(--co-gold); }
-.text-purple { color: #84719C; }
-
-/* ==========================================================================
-   5. ANALYTICAL CUSTOM SVG CHARTS WRAPPER BOARDS
-   ========================================================================== */
-.analytics-charts-grid {
+.goal-item {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: 140px 1fr 50px;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-@media (max-width: 540px) {
-  .analytics-charts-grid {
-    grid-template-columns: 1fr;
-  }
+.progress-bar {
+  background: var(--co-bg-clean, #FAFAFA);
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
 }
 
-.chart-wrapper-card {
-  background-color: var(--co-bg-card);
-  border: 1px solid var(--co-border-light);
+.progress-fill {
+  height: 100%;
+  background: var(--co-sage, #5B7065);
+  border-radius: 9999px;
+}
+
+.progress-fill.gold {
+  background: var(--co-gold, #C5A059);
+}
+
+.goal-percent {
+  text-align: right;
+  font-weight: 600;
+}
+
+.avg-loss {
+  margin: 1.5rem 0 0 0;
+  font-size: 0.95rem;
+  color: var(--co-muted, #606C66);
+  padding-top: 1rem;
+  border-top: 1px solid var(--co-border-light, #EBEFEF);
+}
+
+/* ==================== ADVANCED MATRIX DATA SHEET TABLE ==================== */
+.table-section {
+  background: #FFFFFF;
   border-radius: 24px;
-  padding: 2.5rem 1.75rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(28, 36, 33, 0.02);
 }
 
-.chart-wrapper-card h3 {
-  font-family: var(--font-serif-luxury);
-  font-size: 1.35rem;
-  color: var(--co-charcoal);
+.table-header {
+  padding: 1.75rem 2rem;
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.table-header h3 {
   margin: 0;
-  font-weight: 700;
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  font-size: 1.35rem;
 }
 
-.chart-sub {
-  color: var(--co-muted);
-  font-size: 0.88rem;
-  margin: 0.35rem 0 2rem 0;
-}
-
-.svg-chart-container {
-  min-height: 180px;
-  position: relative;
-}
-
-.display-flex-center {
+/* Header Integration Combo Elements */
+.title-filter-combo {
   display: flex;
   align-items: center;
-  justify-content: space-around;
   gap: 2rem;
   flex-wrap: wrap;
 }
 
-/* Vector SVG Component Refinement Resets */
-.svg-chart-container line {
-  stroke: var(--co-border-light);
-}
-
-.svg-chart-container text {
-  font-family: var(--font-sans-clean);
-  font-weight: 500;
-}
-
-/* Donut Geometry Vector Engine */
-.donut-vector {
-  transform: rotate(-90deg);
-}
-
-.donut-hole {
-  fill: var(--co-bg-card);
-}
-
-.donut-ring {
-  stroke: var(--co-sage-soft);
-}
-
-.chart-legend-labels {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--co-charcoal);
-}
-
-.color-swatch {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-/* Chart Segment Colors mapping light luxury styles */
-.bg-pink { background-color: var(--co-gold); }
-.bg-blue { background-color: var(--co-sage); }
-
-/* ==========================================================================
-   6. LIVE CUSTOMER DATA PLATFORM MATRIX TABLE
-   ========================================================================== */
-.data-table-card-wrapper {
-  background-color: var(--co-bg-card);
-  border: 1px solid var(--co-border-light);
-  border-radius: 24px;
-  padding: 2.5rem 1.75rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.01);
-}
-
-.table-header-context {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.table-header-context h3 {
-  font-family: var(--font-serif-luxury);
-  font-size: 1.35rem;
-  color: var(--co-charcoal);
-  margin: 0;
-  font-weight: 700;
-}
-
-.badge-total-records {
-  background-color: var(--co-gold-light);
-  color: var(--co-gold);
-  border: 1px solid rgba(197, 160, 89, 0.2);
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.responsive-table-scroll-container {
-  overflow-x: auto;
+.premium-filter-segment-group {
+  background-color: var(--co-bg-clean, #FAFAFA);
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  padding: 0.3rem;
   border-radius: 12px;
-  border: 1px solid var(--co-border-light);
+  display: inline-flex;
+  gap: 0.25rem;
 }
 
-.dashboard-native-table {
+.filter-segment-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--co-muted, #606C66);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 1.15rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-segment-btn:hover {
+  color: var(--co-charcoal, #1C2421);
+}
+
+.filter-segment-btn.is-active {
+  background-color: #FFFFFF;
+  color: var(--co-sage, #5B7065);
+  box-shadow: 0 4px 12px rgba(28, 36, 33, 0.05);
+}
+
+/* Searching Inputs Elements Alignment Blueprint */
+.filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-input {
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  background: var(--co-bg-clean, #FAFAFA);
+  font-size: 0.9rem;
+  width: 240px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--co-sage, #5B7065);
+  background: #FFFFFF;
+}
+
+.select-input {
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  background: var(--co-bg-clean, #FAFAFA);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Core Functional Data Matrix Tables Layout sheets */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1.25rem 1.5rem;
   text-align: left;
-  font-size: 0.92rem;
-  background-color: #FFFFFF;
-}
-
-.dashboard-native-table th {
-  background-color: var(--co-bg-clean);
-  border-bottom: 2px solid var(--co-border-light);
-  padding: 1rem 1.25rem;
-  color: var(--co-charcoal);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-
-.dashboard-native-table td {
-  border-bottom: 1px solid var(--co-border-light);
-  padding: 1.25rem;
   vertical-align: middle;
 }
 
-.table-row-hover:hover {
-  background-color: rgba(91, 112, 101, 0.015);
-}
-
-/* Custom Block Segments inside Table Cells */
-.identity-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.primary-name {
-  color: var(--co-charcoal);
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.sub-contact {
-  color: var(--co-muted);
-  font-size: 0.82rem;
-}
-
-.metrics-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  color: var(--co-charcoal);
-  font-weight: 500;
-}
-
-.package-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.plan-label-badge {
-  color: var(--co-charcoal);
+.admin-table th {
+  background: var(--co-sage-soft, #EEF2F0);
   font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--co-muted, #606C66);
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
 }
 
-.plan-revenue-metric {
-  color: var(--co-gold);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.table-row-interactive {
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
+  transition: background 0.15s ease;
 }
 
-.country-text-label {
-  color: var(--co-charcoal);
+.table-row-interactive:hover {
+  background-color: var(--co-bg-clean, #FAFAFA);
+}
+
+.biometrics-cell-wrapper {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--co-muted, #606C66);
+}
+
+.biometrics-cell-wrapper span {
+  font-weight: 600;
+  color: var(--co-charcoal, #1C2421);
+}
+
+.plan-badge-label {
+  display: inline-block;
+  background-color: var(--co-bg-clean, #FAFAFA);
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   font-weight: 500;
+  color: var(--co-charcoal, #1C2421);
 }
 
-/* Strategic Integration Badge Pill States */
-.status-pill-badge {
-  padding: 0.35rem 0.75rem;
-  border-radius: 8px;
+.amount-cell {
+  font-weight: 600;
+  color: var(--co-charcoal, #1C2421);
+}
+
+.timestamp-column-cell {
+  font-size: 0.85rem;
+  color: var(--co-muted, #606C66);
+  white-space: nowrap;
+}
+
+/* ==================== INTERACTIVE OPTIMISTIC BADGES ==================== */
+.status-badge-container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  cursor: pointer;
+}
+
+.status-badge {
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   display: inline-block;
   text-align: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
 }
 
-.status-pill-badge.paid {
-  background-color: var(--co-sage-soft);
-  color: var(--co-sage);
-  border: 1px solid rgba(91, 112, 101, 0.2);
+.status-badge.paid {
+  background: var(--co-sage-soft, #EEF2F0);
+  color: var(--co-sage, #5B7065);
 }
 
-.status-pill-badge.pending {
-  background-color: var(--co-gold-light);
-  color: var(--co-gold);
-  border: 1px solid rgba(197, 160, 89, 0.2);
+.status-badge.pending {
+  background: #FDF6E2;
+  color: #B38F3B;
 }
 
-.timestamp-field {
-  font-size: 0.82rem;
-  color: var(--co-muted);
+/* Dynamic Interactive Status Hover Effects Rules Context */
+.status-badge-container:hover .clickable-badge {
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-.empty-state-notice {
+.status-badge-container:hover .clickable-badge.paid {
+  background: #E2EBE7;
+  border-color: rgba(91, 112, 101, 0.2);
+}
+
+.status-badge-container:hover .clickable-badge.pending {
+  background: #F9EFC7;
+  border-color: rgba(179, 143, 59, 0.2);
+}
+
+.status-badge-container:active .clickable-badge {
+  transform: scale(0.97);
+}
+
+.status-action-hint {
+  font-size: 0.65rem;
+  color: var(--co-muted, #606C66);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.status-badge-container:hover .status-action-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.empty-state {
   text-align: center;
-  padding: 3.5rem !important;
-  color: var(--co-muted);
+  padding: 4rem !important;
+  color: var(--co-muted, #606C66);
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
