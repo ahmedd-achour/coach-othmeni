@@ -1,15 +1,6 @@
 <div class="admin-dashboard-container">
-
-  <!-- ==========================================================================
-     1. SECURITY IDENTITY FILTER BOUNDARY (AUTHENTICATION SYSTEM SCREEN)
-     ========================================================================== -->
   <div class="login-screen" *ngIf="!isAuthenticated">
-
-
     <div class="login-card">
-
-
-
       <div class="login-header">
         <a href="/" class="brand-icon" >🏠</a>
         <h1 class="login-title">Elite Coaching Admin</h1>
@@ -17,9 +8,6 @@
           {{ isLoginMode ? 'Secure Administrative Access' : 'Create New Admin Account' }}
         </p>
       </div>
-
-
-
       <form (ngSubmit)="handleAuthSubmit()" class="security-form">
         <div class="form-group">
           <label>Operator Email</label>
