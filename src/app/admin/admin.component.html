@@ -179,67 +179,216 @@
         </div>
       </div>
 
-     <div class="table-container">
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>Client Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Physical Metrics</th>
-        <th>Country</th>
-        <th>Plan Name</th>
-        <th>Amount (USD)</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let app of filteredApplications">
-        <td><strong>{{ app.client_profile?.name }}</strong></td>
-        <td>{{ app.client_profile?.email }}</td>
-        <td>{{ app.client_profile?.phone || '—' }}</td>
-        <td>
-          <div style="font-size: 0.85rem; line-height: 1.4;">
-            <div>H: {{ app.physical_metrics?.height_cm }} cm</div>
-            <div>W: {{ app.physical_metrics?.current_weight_kg }} kg</div>
-            <div>Target: {{ app.physical_metrics?.target_weight_kg }} kg</div>
-          </div>
-        </td>
-        <td>{{ app.client_profile?.country || '—' }}</td>
-        <td>{{ app.subscription?.plan_name }}</td>
-        <td class="amount-cell">${{ app.subscription?.amount }}</td>
-        <td>
-          <span
-            class="status-badge"
-            [ngClass]="app.payment?.status || 'pending'">
-            {{ (app.payment?.status || 'pending') | uppercase }}
-          </span>
-        </td>
-       <td>
-  <button
-    *ngIf="app.payment?.status === 'paid'"
-    (click)="cancelSubscription(app.id)"
-    [disabled]="isCancelingMap[app.id]"
-    class="btn btn-small btn-outline"
-    style="border-color: #AE5846; color: #AE5846;">
-    {{ isCancelingMap[app.id] ? 'Stopping...' : 'Stop Auto-Renew' }}
-  </button>
+ <!-- ==========================================================================
+   3. CLIENT INBOUND REGISTRATION LOGISTICS SHEET MATRIX (CLEAN OVERHAUL)
+   ========================================================================== -->
+<section class="table-section">
+  <div class="table-header">
+    <h3>All Applications ({{ filteredApplications.length }})</h3>
 
-  <span *ngIf="app.payment?.status !== 'paid'" style="color: #a0a0a0; font-size: 0.85rem;">
-    —
-  </span>
-</td>
+    <!-- Multi-Variable Search and Subscription Plan Filtering Control Hub -->
+    <div class="filters">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search name, email, or country..."
+        class="search-input">
 
+      <select title="Filter by Status" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+        <option value="all">All Statuses</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+<!-- ==========================================================================
+   4. DETAIL DIALOG OVERLAY PORTAL CONTAINER (THE MISSING LINK)
+   ========================================================================== -->
+<div class="detail-modal-overlay" *ngIf="selectedApp" (click)="closeDetails()">
+  <div class="detail-modal-card" (click)="$event.stopPropagation()">
 
+    <header class="modal-header">
+      <div class="modal-title-block">
+        <h2>Application Analysis File</h2>
+        <p class="modal-record-id">System Record ID: {{ selectedApp.id }}</p>
+      </div>
+      <button class="modal-close-btn" (click)="closeDetails()">✕</button>
+    </header>
 
-      </tr>
-      <tr *ngIf="filteredApplications.length === 0">
-        <td colspan="10" class="empty-state">No matching structural ledger records found.</td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="modal-scrollable-content">
+      <!-- BLOCK A: METRICS STRIP HEADER -->
+      <div class="modal-summary-strip">
+        <div class="strip-item">
+          <span class="strip-label">Selected Track:</span>
+          <strong class="text-gold">{{ selectedApp.subscription?.plan_name }}</strong>
+        </div>
+        <div class="strip-item">
+          <span class="strip-label">Height:</span>
+          <strong>{{ selectedApp.physical_metrics?.height_cm }} cm</strong>
+        </div>
+        <div class="strip-item">
+          <span class="strip-label">Current Weight:</span>
+          <strong>{{ selectedApp.physical_metrics?.current_weight_kg }} kg</strong>
+        </div>
+        <div class="strip-item">
+          <span class="strip-label">Target Weight:</span>
+          <strong class="text-gold">{{ selectedApp.physical_metrics?.target_weight_kg }} kg</strong>
+        </div>
+      </div>
+
+      <!-- BLOCK B: FULL SYSTEM ACCORDION INTERFACE SECTIONS MAP -->
+      <div class="questionnaire-details-grid">
+
+        <!-- SECTOR 1: GOALS & ASPIRATIONS -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.goals">
+          <h4>🏆 Objective Strategy Assessment</h4>
+          <div class="data-row"><span class="lbl">Desired Transformation Profile:</span><p>{{ selectedApp.coaching_questionnaire?.goals?.desired_weight_loss || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Target Timeline Horizon:</span><p>{{ selectedApp.coaching_questionnaire?.goals?.target_date || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Yo-Yo Dieting Relapse History:</span><p>{{ selectedApp.coaching_questionnaire?.goals?.yoyo_dieting || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Previous Program Failures Reasons:</span><p>{{ selectedApp.coaching_questionnaire?.goals?.didnt_work || '—' }}</p></div>
+        </div>
+
+        <!-- SECTOR 2: TRAINING METRIC SPECS -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.training">
+          <h4>🏋️‍♂️ Exercise & Kinesiology History</h4>
+          <div class="data-row"><span class="lbl">Fitness Training Experience:</span><p>{{ selectedApp.coaching_questionnaire?.training?.experience || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Equipment & Gym Facilities Access:</span><p>{{ selectedApp.coaching_questionnaire?.training?.equipment || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Target Weekly Allocation (Days):</span><p>{{ selectedApp.coaching_questionnaire?.training?.training_days || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Preferred Window Scheduling:</span><p>{{ selectedApp.coaching_questionnaire?.training?.preferred_time || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Pathology & Injury Concerns:</span><p>{{ selectedApp.coaching_questionnaire?.training?.injuries || '—' }}</p></div>
+        </div>
+
+        <!-- SECTOR 3: DIETETIC NUTRITION PATTERNS -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.nutrition">
+          <h4>🥗 Nutritional & Metabolic Profiling</h4>
+          <div class="data-row"><span class="lbl">Selected Diet Framework Preference:</span><p>{{ selectedApp.coaching_questionnaire?.nutrition?.diet || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Allergen Flags & System Restraints:</span><p>{{ selectedApp.coaching_questionnaire?.nutrition?.allergies || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Disliked Foods Restrictions:</span><p>{{ selectedApp.coaching_questionnaire?.nutrition?.disliked_foods || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Cooking Habits & Kitchen Routine:</span><p>{{ selectedApp.coaching_questionnaire?.nutrition?.cooking || '—' }}</p></div>
+        </div>
+
+        <!-- SECTOR 4: STRESS, STAMINA & LIFESTYLE LAYERS -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.lifestyle">
+          <h4>💼 Professional Lifestyle Factors</h4>
+          <div class="data-row"><span class="lbl">Occupation Status & Cognitive Load:</span><p>{{ selectedApp.coaching_questionnaire?.lifestyle?.occupation || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Sleep Duration (Hours/Night):</span><p>{{ selectedApp.coaching_questionnaire?.lifestyle?.sleep_hours || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Perceived Daily Stress Index:</span><p>{{ selectedApp.coaching_questionnaire?.lifestyle?.stress_level || '—' }}</p></div>
+        </div>
+
+        <!-- SECTOR 5: PSYCHOLOGICAL COACHING MINDSET -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.mindset">
+          <h4>🧠 Psychological Compliance Profile</h4>
+          <div class="data-row"><span class="lbl">Primary Historical Progression Obstacle:</span><p>{{ selectedApp.coaching_questionnaire?.mindset?.biggest_obstacle || '—' }}</p></div>
+          <div class="data-row"><span class="lbl">Demanded Check-in Frequency Routine:</span><p>{{ selectedApp.coaching_questionnaire?.mindset?.checkin_frequency || '—' }}</p></div>
+        </div>
+
+        <!-- SECTOR 6: MEDICAL CLEARANCE BLOCK -->
+        <div class="detail-section-card" *ngIf="selectedApp.coaching_questionnaire?.medical">
+          <h4>⚠️ Clinical & Medical Disclosures</h4>
+          <div class="data-row"><span class="lbl">Diagnosed Pathology Conditions:</span><p>{{ selectedApp.coaching_questionnaire?.medical?.medical_conditions || 'None Declared' }}</p></div>
+          <div class="data-row"><span class="lbl">Active Maintenance Medications:</span><p>{{ selectedApp.coaching_questionnaire?.medical?.medications || 'None Declared' }}</p></div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="modal-footer">
+      <button class="btn btn-small btn-solid" (click)="closeDetails()">Close Application View</button>
+    </footer>
+  </div>
 </div>
+  <div class="table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Contact Coordinates</th>
+          <th>Country</th>
+          <th>Subscription Plan</th>
+          <th>Billing Status</th>
+          <th style="text-align: center;">Operational Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let app of filteredApplications">
+          <!-- SUBMISSION DATE -->
+
+
+          <!-- CLIENT PROFILE -->
+          <td>
+            <strong>{{ app.client_profile?.name || 'Unknown Client' }}</strong>
+          </td>
+
+          <!-- CONTACT COORDINATES -->
+          <td>
+            <div class="compact-info">
+              <span class="sub-text">{{ app.client_profile?.email || '—' }}</span>
+              <span class="sub-text phone-highlight">{{ app.client_profile?.phone || '—' }}</span>
+            </div>
+          </td>
+
+          <!-- COUNTRY -->
+          <td>
+            {{ app.client_profile?.country || '—' }}
+          </td>
+
+          <!-- SUBSCRIPTION PLAN -->
+          <td>
+            <div class="compact-info">
+              <strong>{{ app.subscription?.plan_name || '—' }}</strong>
+              <div class="amount-cell">${{ app.subscription?.amount || 0 }}</div>
+            </div>
+          </td>
+
+          <!-- BILLING STATUS -->
+          <td>
+            <span
+              class="status-badge"
+              [ngClass]="app.payment?.status || 'pending'"
+              (click)="togglePaymentStatus(app)"
+              style="cursor: pointer;"
+              title="Click to manually toggle status overlay">
+              {{ (app.payment?.status || 'pending') | uppercase }}
+            </span>
+          </td>
+
+          <!-- OPERATIONAL ACTIONS (DUAL FUNCTIONALITY) -->
+          <td>
+            <div class="action-buttons-group">
+              <!-- ACTION 1: OPEN DEEP INSIGHT QUESTIONNAIRE MODAL -->
+              <button (click)="openDetails(app)" class="btn btn-small btn-solid">
+                🔍 View Questionnaire
+              </button>
+
+              <!-- ACTION 2: FIRE STRIPE SUBSCRIPTION GRACEFUL CANCELLATION ENGINE -->
+              <button
+                *ngIf="app.payment?.status === 'paid'"
+                (click)="cancelSubscription(app.id)"
+                [disabled]="isCancelingMap[app.id]"
+                class="btn btn-small btn-outline btn-cancel">
+                {{ isCancelingMap[app.id] ? 'Stopping...' : 'Stop Auto-Renew' }}
+              </button>
+
+              <span *ngIf="app.payment?.status !== 'paid'" class="action-divider">
+                —
+              </span>
+            </div>
+          </td>
+        </tr>
+
+        <!-- EMPTY STATE FEEDBACK ROW -->
+        <tr *ngIf="filteredApplications.length === 0">
+          <td colspan="7" class="empty-state">
+            No premium coaching application records matched your active filter boundaries.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
     </section>
 
   </div>

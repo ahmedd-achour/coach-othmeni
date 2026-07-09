@@ -39,6 +39,225 @@
 .btn-outline:hover {
   background: var(--co-sage-soft, #EEF2F0);
 }
+/* ==========================================================================
+   5. MASTER-DETAIL MODAL OVERLAY & COMPACT CELL ADAPTATIONS
+   ========================================================================== */
+
+/* Compact Layout Data Formats inside rows */
+.compact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sub-text {
+  font-size: 0.85rem;
+  color: var(--co-muted, #606C66);
+}
+
+.phone-highlight {
+  color: var(--co-sage, #5B7065);
+  font-weight: 500;
+}
+
+/* Operational Dual Actions Blueprint Alignment */
+.action-buttons-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-cancel {
+  border-color: #AE5846 !important;
+  color: #AE5846 !important;
+}
+
+.btn-cancel:hover {
+  background-color: #FDF3F1 !important;
+  color: #AE5846 !important;
+}
+
+.action-divider {
+  opacity: 0.4;
+  color: var(--co-muted, #606C66);
+}
+
+/* Master-Detail Modal Core Framework Overlay Window */
+.detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(28, 36, 33, 0.6);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInModal 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detail-modal-card {
+  width: 90%;
+  max-width: 1000px;
+  height: 85vh;
+  background-color: #FFFFFF;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(28, 36, 33, 0.08);
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title-block h2 {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  color: var(--co-charcoal, #1C2421);
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+}
+
+.modal-record-id {
+  font-size: 0.8rem;
+  color: var(--co-muted, #606C66);
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--co-charcoal, #1C2421);
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  opacity: 1;
+}
+
+.modal-scrollable-content {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--co-bg-clean, #FAFAFA);
+}
+
+/* Horizontal Metrics Highlight Strip inside Modal */
+.modal-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  background-color: #FFFFFF;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  border-left: 4px solid var(--co-sage, #5B7065);
+  margin-bottom: 2rem;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  border-left: 4px solid var(--co-sage, #5B7065);
+}
+
+.strip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.strip-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--co-muted, #606C66);
+}
+
+/* Internal Questionnaire Grid Blocks */
+.questionnaire-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 1.5rem;
+}
+
+.detail-section-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--co-border-light, #EBEFEF);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(28, 36, 33, 0.01);
+}
+
+.detail-section-card h4 {
+  font-family: var(--font-serif-luxury, 'Playfair Display', Georgia, serif);
+  color: var(--co-charcoal, #1C2421);
+  margin: 0 0 1.25rem 0;
+  border-bottom: 1px solid var(--co-border-light, #EBEFEF);
+  padding-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.data-row {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.data-row:last-child {
+  margin-bottom: 0;
+}
+
+.data-row .lbl {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--co-muted, #606C66);
+}
+
+.data-row p {
+  margin: 0;
+  color: var(--co-charcoal, #1C2421);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.modal-footer {
+  padding: 1.25rem 2rem;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--co-border-light, #EBEFEF);
+  display: flex;
+  justify-content: flex-end;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.99); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive Structural Modifications */
+@media(max-width: 768px) {
+  .action-buttons-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .questionnaire-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-modal-card {
+    width: 95%;
+    height: 90vh;
+  }
+}
 
 .btn-full { width: 100%; }
 .btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px; }

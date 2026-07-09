@@ -30,14 +30,99 @@ interface NutritionLeaf {
   name: string;
 }
 
-interface FormData {
+export interface FormData {
+
+  // Existing
   name: string;
   email: string;
   phone: string;
+
   height: number | null;
   weight: number | null;
   targetWeight: number | null;
+
   country: string;
+
+  // ------------------------
+  // PERSONAL
+  // ------------------------
+
+  age: number | null;
+  gender: string;
+  timezone: string;
+
+  // ------------------------
+  // GOALS
+  // ------------------------
+
+  weightGoal: string;
+  targetDate: string;
+
+  previousAttempts: string;
+  workedBefore: string;
+  didntWorkBefore: string;
+  yoyoDieting: string;
+
+  // ------------------------
+  // TRAINING
+  // ------------------------
+
+  experience: string;
+  equipment: string;
+  trainingDays: string;
+  preferredTrainingTime: string;
+
+  injuries: string;
+  activityLevel: string;
+
+  // ------------------------
+  // NUTRITION
+  // ------------------------
+
+  dietPreference: string;
+
+  allergies: string;
+
+  dislikedFoods: string;
+
+  cookingHabits: string;
+
+  foodBudget: string;
+
+  eatingPattern: string;
+
+  alcoholConsumption: string;
+
+  // ------------------------
+  // LIFESTYLE
+  // ------------------------
+
+  occupation: string;
+
+  sleepHours: string;
+
+  stressLevel: string;
+
+  waterIntake: string;
+
+  // ------------------------
+  // MINDSET
+  // ------------------------
+
+  biggestObstacle: string;
+
+  cravingsManagement: string;
+
+  checkInFrequency: string;
+
+  // ------------------------
+  // MEDICAL
+  // ------------------------
+
+  medicalConditions: string;
+
+  medications: string;
+
 }
 
 @Component({
@@ -96,7 +181,8 @@ export class HomeComponent implements OnInit {
         'weekly check-ins to track your progress',
         'progress photo review by your coach',
         'full plan review every month',
-        'email support whenever you need it'
+        'email support whenever you need it',
+
       ],
       isPopular: false,
       ctaText: 'Apply For Standard Pack',
@@ -144,36 +230,74 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
   isProcessingPayment = false;
   checkoutOpened = false;
 
-  formData: FormData = {
-    name: '',
-    email: '',
-    phone: '',
-    height: null,
-    weight: null,
-    targetWeight: null,
-    country: ''
-  };
+formData: FormData = {
 
-  constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private functions: Functions
-  ) {}
+  // Existing
+  name: '',
+  email: '',
+  phone: '',
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const sessionId = params['session_id'] || params['sessionId'];
-      if (sessionId) {
-        alert('🎉 Payment Succeeded & Application Finalized! Coach Aymen will contact you shortly.');
-        this.closePopup();
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    });
-  }
+  height: null,
+  weight: null,
+  targetWeight: null,
 
-  /**
-   * Pipeline de paiement avec système de traçabilité par alertes graphiques.
-   */
+  country: '',
+
+  // PERSONAL
+
+  age: null,
+  gender: '',
+  timezone: '',
+
+  // GOALS
+
+  weightGoal: '',
+  targetDate: '',
+
+  previousAttempts: '',
+  workedBefore: '',
+  didntWorkBefore: '',
+  yoyoDieting: '',
+
+  // TRAINING
+
+  experience: '',
+  equipment: '',
+  trainingDays: '',
+  preferredTrainingTime: '',
+
+  injuries: '',
+  activityLevel: '',
+
+  // NUTRITION
+
+  dietPreference: '',
+  allergies: '',
+  dislikedFoods: '',
+  cookingHabits: '',
+  foodBudget: '',
+  eatingPattern: '',
+  alcoholConsumption: '',
+
+  // LIFESTYLE
+
+  occupation: '',
+  sleepHours: '',
+  stressLevel: '',
+  waterIntake: '',
+
+  // MINDSET
+
+  biggestObstacle: '',
+  cravingsManagement: '',
+  checkInFrequency: '',
+
+  // MEDICAL
+
+  medicalConditions: '',
+  medications: ''
+
+};
   async handlePaymentSubmit(): Promise<void> {
     if (this.isProcessingPayment || !this.selectedPlan) return;
 
@@ -185,8 +309,6 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
     this.isProcessingPayment = true;
     this.stripeErrorMessage = '';
 
-    // 📢 ALERT DEBUG 1 : Formulaire validé localement, envoi au serveur
-   // alert(`🔍 [DEBUG 1/3] Data validated! Contacting 'createCheckoutSession' Cloud Function for ${this.formData.email}...`);
 
     try {
       const createCheckoutSessionFn = httpsCallable<any, { checkoutUrl: string; applicationId: string }>(
@@ -194,25 +316,137 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
         'createCheckoutSession'
       );
 
-      const payload = {
-        client_profile: {
-          name: this.formData.name.trim(),
-          email: this.formData.email.trim().toLowerCase(),
-          phone: this.formData.phone.trim(),
-          country: this.formData.country.trim()
-        },
-        physical_metrics: {
-          height_cm: Number(this.formData.height),
-          current_weight_kg: Number(this.formData.weight),
-          target_weight_kg: Number(this.formData.targetWeight)
-        },
-        subscription: {
-          plan_name: this.selectedPlan.name,
-          amount: Number(this.selectedPlan.price),
-          stripePriceId: this.selectedPlan.stripePriceId, // ⚠️ Vérifie que ce n'est pas undefined
-          stripePdfPriceId: this.selectedPlan.stripePdfPriceId // ⚠️ Vérifie que ce n'est pas undefined
-        }
-      };
+    const payload = {
+
+  client_profile: {
+
+    name: this.formData.name.trim(),
+
+    email: this.formData.email.trim().toLowerCase(),
+
+    phone: this.formData.phone.trim(),
+
+    country: this.formData.country.trim()
+
+  },
+
+  physical_metrics: {
+
+    height_cm: Number(this.formData.height),
+
+    current_weight_kg: Number(this.formData.weight),
+
+    target_weight_kg: Number(this.formData.targetWeight)
+
+  },
+
+  coaching_questionnaire: {
+
+    personal: {
+
+      age: this.formData.age,
+
+      gender: this.formData.gender,
+
+      timezone: this.formData.timezone
+
+    },
+
+    goals: {
+
+      desired_weight_loss: this.formData.weightGoal,
+
+      target_date: this.formData.targetDate,
+
+      previous_attempts: this.formData.previousAttempts,
+
+      worked_before: this.formData.workedBefore,
+
+      didnt_work: this.formData.didntWorkBefore,
+
+      yoyo_dieting: this.formData.yoyoDieting
+
+    },
+
+    training: {
+
+      experience: this.formData.experience,
+
+      equipment: this.formData.equipment,
+
+      training_days: this.formData.trainingDays,
+
+      preferred_time: this.formData.preferredTrainingTime,
+
+      injuries: this.formData.injuries,
+
+      activity_level: this.formData.activityLevel
+
+    },
+
+    nutrition: {
+
+      diet: this.formData.dietPreference,
+
+      allergies: this.formData.allergies,
+
+      disliked_foods: this.formData.dislikedFoods,
+
+      cooking: this.formData.cookingHabits,
+
+      food_budget: this.formData.foodBudget,
+
+      eating_pattern: this.formData.eatingPattern,
+
+      alcohol: this.formData.alcoholConsumption
+
+    },
+
+    lifestyle: {
+
+      occupation: this.formData.occupation,
+
+      sleep_hours: this.formData.sleepHours,
+
+      stress_level: this.formData.stressLevel,
+
+      water_intake: this.formData.waterIntake
+
+    },
+
+    mindset: {
+
+      biggest_obstacle: this.formData.biggestObstacle,
+
+      cravings_management: this.formData.cravingsManagement,
+
+      checkin_frequency: this.formData.checkInFrequency
+
+    },
+
+    medical: {
+
+      medical_conditions: this.formData.medicalConditions,
+
+      medications: this.formData.medications
+
+    }
+
+  },
+
+  subscription: {
+
+    plan_name: this.selectedPlan.name,
+
+    amount: Number(this.selectedPlan.price),
+
+    stripePriceId: this.selectedPlan.stripePriceId,
+
+    stripePdfPriceId: this.selectedPlan.stripePdfPriceId
+
+  }
+
+};
 
       console.log('🔄 Payload sent to Firebase:', payload);
       const result = await createCheckoutSessionFn(payload);
@@ -241,22 +475,161 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
       this.isProcessingPayment = false;
     }
   }
+  constructor(
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private functions: Functions
+  ) {}
 
-  isStep1Valid(): boolean {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
-
-    const { name, email, phone, height, weight, targetWeight } = this.formData;
-
-    if (!name || name.trim().length < 2) return false;
-    if (!email || !emailRegex.test(email)) return false;
-    if (!phone || !phoneRegex.test(phone)) return false;
-    if (height === null || height < 50 || height > 300) return false;
-    if (weight === null || weight < 20 || weight > 500) return false;
-    if (targetWeight === null || targetWeight < 20 || targetWeight > 500) return false;
-
-    return true;
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const sessionId = params['session_id'] || params['sessionId'];
+      if (sessionId) {
+        alert('🎉 Payment Succeeded & Application Finalized! Coach Aymen will contact you shortly.');
+        this.closePopup();
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
   }
+
+  /**
+   * Pipeline de paiement avec système de traçabilité par alertes graphiques.
+   */
+
+
+isStep1Valid(): boolean {
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
+
+  const {
+    name,
+    email,
+    phone,
+    age,
+    gender,
+    height,
+    weight,
+    targetWeight,
+    country,
+    timezone
+
+  } = this.formData;
+
+
+  if (!name || name.trim().length < 2) return false;
+
+  if (!email || !emailRegex.test(email)) return false;
+
+  if (!phone || !phoneRegex.test(phone)) return false;
+
+
+  if (
+    age === null ||
+    age < 10 ||
+    age > 100
+  ) return false;
+
+
+  if (!gender) return false;
+
+
+  if (
+    height === null ||
+    height < 50 ||
+    height > 300
+  ) return false;
+
+
+  if (
+    weight === null ||
+    weight < 20 ||
+    weight > 500
+  ) return false;
+
+
+  if (
+    targetWeight === null ||
+    targetWeight < 20 ||
+    targetWeight > 500
+  ) return false;
+
+
+  if (!country) return false;
+
+  if (!timezone || timezone.trim().length < 2) return false;
+
+
+  return true;
+
+}
+
+isStep2Valid(): boolean {
+
+  const {
+    weightGoal,
+    targetDate,
+    previousAttempts
+
+  } = this.formData;
+
+
+  if (!weightGoal || weightGoal.trim().length < 2)
+    return false;
+
+
+  if (!targetDate)
+    return false;
+
+
+  if (!previousAttempts || previousAttempts.trim().length < 5)
+    return false;
+
+
+  return true;
+
+}
+
+
+isStep3Valid(): boolean {
+
+  const {
+    experience,
+    equipment,
+    trainingDays,
+    preferredTrainingTime
+
+  } = this.formData;
+
+
+  if (!experience) return false;
+
+  if (!equipment) return false;
+
+  if (!trainingDays) return false;
+
+  if (!preferredTrainingTime) return false;
+
+
+  return true;
+
+}
+
+isStep4Valid(): boolean {
+  return true;
+}
+
+isStep5Valid(): boolean {
+  return true;
+}
+
+isStep6Valid(): boolean {
+  return true;
+}
+
+isStep7Valid(): boolean {
+  return true;
+}
 
   openPopup(plan?: PricingTier): void {
     this.selectedPlan = plan || this.pricingTiers[1];
@@ -264,8 +637,74 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
     this.isPopupVisible = true;
     this.stripeErrorMessage = '';
     this.checkoutOpened = false;
-    this.formData = { name: '', email: '', phone: '', height: null, weight: null, targetWeight: null, country: '' };
-    document.body.style.overflow = 'hidden';
+this.formData = {
+
+  // Existing
+  name: '',
+  email: '',
+  phone: '',
+
+  height: null,
+  weight: null,
+  targetWeight: null,
+
+  country: '',
+
+  // PERSONAL
+
+  age: null,
+  gender: '',
+  timezone: '',
+
+  // GOALS
+
+  weightGoal: '',
+  targetDate: '',
+
+  previousAttempts: '',
+  workedBefore: '',
+  didntWorkBefore: '',
+  yoyoDieting: '',
+
+  // TRAINING
+
+  experience: '',
+  equipment: '',
+  trainingDays: '',
+  preferredTrainingTime: '',
+
+  injuries: '',
+  activityLevel: '',
+
+  // NUTRITION
+
+  dietPreference: '',
+  allergies: '',
+  dislikedFoods: '',
+  cookingHabits: '',
+  foodBudget: '',
+  eatingPattern: '',
+  alcoholConsumption: '',
+
+  // LIFESTYLE
+
+  occupation: '',
+  sleepHours: '',
+  stressLevel: '',
+  waterIntake: '',
+
+  // MINDSET
+
+  biggestObstacle: '',
+  cravingsManagement: '',
+  checkInFrequency: '',
+
+  // MEDICAL
+
+  medicalConditions: '',
+  medications: ''
+
+};    document.body.style.overflow = 'hidden';
   }
 
   closePopup(): void {
@@ -281,16 +720,16 @@ stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Str
     }
   }
 
-  goToStep(step: number): void {
-    if (step === 2) {
-      if (!this.isStep1Valid()) {
-        this.stripeErrorMessage = 'Please fill out all metric validation fields accurately first.';
-        return;
-      }
-      this.stripeErrorMessage = '';
-    }
-    this.currentStep = step;
-  }
+goToStep(step: number): void {
+  if (step === 2 && !this.isStep1Valid()) return;
+  if (step === 3 && !this.isStep2Valid()) return;
+  if (step === 4 && !this.isStep3Valid()) return;
+  if (step === 5 && !this.isStep4Valid()) return;
+  if (step === 6 && !this.isStep5Valid()) return;
+  if (step === 7 && !this.isStep6Valid()) return;
+
+  this.currentStep = step;
+}
 
   onSubmit(): void {
     if (this.currentStep === 1) {

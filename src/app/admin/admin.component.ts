@@ -21,6 +21,99 @@ interface ApplicationRecord {
     current_weight_kg: number;
     target_weight_kg: number;
   };
+  coaching_questionnaire?: {
+
+  personal?: {
+
+    age?: number;
+
+    gender?: string;
+
+    timezone?: string;
+
+  };
+
+  goals?: {
+
+    desired_weight_loss?: string;
+
+    target_date?: string;
+
+    previous_attempts?: string;
+
+    worked_before?: string;
+
+    didnt_work?: string;
+
+    yoyo_dieting?: string;
+
+  };
+
+  training?: {
+
+    experience?: string;
+
+    equipment?: string;
+
+    training_days?: string;
+
+    preferred_time?: string;
+
+    injuries?: string;
+
+    activity_level?: string;
+
+  };
+
+  nutrition?: {
+
+    diet?: string;
+
+    allergies?: string;
+
+    disliked_foods?: string;
+
+    cooking?: string;
+
+    food_budget?: string;
+
+    eating_pattern?: string;
+
+    alcohol?: string;
+
+  };
+
+  lifestyle?: {
+
+    occupation?: string;
+
+    sleep_hours?: string;
+
+    stress_level?: string;
+
+    water_intake?: string;
+
+  };
+
+  mindset?: {
+
+    biggest_obstacle?: string;
+
+    cravings_management?: string;
+
+    checkin_frequency?: string;
+
+  };
+
+  medical?: {
+
+    medical_conditions?: string;
+
+    medications?: string;
+
+  };
+
+};
   subscription: {
     plan_name: string;
     amount: number;
@@ -31,6 +124,8 @@ interface ApplicationRecord {
     stripeSessionId?: string | null;
     status: 'pending' | 'paid' | 'cancelled';
   };
+
+
 }
 
 @Component({
@@ -146,32 +241,42 @@ async cancelSubscription(applicationId: string) {
             return;
           }
 
-          this.applications = rawDocs.map(docData => {
-            return {
-              id: docData.id,
-              client_profile: {
-                name: docData.client_profile?.name || 'Anonymous',
-                email: docData.client_profile?.email || '',
-                phone: docData.client_profile?.phone || '',
-                country: docData.client_profile?.country || 'Unknown'
-              },
-              physical_metrics: {
-                height_cm: Number(docData.physical_metrics?.height_cm || 0),
-                current_weight_kg: Number(docData.physical_metrics?.current_weight_kg || 0),
-                target_weight_kg: Number(docData.physical_metrics?.target_weight_kg || 0)
-              },
-              subscription: {
-                plan_name: docData.subscription?.plan_name || docData.subscription_tier?.plan_name || 'Standard Plan',
-                amount: Number(docData.subscription?.amount || docData.subscription_tier?.amount_paid_usd || 0),
-                stripePriceId: docData.subscription?.stripePriceId || '',
-                stripePdfPriceId: docData.subscription?.stripePdfPriceId || ''
-              },
-              payment: {
-                stripeSessionId: docData.payment?.stripeSessionId || null,
-                status: docData.payment?.status === 'paid' ? 'paid' :  docData.payment?.status === 'cancelled' ? 'cancelled' : 'pending',
-              }
-            };
-          });
+       this.applications = rawDocs.map(docData => {
+  return {
+    id: docData.id,
+    client_profile: {
+      name: docData.client_profile?.name || 'Anonymous',
+      email: docData.client_profile?.email || '',
+      phone: docData.client_profile?.phone || '',
+      country: docData.client_profile?.country || 'Unknown'
+    },
+    physical_metrics: {
+      height_cm: Number(docData.physical_metrics?.height_cm || 0),
+      current_weight_kg: Number(docData.physical_metrics?.current_weight_kg || 0),
+      target_weight_kg: Number(docData.physical_metrics?.target_weight_kg || 0)
+    },
+    // FIX: Spread the raw questionnaire data directly so new questions aren't dropped!
+    coaching_questionnaire: docData.coaching_questionnaire ? {
+      personal: { ...docData.coaching_questionnaire.personal },
+      goals: { ...docData.coaching_questionnaire.goals },
+      training: { ...docData.coaching_questionnaire.training },
+      nutrition: { ...docData.coaching_questionnaire.nutrition },
+      lifestyle: { ...docData.coaching_questionnaire.lifestyle },
+      mindset: { ...docData.coaching_questionnaire.mindset },
+      medical: { ...docData.coaching_questionnaire.medical }
+    } : {},
+    subscription: {
+      plan_name: docData.subscription?.plan_name || docData.subscription_tier?.plan_name || 'Standard Plan',
+      amount: Number(docData.subscription?.amount || docData.subscription_tier?.amount_paid_usd || 0),
+      stripePriceId: docData.subscription?.stripePriceId || '',
+      stripePdfPriceId: docData.subscription?.stripePdfPriceId || ''
+    },
+    payment: {
+      stripeSessionId: docData.payment?.stripeSessionId || null,
+      status: docData.payment?.status === 'paid' ? 'paid' : docData.payment?.status === 'cancelled' ? 'cancelled' : 'pending',
+    }
+  };
+});
 
           // Client-side sort fallback
 
@@ -330,7 +435,37 @@ async cancelSubscription(applicationId: string) {
     this.isAuthenticated = false;
     sessionStorage.removeItem('admin_session_token');
   }
+// ==========================================
+// 1. ADD THESE PROPERTIES TO YOUR CLASS
+// ==========================================
+// UX Detail Modal Controller Elements
+selectedApp: ApplicationRecord | null = null; // Tracks the application currently open in the modal
 
+// Renamed to match the template's [(ngModel)] binding
+statusFilter = 'all';
+
+// ==========================================
+// 2. ADD THESE METHODS INTO YOUR CLASS
+// ==========================================
+
+/**
+ * Opens the full master-detail sheet view modal for a specific application
+ * @param app The fully destructured client record object mapping
+ */
+openDetails(app: ApplicationRecord): void {
+  this.selectedApp = app;
+  // Lock background layout scrolling while analyzing details
+  document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Closes the master-detail modal view panel overlay cleanly
+ */
+closeDetails(): void {
+  this.selectedApp = null;
+  // Restore primary workspace screen layout scroll behaviors
+  document.body.style.overflow = '';
+}
   ngOnDestroy() {
     this.destroyCharts();
     if (this.dataSubscription) this.dataSubscription.unsubscribe();

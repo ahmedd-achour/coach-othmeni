@@ -46,7 +46,364 @@
     text-align: center;   /* Centers the link inline on mobile screens for visual symmetry */
   }
 }
+/*======================================================
+PREMIUM COACHING QUESTIONNAIRE
+PART 1
+======================================================*/
 
+.popup-form-engine{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+}
+
+.form-step-panel{
+
+    display:flex;
+    flex-direction:column;
+
+    animation:fadeSlide .35s ease;
+
+}
+
+.popup-step-title{
+
+    color:#fff;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+    line-height:1.2;
+
+}
+
+.panel-instruction-text{
+
+    color:#9f9f9f;
+
+    line-height:1.8;
+
+    font-size:15px;
+
+    margin-bottom:35px;
+
+}
+
+
+
+/*======================================================
+GRID
+======================================================*/
+
+.form-fields-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+    gap:22px;
+
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.form-group.full-width{
+
+    grid-column:1/-1;
+
+}
+
+
+
+/*======================================================
+LABELS
+======================================================*/
+
+.form-group label{
+
+    color:#fff;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    margin-bottom:10px;
+
+}
+
+.required{
+
+    color:#ff4d4d;
+
+}
+
+.unit{
+
+    color:#999;
+
+    font-size:12px;
+
+}
+
+
+
+/*======================================================
+INPUTS
+======================================================*/
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+
+    width:100%;
+
+    background:#1d1d1d;
+
+    border:1px solid #323232;
+
+    color:white;
+
+    border-radius:14px;
+
+    padding:15px 18px;
+
+    font-size:15px;
+
+    transition:.25s;
+
+    outline:none;
+
+    box-sizing:border-box;
+
+}
+
+.form-group textarea{
+
+    resize:vertical;
+
+    min-height:110px;
+
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder{
+
+    color:#707070;
+
+}
+
+
+
+/*======================================================
+FOCUS
+======================================================*/
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+
+    border-color:#ff7a18;
+
+    box-shadow:
+
+    0 0 0 4px rgba(255,122,24,.12);
+
+}
+
+
+
+/*======================================================
+SELECT
+======================================================*/
+
+.form-group select{
+
+    cursor:pointer;
+
+}
+
+
+
+/*======================================================
+BUTTON AREA
+======================================================*/
+
+.form-actions-panel{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    margin-top:40px;
+
+}
+
+
+
+/*======================================================
+BUTTONS
+======================================================*/
+
+.form-actions-panel .btn{
+
+
+    border-radius:14px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    transition:.25s;
+
+}
+
+.btn-solid{
+
+    flex:1;
+
+}
+
+.btn-outline{
+
+    flex:1;
+
+}
+
+
+
+/*======================================================
+ERROR
+======================================================*/
+
+.stripe-error-message{
+
+    color:#ff6464;
+
+    text-align:center;
+
+    margin-top:20px;
+
+}
+
+
+
+/*======================================================
+PROGRESS BAR
+======================================================*/
+
+.progress-bar-container{
+
+    position:relative;
+
+    margin-bottom:40px;
+
+}
+
+.progress-indicator-line{
+
+    position:absolute;
+
+    top:22px;
+
+    left:0;
+
+    height:4px;
+
+    background:linear-gradient(90deg,#ff7a18,#ffb347);
+
+    border-radius:50px;
+
+    transition:.35s;
+
+}
+
+.progress-steps-nodes{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    position:relative;
+
+}
+
+.step-node{
+
+    width:46px;
+
+    height:46px;
+
+    border-radius:50%;
+
+    background:#252525;
+
+    border:2px solid #3a3a3a;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#999;
+
+    font-weight:700;
+
+    transition:.3s;
+
+    z-index:5;
+
+}
+
+.step-node.active{
+
+    background:#ff7a18;
+
+    border-color:#ff7a18;
+
+    color:white;
+
+    transform:scale(1.08);
+
+}
+
+
+
+/*======================================================
+ANIMATION
+======================================================*/
+
+@keyframes fadeSlide{
+
+from{
+
+opacity:0;
+
+transform:translateY(18px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:none;
+
+}
+
+}
 .admin-link {
   display: inline-flex;
   align-items: center;
