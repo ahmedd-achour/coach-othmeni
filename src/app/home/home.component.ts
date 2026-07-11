@@ -175,7 +175,7 @@ export class HomeComponent implements OnInit {
   pricingTiers: PricingTier[] = [
     {
       name: 'Standard Coaching',
-      price: 149,
+      price: 2,
       features: [
         'custom training program built around your goals',
         'weekly check-ins to track your progress',
@@ -186,11 +186,11 @@ export class HomeComponent implements OnInit {
       ],
       isPopular: false,
       ctaText: 'Apply For Standard Pack',
-      stripePriceId: 'price_1TqZkvQBeLJr5RNok0Uescs2', // 👈 Remplace par ton ID Stripe mensuel
+      stripePriceId: '1895648', // 👈 Remplace par ton ID Stripe mensuel
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
     {
       name: 'Premium Coaching',
-      price: 199,
+      price: 9.99,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -202,11 +202,11 @@ export class HomeComponent implements OnInit {
       ],
       isPopular: true,
       ctaText: 'Apply For Premium Pack',
-      stripePriceId: 'price_1TqZl8QBeLJr5RNoFNqZvDGX', // 👈 Remplace par ton ID Stripe mensuel
+      stripePriceId: '1895660', // 👈 Remplace par ton ID Stripe mensuel
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
     {
       name: 'VIP Elite Coaching',
-      price: 249,
+      price: 19.99,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -219,7 +219,7 @@ export class HomeComponent implements OnInit {
       ],
       isPopular: false,
       ctaText: 'Apply For VIP Elite Pack',
-stripePriceId: 'price_1TqZlNQBeLJr5RNoYdujVKb8', // 👈 Remplace par ton ID Stripe mensuel
+stripePriceId: '1895666', // 👈 Remplace par ton ID Stripe mensuel
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    }
   ];
 

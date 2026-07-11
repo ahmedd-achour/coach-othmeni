@@ -258,6 +258,7 @@ BUTTONS
 
 .form-actions-panel .btn{
 
+    min-height:54px;
 
     border-radius:14px;
 
