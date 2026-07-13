@@ -336,7 +336,6 @@
             <span
               class="status-badge"
               [ngClass]="app.payment?.status || 'pending'"
-              (click)="togglePaymentStatus(app)"
               style="cursor: pointer;"
               title="Click to manually toggle status overlay">
               {{ (app.payment?.status || 'pending') | uppercase }}

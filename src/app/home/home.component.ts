@@ -219,7 +219,7 @@ export class HomeComponent implements OnInit {
       ],
       isPopular: false,
       ctaText: 'Apply For VIP Elite Pack',
-stripePriceId: '1903966', // 👈 Remplace par ton ID Stripe mensuel
+      stripePriceId: '1903973', // 👈 Remplace par ton ID Stripe mensuel
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    }
   ];
 
