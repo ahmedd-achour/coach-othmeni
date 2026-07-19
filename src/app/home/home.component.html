@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 <section class="home-page">
   <section class="hero">
     <div class="hero-content">
@@ -7,7 +16,7 @@
           +15 years of experience. 1000+ real transformations. One coach who builds a plan around YOU not the other way around.
         </p>
         <div class="hero-actions">
-          <button (click)="scrollToSection('pricing')" class="btn btn-outline">Start your transformation</button>
+          <button (click)="scrollToSection('pricing')" class="btn btn-outline">See Offers</button>
           <button (click)="openPopup()" class="btn btn-solid">Apply Now</button>
 
           <!-- Subtle Admin Shortcut Link -->
@@ -25,9 +34,7 @@
         </div>
       </div>
       <div class="hero-visual">
-        <div class="visual-card">
-          <img class="image-placeholder" src="assets/onlineapp.png" alt="Coach Aymen Othmani">
-        </div>
+          <img class="image-placeholder" src="assets/backgrounded.jpeg" alt="Coach Aymen Othmani">
       </div>
     </div>
 
@@ -85,45 +92,87 @@
       </div>
     </div>
   </section>
-
-  <section class="results-section">
+ <section class="results-section">
     <h2 class="section-headline">COACHING RESULTS</h2>
     <div class="gallery-grid">
       <div class="transform-card">
-        <div class="before-after">
-          <img class="photo-slot before" src="assets/asset1.png" alt="Before Transformation">
-          <img class="photo-slot after" src="assets/asset2.png" alt="After Transformation">
-        </div>
+          <img class="image-placeholder" src="assets/exp1.jpeg" alt="Before Transformation">
         <p class="transform-caption"></p>
       </div>
       <div class="transform-card">
-        <div class="before-after">
-          <img class="photo-slot before" src="assets/online.png" alt="Before Transformation">
-          <img class="photo-slot after" src="assets/othmeniC.jpg" alt="After Transformation">
-         </div>
+          <img class="image-placeholder" src="assets/exp2.jpeg" alt="Before Transformation">
+        <p class="transform-caption"></p>
+      </div>
+    </div>
+  </section>
+  <section class="results-section">
+    <h2 class="section-headline">COACHING RESULTS</h2>
+    <div class="gallery-grid">
+     <div class="transform-card">
+          <img class="image-placeholder" src="assets/exp3.jpeg" alt="Before Transformation">
+        <p class="transform-caption"></p>
+      </div>
+      <div class="transform-card">
+          <img class="image-placeholder" src="assets/exp4.jpeg" alt="Before Transformation">
         <p class="transform-caption"></p>
       </div>
     </div>
   </section>
 
-  <section class="nutrition-section">
-    <h2 class="section-headline">EVERY DIET. EVERY RESTRICTION. ONE PLAN THAT ACTUALLY FITS YOU.</h2>
-    <div class="radial-matrix">
-      <div class="center-core">YOU</div>
-      <div class="leaves-grid">
+<section class="nutrition-section" id="nutrition">
+  <div class="nutrition-header">
+    <span class="nutrition-tag">Tailored Nutrition Architecture</span>
+    <h2 class="section-headline">EVERY DIET. EVERY RESTRICTION. <br><span>ONE PLAN THAT ACTUALLY FITS YOU.</span></h2>
+  </div>
+
+  <div class="nutrition-matrix-grid">
+
+    <!-- Core Identity Focus Card (Replaces the old floating circle) -->
+    <div class="matrix-card core-focus">
+      <div class="core-glow"></div>
+      <div class="core-meta">
+        <span class="core-title">THE CENTER OF THE PLAN</span>
+        <h3>YOU</h3>
+      </div>
+      <p class="core-desc">Your schedule, your culture, your parameters. Everything rotates around your metrics.</p>
+    </div>
+
+    <!-- Dynamic Leaves Card (Combines your custom loops seamlessly) -->
+    <div class="matrix-card leaves-hub">
+      <h4 class="card-label">Supported Frameworks</h4>
+      <div class="leaves-flex-wrapper">
         <div *ngFor="let leaf of nutritionLeaves" class="nutrition-leaf">
+          <span class="leaf-dot"></span>
           {{ leaf.name }}
         </div>
       </div>
     </div>
-    <div class="strategy-grid">
-      <div class="strategy-node">Protein Coverage</div>
-      <div class="strategy-node">Allergy-Safe Filters</div>
-      <div class="strategy-node">Halal Alignments</div>
-      <div class="strategy-node">Diabetic/PCOS Tracking</div>
-    </div>
-  </section>
 
+    <!-- Strategy Pillars Block -->
+    <div class="matrix-card strategies-hub">
+      <h4 class="card-label">Core Systems Integrated</h4>
+      <div class="strategy-pill-grid">
+        <div class="strategy-node">
+          <span class="node-accent"></span>
+          <h5>Protein Coverage</h5>
+        </div>
+        <div class="strategy-node">
+          <span class="node-accent"></span>
+          <h5>Allergy-Safe Filters</h5>
+        </div>
+        <div class="strategy-node">
+          <span class="node-accent"></span>
+          <h5>Halal Alignments</h5>
+        </div>
+        <div class="strategy-node">
+          <span class="node-accent"></span>
+          <h5>Diabetic/PCOS Tracking</h5>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
 
   <section class="final-cta">
