@@ -134,7 +134,7 @@ export interface FormData {
 export class HomeComponent implements OnInit {
 
   metrics: Metric[] = [
-    { value: '22+', label: 'Years Experience' },
+    { value: '15+', label: 'Years Experience' },
     { value: '1000+', label: 'Transformations' },
     { value: '99.7%', label: 'Custom Blueprint' },
     { value: '54,000+', label: 'Instagram Community' },
