@@ -1743,7 +1743,206 @@ body {
     background-color: #e04613;
     transform: translateY(-2px);
 }
+/* ==========================================================================
+   11. DIGITAL PRODUCT MATRIX LISTING (PDF SALES MODULE)
+   ========================================================================== */
+.pdf-listing-section {
+  padding: 5.5rem 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
+.pdf-section-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.pdf-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--co-sage); /* Maps directly to the Neon Orange variable */
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.pdf-section-header .section-headline span {
+  color: var(--co-sage);
+}
+
+/* Flex layout prioritizing centered layout flow focus sheets */
+.pdf-grid-matrix {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.pdf-product-card {
+  background-color: var(--co-bg-card);
+  border: 1px solid var(--co-border-light);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 850px;
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.25s ease;
+}
+
+.pdf-product-card:hover {
+  border-color: rgba(255, 87, 34, 0.3);
+}
+
+@media (min-width: 768px) {
+  .pdf-product-card {
+    grid-template-columns: 0.8fr 1.2fr; /* Splitting the cover graphic and data columns */
+  }
+}
+
+/* Product Left Wing Visual Box Layout Cover Filter */
+.pdf-visual-shell {
+  background: linear-gradient(135deg, #191b1e 0%, #0c0d0e 100%);
+  border-bottom: 1px solid var(--co-border-light);
+  min-height: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .pdf-visual-shell {
+    border-bottom: none;
+    border-right: 1px solid var(--co-border-light);
+    height: 100%;
+  }
+}
+
+.pdf-cover-glow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 87, 34, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pdf-icon-badge {
+  color: var(--co-sage);
+  background-color: rgba(255, 87, 34, 0.05);
+  border: 1px solid rgba(255, 87, 34, 0.15);
+  padding: 1.75rem;
+  border-radius: 20px;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.file-format-tag {
+  position: absolute;
+  bottom: 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--co-muted);
+  border: 1px solid var(--co-border-light);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  background-color: var(--co-bg-clean);
+}
+
+/* Right Wing Content Matrix Block */
+.pdf-meta-details {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.pdf-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.pdf-title {
+  font-family: var(--font-sans-clean);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.pdf-price-tag {
+  font-family: var(--font-sans-clean);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pdf-price-tag .currency {
+  font-size: 1.1rem;
+  color: var(--co-sage);
+  vertical-align: super;
+  margin-right: 0.1rem;
+}
+
+.pdf-price-tag .period {
+  font-size: 0.9rem;
+  color: var(--co-muted);
+  vertical-align: super;
+}
+
+.pdf-description {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--co-muted);
+  margin: 0;
+}
+
+/* Specification Nodes Strip */
+.pdf-spec-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  background-color: rgba(255, 87, 34, 0.02);
+  border: 1px solid var(--co-border-light);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+}
+
+.pdf-spec-row .spec-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pdf-spec-row .lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--co-muted);
+  letter-spacing: 0.03em;
+}
+
+.pdf-spec-row p {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pdf-action-row {
+  margin-top: 0.5rem;
+  width: 100%;
+}
 .stats-ribbon {
     background-color: var(--co-sage);
     width: 100%;

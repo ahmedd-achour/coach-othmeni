@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Functions, httpsCallable } from '@angular/fire/functions';
+import Swal from 'sweetalert2'
 
 interface Metric {
   value: string;
@@ -456,7 +457,13 @@ formData: FormData = {
 
        //kif traja3 hethi chekout temchiiiiii
        // window.location.href = result.data.checkoutUrl;
-       window.location.href = ''
+       this.closePopup();
+       Swal.fire({
+  title: "Application sent!",
+  text: "Coach Aymen Othmeni would contact you soon!",
+  icon: "success"
+});
+
 
       } else {
       //  throw new Error('The Cloud Function executed but returned an empty checkout URL.');
