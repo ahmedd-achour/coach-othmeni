@@ -452,9 +452,14 @@ formData: FormData = {
       if (result?.data?.checkoutUrl) {
         // 📢 ALERT DEBUG 2 : Succès de la fonction, redirection imminente
        // alert(`✅ [DEBUG 2/3] Success! Application ID created: ${result.data.applicationId}. Redirecting to Stripe URL...`);
-        window.location.href = result.data.checkoutUrl;
+
+
+       //kif traja3 hethi chekout temchiiiiii
+       // window.location.href = result.data.checkoutUrl;
+       window.location.href = ''
+
       } else {
-        throw new Error('The Cloud Function executed but returned an empty checkout URL.');
+      //  throw new Error('The Cloud Function executed but returned an empty checkout URL.');
       }
 
     } catch (err: any) {
