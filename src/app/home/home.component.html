@@ -52,7 +52,22 @@
       </div>
     </div>
   </section>
-
+ <section class="pricing-section" id="pricing">
+    <h2 class="section-headline">CHOOSE YOUR PACK. START YOUR TRANSFORMATION.</h2>
+    <div class="pricing-grid">
+      <div *ngFor="let tier of pricingTiers" class="pricing-card" [class.popular]="tier.isPopular">
+        <div *ngIf="tier.isPopular" class="popular-badge">MOST POPULAR</div>
+        <h3 class="tier-name">{{ tier.name }}</h3>
+        <div class="price">
+          <span class="currency">$</span>{{ tier.price }}<span class="period">/mo</span>
+        </div>
+        <ul class="features-list">
+          <li *ngFor="let feature of tier.features">{{ feature }}</li>
+        </ul>
+        <button (click)="openPopup(tier)" class="btn btn-solid tier-cta">{{ tier.ctaText }}</button>
+      </div>
+    </div>
+  </section>
   <section class="why-fail-section">
     <h2 class="section-headline">YOU'VE TRIED BEFORE. THE PLAN WASN'T THE PROBLEM - THE COACH WAS.</h2>
     <p class="section-body">
@@ -109,22 +124,7 @@
     </div>
   </section>
 
-  <section class="pricing-section" id="pricing">
-    <h2 class="section-headline">CHOOSE YOUR PACK. START YOUR TRANSFORMATION.</h2>
-    <div class="pricing-grid">
-      <div *ngFor="let tier of pricingTiers" class="pricing-card" [class.popular]="tier.isPopular">
-        <div *ngIf="tier.isPopular" class="popular-badge">MOST POPULAR</div>
-        <h3 class="tier-name">{{ tier.name }}</h3>
-        <div class="price">
-          <span class="currency">$</span>{{ tier.price }}<span class="period">/mo</span>
-        </div>
-        <ul class="features-list">
-          <li *ngFor="let feature of tier.features">{{ feature }}</li>
-        </ul>
-        <button (click)="openPopup(tier)" class="btn btn-solid tier-cta">{{ tier.ctaText }}</button>
-      </div>
-    </div>
-  </section>
+
 
   <section class="final-cta">
     <h2 class="final-headline">STOP STARTING OVER. START FINISHING.</h2>
@@ -427,16 +427,6 @@ Other
 
 <div class="form-group">
 
-<label>
-Time Zone *
-</label>
-
-
-<input
-type="text"
-[(ngModel)]="formData.timezone"
-name="timezone"
-placeholder="UTC +4">
 
 
 </div>
@@ -520,7 +510,6 @@ Realistic target timeframe
 
 <input
 title="k"
-
 type="date"
 [(ngModel)]="formData.targetDate"
 name="targetDate">

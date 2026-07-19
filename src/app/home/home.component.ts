@@ -49,7 +49,6 @@ export interface FormData {
 
   age: number | null;
   gender: string;
-  timezone: string;
 
   // ------------------------
   // GOALS
@@ -175,7 +174,7 @@ export class HomeComponent implements OnInit {
   pricingTiers: PricingTier[] = [
     {
       name: 'Standard Coaching',
-      price: 0.99,
+      price: 150,
       features: [
         'custom training program built around your goals',
         'weekly check-ins to track your progress',
@@ -190,7 +189,7 @@ export class HomeComponent implements OnInit {
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
     {
       name: 'Premium Coaching',
-      price: 1.5,
+      price: 200,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -198,7 +197,7 @@ export class HomeComponent implements OnInit {
         'swappable meals and a ready-to-use grocery list',
         'weekly check-ins to track your progress',
         'progress photo review by your coach',
-        'direct whatsapp access to your coach'
+        'direct whatsapp access to your coach',
       ],
       isPopular: true,
       ctaText: 'Apply For Premium Pack',
@@ -206,7 +205,7 @@ export class HomeComponent implements OnInit {
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
     {
       name: 'VIP Elite Coaching',
-      price: 1.99,
+      price: 250,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -247,7 +246,6 @@ formData: FormData = {
 
   age: null,
   gender: '',
-  timezone: '',
 
   // GOALS
 
@@ -348,7 +346,6 @@ formData: FormData = {
 
       gender: this.formData.gender,
 
-      timezone: this.formData.timezone
 
     },
 
@@ -512,7 +509,6 @@ isStep1Valid(): boolean {
     weight,
     targetWeight,
     country,
-    timezone
 
   } = this.formData;
 
@@ -557,7 +553,6 @@ isStep1Valid(): boolean {
 
   if (!country) return false;
 
-  if (!timezone || timezone.trim().length < 2) return false;
 
 
   return true;
@@ -654,7 +649,6 @@ this.formData = {
 
   age: null,
   gender: '',
-  timezone: '',
 
   // GOALS
 
