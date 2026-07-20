@@ -465,6 +465,9 @@ formData: FormData = {
 });
 
 
+window.location.href = "https://wa.me/971526164854?text=can%20i%20purshase%20this%20pdf%20item%20found%20in%20your%20website%20%3F"
+
+
       } else {
       //  throw new Error('The Cloud Function executed but returned an empty checkout URL.');
       }
