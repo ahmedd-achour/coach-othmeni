@@ -138,7 +138,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { value: '15+', label: 'Years Experience' },
     { value: '1000+', label: 'Transformations' },
     { value: '99.7%', label: 'Custom Blueprint' },
-    { value: '54,000+', label: 'Instagram Community' },
+    { value: '57,000+', label: 'Instagram Community' },
   ];
 
   methodSteps: MethodStep[] = [
