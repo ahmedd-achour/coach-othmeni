@@ -297,6 +297,10 @@ formData: FormData = {
   medications: ''
 
 };
+
+openApp(): void {
+  window.location.href = 'https://www.dewslife.com.tr';
+}
   async handlePaymentSubmit(): Promise<void> {
     if (this.isProcessingPayment || !this.selectedPlan) return;
 
