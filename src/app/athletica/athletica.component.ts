@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 import {
   Auth,
@@ -62,6 +63,7 @@ export interface Settings {
   businessName: string;
   coachPhone: string;
   leadHours: number;
+  smsMode?: 'firebase' | 'device';
 }
 
 /* ========== COMPONENT ========== */
@@ -76,8 +78,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   private auth = inject(Auth);
   private firestore = inject(Firestore);
+  private http = inject(HttpClient);
 
-  /* ---- Constants ---- */
+  /* ---- Constants & Token ---- */
+  readonly FIREBASE_SMS_JETON = 'AVweKohsMBhkVyLAk_zLvnAv09I-gT-SemKtUSjcyAL2J-1ZexLKMJh7-FbZDfclZV7qo35IKF2skkH5zu4JkMkSKzLk31moFHYWJVWrNv04ZhsI_5kPy_2po25P3_pUfc8V8LKK5agWiTEkNXqK87Y5';
+
   readonly packages: Package[] = [
     { key: 'consistency',    label: 'Consistency',    sessions: 8,   per: 270, total: 2160 },
     { key: 'progress',       label: 'Progress',       sessions: 12,  per: 242, total: 2900 },
@@ -95,7 +100,8 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     coachName: 'Aymen Othmani',
     businessName: 'Carthage Athletica',
     coachPhone: '',
-    leadHours: 2
+    leadHours: 2,
+    smsMode: 'firebase'
   };
 
   readonly navItems = [
@@ -133,7 +139,8 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     coachName: 'Aymen Othmani',
     businessName: 'Carthage Athletica',
     coachPhone: '',
-    leadHours: 2
+    leadHours: 2,
+    smsMode: 'firebase'
   };
 
   isAuthenticated = false;
@@ -142,6 +149,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   currentView = 'today';
   pageTitle = 'Today';
   pageSub = 'Your day at a glance';
+
+  isLoadingData = true;
+  isSaving = false;
+  sendingSmsId: string | null = null;
 
   // Auth forms
   setupEmail = '';
@@ -183,6 +194,8 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   showClientModal = false;
   activeClient: Client | null = null;
   clientHistory: Session[] = [];
+  customRenewCount = 10;
+  showRenewInput = false;
 
   // New client
   showNewClientModal = false;
@@ -191,13 +204,15 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   ncNote = '';
   selectedPkgKeyNC = 'elite';
 
-  // Search
+  // Search & Filter
   clientSearch = '';
+  clientFilterTab: 'all' | 'low' | 'empty' = 'all';
   filteredClients: Client[] = [];
 
   // Toast
   toastVisible = false;
   toastMessage = '';
+  toastType: 'success' | 'error' | 'info' = 'success';
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Firebase refs
@@ -234,7 +249,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       })
     );
   }
-
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
     if (this.toastTimer) {
@@ -607,13 +621,22 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   /* ========== CLIENTS ========== */
+  setClientFilterTab(tab: 'all' | 'low' | 'empty'): void {
+    this.clientFilterTab = tab;
+    this.filterClients();
+  }
+
   filterClients(): void {
-    const q = (this.clientSearch || '').toLowerCase();
+    const q = (this.clientSearch || '').toLowerCase().trim();
     this.filteredClients = this.clients
-      .filter(
-        c =>
-          c.name.toLowerCase().includes(q) || (c.phone || '').includes(q)
-      )
+      .filter(c => {
+        const matchesSearch = c.name.toLowerCase().includes(q) || (c.phone || '').includes(q) || (c.packageLabel || '').toLowerCase().includes(q);
+        if (!matchesSearch) return false;
+        const rem = this.remainingCount(c);
+        if (this.clientFilterTab === 'low') return rem > 0 && rem <= 3;
+        if (this.clientFilterTab === 'empty') return rem === 0;
+        return true;
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -926,15 +949,125 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.authExists = false;
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.closeModal('book');
+    this.closeModal('sess');
+    this.closeModal('client');
+    this.closeModal('newClient');
+  }
+
+  /* ========== SMS SENDER (FIREBASE & JETON) ========== */
+  async sendSMSReminder(session: Session, client: Client): Promise<void> {
+    if (!client || !client.phone) {
+      this.showToast('Client phone number missing', 'error');
+      return;
+    }
+
+    const msg = this.reminderMsg(client, session);
+    this.sendingSmsId = session.id;
+
+    try {
+      // 1. Primary path: Send via Firebase Cloud Function using Firebase phone jeton
+      const payload = {
+        phone: this.cleanPhone(client.phone),
+        message: msg,
+        token: this.FIREBASE_SMS_JETON,
+        clientName: client.name,
+        sessionDate: session.date,
+        sessionTime: session.time
+      };
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.FIREBASE_SMS_JETON}`
+      });
+
+      const endpoint = 'https://us-central1-coach-othmeni.cloudfunctions.net/sendSMS';
+      
+      const res = await firstValueFrom(this.http.post<any>(endpoint, payload, { headers })).catch(err => {
+        console.warn('Firebase SMS API direct endpoint response/error:', err);
+        return null;
+      });
+
+      if (res && (res.success || res.status === 'ok' || res.id)) {
+        await this.markReminded(session.id);
+        this.showToast(`Firebase SMS sent to ${client.name}!`, 'success');
+      } else {
+        // Fallback: Trigger device SMS pre-filled message & mark reminded
+        const smsUrl = this.smsHrefWithBody(client.phone, msg);
+        window.location.href = smsUrl;
+        await this.markReminded(session.id);
+        this.showToast(`SMS opened for ${client.name} (Tap send to deliver)`, 'info');
+      }
+    } catch {
+      const smsUrl = this.smsHrefWithBody(client.phone, msg);
+      window.location.href = smsUrl;
+      await this.markReminded(session.id);
+      this.showToast(`SMS prepared for ${client.name}`, 'info');
+    } finally {
+      this.sendingSmsId = null;
+    }
+  }
+
+  async sendDirectClientSMS(client: Client, customMsg?: string): Promise<void> {
+    if (!client || !client.phone) {
+      this.showToast('Client phone number missing', 'error');
+      return;
+    }
+    const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
+    const msg = customMsg || `Hi ${client.name.split(' ')[0]}, this is Coach ${coachFirst} (${this.settings.businessName || 'Carthage Athletica'}).`;
+    
+    try {
+      const payload = {
+        phone: this.cleanPhone(client.phone),
+        message: msg,
+        token: this.FIREBASE_SMS_JETON
+      };
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.FIREBASE_SMS_JETON}`
+      });
+      const endpoint = 'https://us-central1-coach-othmeni.cloudfunctions.net/sendSMS';
+      await firstValueFrom(this.http.post<any>(endpoint, payload, { headers })).catch(() => null);
+      
+      const smsUrl = this.smsHrefWithBody(client.phone, msg);
+      window.location.href = smsUrl;
+      this.showToast(`SMS sent to ${client.name}`, 'success');
+    } catch {
+      const smsUrl = this.smsHrefWithBody(client.phone, msg);
+      window.location.href = smsUrl;
+    }
+  }
+
+  async quickToggleStatus(s: Session, newStatus: Session['status'], event?: Event): Promise<void> {
+    if (event) event.stopPropagation();
+    const updated: Session = { ...s, status: newStatus };
+    await this.saveSession(updated);
+    this.showToast(`Session marked as ${newStatus}`, 'success');
+  }
+
+  async addExtraSessions(cl: Client, count: number): Promise<void> {
+    if (count <= 0) return;
+    const updated: Client = {
+      ...cl,
+      totalSessions: cl.totalSessions + count
+    };
+    await this.saveClient(updated);
+    this.activeClient = updated;
+    this.showToast(`+${count} sessions added for ${cl.name}`, 'success');
+  }
+
   /* ========== TOAST ========== */
-  showToast(msg: string): void {
+  showToast(msg: string, type: 'success' | 'error' | 'info' = 'success'): void {
     this.toastMessage = msg;
+    this.toastType = type;
     this.toastVisible = true;
     if (this.toastTimer) {
       clearTimeout(this.toastTimer);
     }
     this.toastTimer = setTimeout(() => {
       this.toastVisible = false;
-    }, 2600);
+    }, 2800);
   }
 }

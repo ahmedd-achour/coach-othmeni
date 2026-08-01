@@ -113,20 +113,38 @@
               <h2>Text these clients now</h2>
             </div>
           </div>
+          <!--
+
+
           <div class="banner">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
-            <div>Phones don't let any site send a text silently in the background — that's an Apple/Android rule, not a limit of this app. These are pre-written and ready: one tap opens Messages with the text filled in, tap send, done.</div>
+            <div>SMS reminders can be sent directly via Firebase Phone API (Token authenticated) or opened in your device Messages app with pre-filled content.</div>
           </div>
+          -->
           <div class="reminder-card" *ngFor="let s of dueReminders()">
             <ng-container *ngIf="clientById(s.clientId) as cl">
               <span class="rt">{{ fmtTime12(s.time) }}</span>
-              <div style="flex:1;min-width:120px;">
+              <div style="flex:1;min-width:140px;">
                 <div style="font-weight:600;font-size:13.5px;">{{ cl.name }}</div>
-                <div class="sr-sub">{{ s.date === todayStr() ? 'Today' : s.date }}</div>
+                <div class="sr-sub">{{ s.date === todayStr() ? 'Today' : s.date }} · {{ cl.phone }}</div>
               </div>
-              <a class="btn btn-primary btn-sm"
-                 [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))"
-                 (click)="markReminded(s.id)">Send SMS reminder</a>
+             <!--
+
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm"
+                        [disabled]="sendingSmsId === s.id"
+                        (click)="sendSMSReminder(s, cl)">
+                  <span *ngIf="sendingSmsId === s.id">Sending...</span>
+                  <span *ngIf="sendingSmsId !== s.id">Send Firebase SMS</span>
+                </button>
+                <a class="btn btn-ghost btn-sm"
+                   [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))"
+                   (click)="markReminded(s.id)"
+                   title="Open device Messages app">Device SMS</a>
+              </div>
+
+
+             -->
             </ng-container>
           </div>
         </div>
@@ -138,7 +156,7 @@
               <div class="eyebrow">Log</div>
               <h2>Today's Sessions</h2>
             </div>
-            <button class="btn btn-ghost btn-sm" (click)="switchView('calendar')">Open calendar.</button>
+            <button class="btn btn-ghost btn-sm" (click)="switchView('calendar')">Open calendar</button>
           </div>
           <ng-container *ngIf="todaysSessions().length; else noToday">
             <div class="session-row" *ngFor="let s of todaysSessions()" (click)="openSessionDetail(s.id)">
@@ -147,6 +165,10 @@
               <div style="flex:1;">
                 <div class="sr-name">{{ clientById(s.clientId)?.name }}</div>
                 <div class="sr-sub">{{ s.note || pkgLabelSafe(clientById(s.clientId)) }} · {{ capitalize(s.status) }}</div>
+              </div>
+              <div class="quick-status-actions" (click)="$event.stopPropagation()">
+                <button class="btn-xs btn-done" *ngIf="s.status !== 'completed'" (click)="quickToggleStatus(s, 'completed', $event)" title="Mark as Completed">✓ Done</button>
+                <button class="btn-xs btn-cancel" *ngIf="s.status !== 'cancelled'" (click)="quickToggleStatus(s, 'cancelled', $event)" title="Cancel session">✕ Cancel</button>
               </div>
             </div>
           </ng-container>
@@ -174,11 +196,13 @@
                 <div style="font-weight:600;font-size:14px;">{{ cl.name }}</div>
                 <div class="sr-sub">{{ remainingCount(cl) }} of {{ cl.totalSessions }} sessions remaining</div>
               </div>
+              <!--
+
               <div class="icon-row">
                 <a [href]="telLink(cl.phone)" title="Call" [innerHTML]="icoPhone"></a>
                 <a [href]="smsLink(cl.phone)" title="SMS" [innerHTML]="icoSMS"></a>
                 <button class="btn btn-primary btn-sm" (click)="openBookingModal({clientId: cl.id})">Renew / Book.</button>
-              </div>
+              </div>-->
             </div>
           </ng-container>
           <ng-template #allTopped>
@@ -286,12 +310,29 @@
       <!-- ========== CLIENTS VIEW ========== -->
       <ng-container *ngIf="currentView === 'clients'">
         <div class="search-row">
-          <input class="input" [(ngModel)]="clientSearch" placeholder="Search clients by name or phone..." (ngModelChange)="filterClients()">
+          <div style="flex:1;position:relative;">
+            <input class="input" [(ngModel)]="clientSearch" placeholder="Search clients by name or phone..." (ngModelChange)="filterClients()">
+            <button *ngIf="clientSearch" (click)="clientSearch = ''; filterClients()" class="search-clear-btn" title="Clear search">✕</button>
+          </div>
           <button class="btn btn-primary" (click)="openNewClientModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
             New Client
-          ..</button>
+          </button>
         </div>
+
+        <!-- Filter tabs -->
+        <div class="client-filter-tabs">
+          <button class="filter-tab" [class.active]="clientFilterTab === 'all'" (click)="setClientFilterTab('all')">
+            All Clients ({{ clients.length }})
+          </button>
+          <button class="filter-tab" [class.active]="clientFilterTab === 'low'" (click)="setClientFilterTab('low')">
+            Running Low (<= 3 left)
+          </button>
+          <button class="filter-tab" [class.active]="clientFilterTab === 'empty'" (click)="setClientFilterTab('empty')">
+            Out of Sessions (0 left)
+          </button>
+        </div>
+
         <div class="client-list">
           <ng-container *ngIf="filteredClients.length; else noClients">
             <div class="client-card" *ngFor="let cl of filteredClients" (click)="openClientDetail(cl.id)">
@@ -310,17 +351,18 @@
                 </svg>
                 <div class="rn">{{ progressPct(cl) }}%</div>
               </div>
-              <div class="icon-row" (click)="$event.stopPropagation()">
-                <a [href]="telLink(cl.phone)" title="Call" [innerHTML]="icoPhone"></a>
-                <a [href]="smsLink(cl.phone)" title="SMS" [innerHTML]="icoSMS"></a>
-              </div>
+             <!--
+               <div class="icon-row" (click)="$event.stopPropagation()">
+                <a [href]="telLink(cl.phone)" title="Call client" [innerHTML]="icoPhone"></a>
+                <button class="icon-btn-action" (click)="sendDirectClientSMS(cl)" title="Send Firebase SMS" [innerHTML]="icoSMS"></button>
+              </div>-->
             </div>
           </ng-container>
           <ng-template #noClients>
             <div class="empty-state">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
               <div class="t">No clients found</div>
-              <div>Add a new client to get started.</div>
+              <div>Try adjusting your search or filter.</div>
             </div>
           </ng-template>
         </div>
@@ -503,13 +545,13 @@
 </div>
 
 <!-- ========== SESSION DETAIL MODAL ========== -->
-<div class="overlay" [class.show]="showSessModal">
-  <div class="modal">
+<div class="overlay" [class.show]="showSessModal" (click)="closeModal('sess')">
+  <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal-head">
       <h3>Session Details</h3>
       <button class="close-x" (click)="closeModal('sess')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.
-      .</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> .
+      </button>
     </div>
     <div class="modal-body" *ngIf="activeSession as s">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;" *ngIf="clientById(s.clientId) as cl">
@@ -522,16 +564,16 @@
       <div class="field-row">
         <div class="field">
           <label>Date</label>
-          <input class="input" type="date" [(ngModel)]="edDate" title="jk">
+          <input class="input" type="date" [(ngModel)]="edDate" title="Date">
         </div>
         <div class="field">
           <label>Time</label>
-          <input class="input" type="time" [(ngModel)]="edTime" title="jk">
+          <input class="input" type="time" [(ngModel)]="edTime" title="Time">
         </div>
       </div>
       <div class="field">
         <label>Note</label>
-        <input class="input" [(ngModel)]="edNote" title="jk">
+        <input class="input" [(ngModel)]="edNote" title="Note">
       </div>
       <div class="field">
         <label>Status</label>
@@ -541,35 +583,44 @@
           <div [class.on]="edStatus === 'cancelled'" (click)="edStatus = 'cancelled'">Cancelled</div>
         </div>
       </div>
-      <div class="icon-row" style="margin-top:6px;" *ngIf="clientById(s.clientId) as cl">
-        <a [href]="telLink(cl.phone)" [innerHTML]="icoPhone"></a>
-        <a [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))" (click)="markReminded(s.id)" [innerHTML]="icoSMS"></a>
+     <!--
+       <div class="icon-row" style="margin-top:10px;" *ngIf="clientById(s.clientId) as cl">
+        <a [href]="telLink(cl.phone)" class="btn btn-ghost btn-sm" [innerHTML]="icoPhone + ' Call'"></a>
+        <button class="btn btn-primary btn-sm" (click)="sendSMSReminder(s, cl)" [disabled]="sendingSmsId === s.id">
+          <span *ngIf="sendingSmsId === s.id">Sending...</span>
+          <span *ngIf="sendingSmsId !== s.id">Send Firebase SMS</span>
+        </button>
       </div>
-      <div class="field-hint" *ngIf="s.remindedAt">
+
+     -->
+      <div class="field-hint" *ngIf="s.remindedAt" style="margin-top:8px;">
         Reminder already sent {{ s.remindedAt | date:'MMM d, h:mm a' }}
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="saveSessionEdit()">Save changes.</button>
-      <button class="btn btn-danger" (click)="deleteSession()">Delete.</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="saveSessionEdit()">Save changes</button>
+      <button class="btn btn-danger" (click)="deleteSession()">Delete</button>
     </div>
   </div>
 </div>
 
 <!-- ========== CLIENT DETAIL MODAL ========== -->
-<div class="overlay" [class.show]="showClientModal">
-  <div class="modal" style="max-width:520px;">
+<div class="overlay" [class.show]="showClientModal" (click)="closeModal('client')">
+  <div class="modal" style="max-width:520px;" (click)="$event.stopPropagation()">
     <div class="modal-head">
       <h3>{{ activeClient?.name || 'Client' }}</h3>
       <button class="close-x" (click)="closeModal('client')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      .</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.      </button>
     </div>
     <div class="modal-body" *ngIf="activeClient as cl">
+      <!--
+
       <div class="icon-row" style="margin-bottom:16px;">
         <a [href]="telLink(cl.phone)" class="btn btn-ghost btn-sm" style="width:auto;" [innerHTML]="icoPhone + ' Call'"></a>
-        <a [href]="smsLink(cl.phone)" class="btn btn-ghost btn-sm" style="width:auto;" [innerHTML]="icoSMS + ' SMS'"></a>
+        <button class="btn btn-ghost btn-sm" style="width:auto;" (click)="sendDirectClientSMS(cl)">Send SMS</button>
       </div>
+
+      -->
       <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
         <div class="stat-card" style="padding:12px 14px;">
           <div class="label">Package</div>
@@ -607,22 +658,27 @@
         </div>
       </div>
     </div>
-    <div class="modal-foot" *ngIf="activeClient">
-      <button class="btn btn-primary" (click)="closeModal('client'); openBookingModal({clientId: activeClient.id})">Book session.</button>
-      <button class="btn btn-ghost" (click)="openRenewInline()">Add sessions.</button>
-      <button class="btn btn-danger" (click)="deleteClient()">Delete client.</button>
+    <div class="modal-foot" *ngIf="activeClient as cl">
+      <button class="btn btn-primary" (click)="closeModal('client'); openBookingModal({clientId: cl.id})">Book session</button>
+      <div class="renew-quick-group">
+        <span style="font-size:11.5px;font-weight:600;color:var(--muted);align-self:center;">+Add:</span>
+        <button class="btn btn-ghost btn-sm" (click)="addExtraSessions(cl, 5)">+5</button>
+        <button class="btn btn-ghost btn-sm" (click)="addExtraSessions(cl, 10)">+10</button>
+        <button class="btn btn-ghost btn-sm" (click)="addExtraSessions(cl, 20)">+20</button>
+      </div>
+      <button class="btn btn-danger" (click)="deleteClient()">Delete client</button>
     </div>
   </div>
 </div>
 
 <!-- ========== NEW CLIENT MODAL ========== -->
-<div class="overlay" [class.show]="showNewClientModal">
-  <div class="modal">
+<div class="overlay" [class.show]="showNewClientModal" (click)="closeModal('newClient')">
+  <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal-head">
       <h3>New Client</h3>
       <button class="close-x" (click)="closeModal('newClient')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.
-      .</button>
+      </button>
     </div>
     <div class="modal-body">
       <div class="field">
@@ -652,11 +708,11 @@
       <div class="field-hint">Once added, book their first session and it will show on the calendar automatically.</div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="submitNewClient()">Add client.</button>
-      <button class="btn btn-ghost" (click)="closeModal('newClient')">Cancel.</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="submitNewClient()">Add client</button>
+      <button class="btn btn-ghost" (click)="closeModal('newClient')">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" [class.show]="toastVisible">{{ toastMessage }}</div>
+<div class="toast" [class.show]="toastVisible" [ngClass]="toastType">{{ toastMessage }}</div>

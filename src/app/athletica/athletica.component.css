@@ -8,10 +8,13 @@
   --line-soft: #e8dabd;
   --rust: #a3572e;
   --rust-dark: #7c3f20;
+
+
+
   --muted: #7a6852;
   --muted-2: #9a8a70;
   --success: #4c7a52;
-  --success-bg: #e4ede2;
+  --success-bg: #749b6b;
   --danger: #a1443a;
   --danger-bg: #f2e0dc;
   --gold: #c99a3d;
@@ -582,7 +585,7 @@ a {
   font-family: 'Space Mono', monospace;
   font-weight: 700;
   background: var(--rust);
-  color: #fff;
+  color: #363434;
   padding: 5px 9px;
   border-radius: 7px;
   font-size: 11.5px;
@@ -1225,7 +1228,7 @@ table.tracker tr:hover td {
 
 .seg > div.on {
   background: var(--rust);
-  color: #fff;
+  color: #428147;
 }
 
 /* ========== TOAST ========== */
@@ -1251,6 +1254,127 @@ table.tracker tr:hover td {
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+.toast.error {
+  background: var(--danger);
+  color: #fff;
+}
+
+.toast.info {
+  background: var(--rust-dark);
+  color: #fff;
+}
+
+/* ========== QUICK ADMIN ACTIONS & FILTERS ========== */
+.quick-status-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.btn-xs {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.15s;
+}
+
+.btn-xs:active {
+  transform: scale(0.95);
+}
+
+.btn-done {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(76, 122, 82, 0.2);
+}
+
+.btn-done:hover {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-cancel {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(161, 68, 58, 0.2);
+}
+
+.btn-cancel:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.client-filter-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.filter-tab:hover {
+  background: var(--cream-2);
+}
+
+.filter-tab.active {
+  background: var(--rust);
+  color: #fff;
+  border-color: var(--rust);
+}
+
+.icon-btn-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: var(--cream);
+  cursor: pointer;
+}
+
+.icon-btn-action:hover {
+  background: var(--cream-2);
+}
+
+.icon-btn-action svg {
+  width: 15px;
+  height: 15px;
+}
+
+.renew-quick-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 /* ========== SCROLLBAR ========== */
