@@ -1,0 +1,662 @@
+<!-- AUTH SCREEN -->
+<div id="authScreen" *ngIf="!isAuthenticated">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="ring"></div>
+      <div>
+        <div class="co">Carthage Athletica</div>
+        <div class="name">Coach Console</div>
+      </div>
+    </div>
+
+    <!-- SETUP FORM -->
+    <div *ngIf="!authExists">
+      <h2>Create your coach login</h2>
+      <div class="sub">Set an email and password so only you can open this console. This is a device-level lock — keep this link private.</div>
+      <div class="field">
+        <label>Email</label>
+        <input class="input" type="email" [(ngModel)]="setupEmail" placeholder="aymen@carthageathletica.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input class="input" type="password" [(ngModel)]="setupPass" placeholder="At least 4 characters">
+      </div>
+      <div class="field">
+        <label>Confirm password</label>
+        <input class="input" type="password" [(ngModel)]="setupPass2" placeholder="Repeat password">
+      </div>
+      <div class="auth-err" [class.show]="setupError">{{ setupError }}</div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" (click)="submitSetup()">Create login.</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div *ngIf="authExists">
+      <h2>Coach login</h2>
+      <div class="sub">Enter your email and password to open the console.</div>
+      <div class="field">
+        <label>Email</label>
+        <input class="input" type="email" [(ngModel)]="loginEmail" placeholder="aymen@carthageathletica.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input class="input" type="password" [(ngModel)]="loginPass" placeholder="Password">
+      </div>
+      <div class="auth-err" [class.show]="loginError">{{ loginError }}</div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" (click)="submitLogin()">Log in.</button>
+      <div class="auth-switch">Forgot password? <a (click)="resetAuth()">Reset login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" [class.show]="isAuthenticated">
+  <nav class="sidebar" [class.open]="sidebarOpen" id="sidebar">
+    <div class="brandmark">
+      <div class="ring"></div>
+      <div class="brand-text">
+        <div class="co">{{ settings.businessName }}</div>
+        <div class="name">Coach {{ (settings.coachName || '').split(' ')[0] || settings.coachName }}</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-item" *ngFor="let n of navItems"
+           [class.active]="currentView === n.id"
+           (click)="switchView(n.id)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path [attr.d]="n.icon"/>
+        </svg>
+        <span>{{ n.label }}</span>
+        <span class="nav-badge" *ngIf="n.id === 'clients'">{{ clients.length }}</span>
+        <span class="nav-badge" *ngIf="n.id === 'today'">{{ todaysSessions().length }}</span>
+      </div>
+    </div>
+    <div class="sidebar-foot">
+      Coach-only console<br>Nobody but the coach can book, edit or cancel.
+      <div style="margin-top:10px;">
+        <a (click)="lockApp()" style="color:var(--gold);font-weight:600;cursor:pointer;">Lock console</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-btn" (click)="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        .</button>
+        <div>
+          <h1>{{ pageTitle }}</h1>
+          <div class="sub">{{ pageSub }}</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="openBookingModal({})">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Book Session
+      .</button>
+    </div>
+    <div class="content">
+
+      <!-- ========== TODAY VIEW ========== -->
+      <ng-container *ngIf="currentView === 'today'">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="label">Clients Today</div><div class="value">{{ distinctClientsToday }}</div></div>
+          <div class="stat-card"><div class="label">Sessions Today</div><div class="value">{{ todaysSessions().length }}</div></div>
+          <div class="stat-card"><div class="label">Sessions This Week</div><div class="value">{{ weekSessions().length }}</div></div>
+          <div class="stat-card"><div class="label">Total Clients</div><div class="value">{{ clients.length }}</div></div>
+        </div>
+
+        <!-- Reminders due -->
+        <div class="panel" *ngIf="dueReminders().length">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Reminders due</div>
+              <h2>Text these clients now</h2>
+            </div>
+          </div>
+          <div class="banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+            <div>Phones don't let any site send a text silently in the background — that's an Apple/Android rule, not a limit of this app. These are pre-written and ready: one tap opens Messages with the text filled in, tap send, done.</div>
+          </div>
+          <div class="reminder-card" *ngFor="let s of dueReminders()">
+            <ng-container *ngIf="clientById(s.clientId) as cl">
+              <span class="rt">{{ fmtTime12(s.time) }}</span>
+              <div style="flex:1;min-width:120px;">
+                <div style="font-weight:600;font-size:13.5px;">{{ cl.name }}</div>
+                <div class="sr-sub">{{ s.date === todayStr() ? 'Today' : s.date }}</div>
+              </div>
+              <a class="btn btn-primary btn-sm"
+                 [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))"
+                 (click)="markReminded(s.id)">Send SMS reminder</a>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Today's sessions -->
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Log</div>
+              <h2>Today's Sessions</h2>
+            </div>
+            <button class="btn btn-ghost btn-sm" (click)="switchView('calendar')">Open calendar.</button>
+          </div>
+          <ng-container *ngIf="todaysSessions().length; else noToday">
+            <div class="session-row" *ngFor="let s of todaysSessions()" (click)="openSessionDetail(s.id)">
+              <div class="time-chip">{{ fmtTime12(s.time) }}</div>
+              <span class="status-dot" [ngClass]="s.status"></span>
+              <div style="flex:1;">
+                <div class="sr-name">{{ clientById(s.clientId)?.name }}</div>
+                <div class="sr-sub">{{ s.note || pkgLabelSafe(clientById(s.clientId)) }} · {{ capitalize(s.status) }}</div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noToday>
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+              <div class="t">No sessions scheduled today</div>
+              <div>Book a session to fill the day.</div>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Low remaining -->
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Attention</div>
+              <h2>Running Low on Sessions</h2>
+            </div>
+            <button class="btn btn-ghost btn-sm" (click)="switchView('tracker')">Full tracker.</button>
+          </div>
+          <ng-container *ngIf="lowRemainingClients().length; else allTopped">
+            <div class="alert-row" *ngFor="let cl of lowRemainingClients()">
+              <div>
+                <div style="font-weight:600;font-size:14px;">{{ cl.name }}</div>
+                <div class="sr-sub">{{ remainingCount(cl) }} of {{ cl.totalSessions }} sessions remaining</div>
+              </div>
+              <div class="icon-row">
+                <a [href]="telLink(cl.phone)" title="Call" [innerHTML]="icoPhone"></a>
+                <a [href]="smsLink(cl.phone)" title="SMS" [innerHTML]="icoSMS"></a>
+                <button class="btn btn-primary btn-sm" (click)="openBookingModal({clientId: cl.id})">Renew / Book.</button>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #allTopped>
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+              <div class="t">All clients topped up</div>
+              <div>Nobody is close to running out of sessions.</div>
+            </div>
+          </ng-template>
+        </div>
+      </ng-container>
+
+      <!-- ========== CALENDAR VIEW ========== -->
+      <ng-container *ngIf="currentView === 'calendar'">
+        <div class="cal-tabs">
+          <div class="cal-tab" [class.on]="calendarMode === 'day'" (click)="setCalMode('day')">Day</div>
+          <div class="cal-tab" [class.on]="calendarMode === 'week'" (click)="setCalMode('week')">Week</div>
+          <div class="cal-tab" [class.on]="calendarMode === 'month'" (click)="setCalMode('month')">Month</div>
+        </div>
+
+        <!-- WEEK -->
+        <ng-container *ngIf="calendarMode === 'week'">
+          <div class="cal-toolbar">
+            <div class="cal-nav">
+              <button class="icon-btn" (click)="shiftWeek(-1)" [innerHTML]="icoChevronLeft">.</button>
+              <div class="cal-range">{{ weekRangeLabel }}</div>
+              <button class="icon-btn" (click)="shiftWeek(1)" [innerHTML]="icoChevronRight">.</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" (click)="goTodayWeek()">Today.</button>
+          </div>
+          <div class="cal-wrap">
+            <div class="cal-grid">
+              <div class="cal-head-cell"></div>
+              <div class="cal-head-cell" *ngFor="let d of weekDays" [class.today]="isSameDate(d, today)">
+                <div class="d">{{ dayName(d) }}</div>
+                <div class="n">{{ d.getDate() }}</div>
+              </div>
+              <ng-container *ngFor="let h of hours">
+                <div class="cal-time-label">{{ hourLabel(h) }}</div>
+                <div class="cal-cell" *ngFor="let d of weekDays"
+                     (click)="cellClicked(fmtDate(d), padHour(h))">
+                  <div class="sess-block" *ngFor="let s of cellSessions(fmtDate(d), h)"
+                       [ngClass]="s.status"
+                       (click)="$event.stopPropagation(); openSessionDetail(s.id)">
+                    <span class="n">{{ shortName(s.clientId) }}</span>
+                    <span class="p">{{ fmtTime12(s.time) }}</span>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- DAY -->
+        <ng-container *ngIf="calendarMode === 'day'">
+          <div class="cal-toolbar">
+            <div class="cal-nav">
+              <button class="icon-btn" (click)="shiftDay(-1)" [innerHTML]="icoChevronLeft">...</button>
+              <div class="cal-range">{{ selectedDayLabel }}</div>
+              <button class="icon-btn" (click)="shiftDay(1)" [innerHTML]="icoChevronRight">...</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" (click)="goTodayDay()">Today..</button>
+          </div>
+          <div class="cal-wrap">
+            <div class="day-row" *ngFor="let h of hours">
+              <div class="day-time">{{ hourLabel(h) }}</div>
+              <div class="day-slot" (click)="cellClicked(fmtDate(selectedDay), padHour(h))">
+                <div class="sess-block" *ngFor="let s of cellSessions(fmtDate(selectedDay), h)"
+                     [ngClass]="s.status"
+                     style="display:inline-block;margin-right:8px;"
+                     (click)="$event.stopPropagation(); openSessionDetail(s.id)">
+                  <span class="n">{{ clientById(s.clientId)?.name || 'Client' }}</span>
+                  <span class="p">{{ fmtTime12(s.time) }} · {{ capitalize(s.status) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- MONTH -->
+        <ng-container *ngIf="calendarMode === 'month'">
+          <div class="cal-toolbar">
+            <div class="cal-nav">
+              <button class="icon-btn" (click)="shiftMonth(-1)" [innerHTML]="icoChevronLeft">...</button>
+              <div class="cal-range">{{ monthLabel }}</div>
+              <button class="icon-btn" (click)="shiftMonth(1)" [innerHTML]="icoChevronRight">...</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" (click)="goTodayMonth()">Today..</button>
+          </div>
+          <div class="cal-wrap">
+            <div class="month-grid">
+              <div class="month-head" *ngFor="let d of dayNames">{{ d }}</div>
+              <div class="month-cell" *ngFor="let cell of monthCells"
+                   [class.out]="!cell.inMonth"
+                   [class.today]="cell.isToday"
+                   (click)="jumpToDay(cell.dateStr)">
+                <span class="mn">{{ cell.day }}</span>
+                <div class="month-badge" *ngIf="cell.count">{{ cell.count }} session{{ cell.count > 1 ? 's' : '' }}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- ========== CLIENTS VIEW ========== -->
+      <ng-container *ngIf="currentView === 'clients'">
+        <div class="search-row">
+          <input class="input" [(ngModel)]="clientSearch" placeholder="Search clients by name or phone..." (ngModelChange)="filterClients()">
+          <button class="btn btn-primary" (click)="openNewClientModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New Client
+          ..</button>
+        </div>
+        <div class="client-list">
+          <ng-container *ngIf="filteredClients.length; else noClients">
+            <div class="client-card" *ngFor="let cl of filteredClients" (click)="openClientDetail(cl.id)">
+              <div class="avatar">{{ initials(cl.name) }}</div>
+              <div class="client-main">
+                <div class="nm">{{ cl.name }}</div>
+                <div class="pk">{{ cl.packageLabel || 'Custom' }} · {{ remainingCount(cl) }} of {{ cl.totalSessions }} sessions left</div>
+              </div>
+              <div class="ring-wrap">
+                <svg viewBox="0 0 46 46">
+                  <circle cx="23" cy="23" r="19" fill="none" stroke="#e8dabd" stroke-width="5"/>
+                  <circle cx="23" cy="23" r="19" fill="none" stroke="var(--rust)" stroke-width="5"
+                          [attr.stroke-dasharray]="2 * Math.PI * 19"
+                          [attr.stroke-dashoffset]="2 * Math.PI * 19 * (1 - progressPct(cl) / 100)"
+                          stroke-linecap="round"/>
+                </svg>
+                <div class="rn">{{ progressPct(cl) }}%</div>
+              </div>
+              <div class="icon-row" (click)="$event.stopPropagation()">
+                <a [href]="telLink(cl.phone)" title="Call" [innerHTML]="icoPhone"></a>
+                <a [href]="smsLink(cl.phone)" title="SMS" [innerHTML]="icoSMS"></a>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noClients>
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+              <div class="t">No clients found</div>
+              <div>Add a new client to get started.</div>
+            </div>
+          </ng-template>
+        </div>
+      </ng-container>
+
+      <!-- ========== TRACKER VIEW ========== -->
+      <ng-container *ngIf="currentView === 'tracker'">
+        <div class="panel" style="padding-top:16px;">
+          <ng-container *ngIf="clients.length; else noTracker">
+            <div style="overflow-x:auto;">
+              <table class="tracker">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Package</th>
+                    <th>Used</th>
+                    <th>Remaining</th>
+                    <th>Progress</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cl of sortedByRemaining" (click)="openClientDetail(cl.id)">
+                    <td style="font-weight:600;">{{ cl.name }}</td>
+                    <td>{{ cl.packageLabel || 'Custom' }}</td>
+                    <td class="mono">{{ completedCount(cl.id) }}/{{ cl.totalSessions }}</td>
+                    <td>
+                      <span class="pill" [ngClass]="pillClass(cl)">{{ remainingCount(cl) }} left</span>
+                    </td>
+                    <td>
+                      <div class="bar-track">
+                        <div class="bar-fill" [style.width.%]="progressPct(cl)"></div>
+                      </div>
+                    </td>
+                    <td (click)="$event.stopPropagation()">
+                      <button class="btn btn-ghost btn-sm" (click)="openBookingModal({clientId: cl.id})">Book.</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-container>
+          <ng-template #noTracker>
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+              <div class="t">No clients yet</div>
+              <div>Add your first client to start tracking sessions.</div>
+            </div>
+          </ng-template>
+        </div>
+      </ng-container>
+
+      <!-- ========== SETTINGS VIEW ========== -->
+      <ng-container *ngIf="currentView === 'settings'">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Profile</div>
+              <h2>Coach & Business</h2>
+            </div>
+          </div>
+          <div class="field">
+            <label>Coach name</label>
+            <input class="input" [(ngModel)]="settings.coachName" title="jk">
+          </div>
+          <div class="field">
+            <label>Business name</label>
+            <input class="input" [(ngModel)]="settings.businessName" title="jk">
+          </div>
+          <div class="field">
+            <label>Coach phone (shown to you only)</label>
+            <input class="input" [(ngModel)]="settings.coachPhone" placeholder="+971 50 000 0000">
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Reminders</div>
+              <h2>SMS Reminder Timing</h2>
+            </div>
+          </div>
+          <div class="banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+            <div>No website — this one included — can silently text a client from a phone or browser; iOS and Android both block that to stop spam. What this app <em>can</em> do: watch the calendar and surface every client who needs a reminder, with the message already written, so sending is one tap instead of typing from scratch.</div>
+          </div>
+          <div class="field">
+            <label>Remind clients this many hours before their session</label>
+            <input class="input" type="number" min="1" max="48" [(ngModel)]="settings.leadHours" title="jk">
+            <div class="field-hint">Example: set to 2 and a client with a 6pm session will appear in your Today reminders from 4pm onward.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <button class="btn btn-primary" (click)="saveSettings()">Save settings.</button>
+        </div>
+
+        <div class="panel" style="border-color:#e0b8ac;">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow" style="color:var(--danger);">Danger zone</div>
+              <h2>Reset data</h2>
+            </div>
+          </div>
+          <div class="sr-sub" style="margin-bottom:12px;">Permanently deletes every client and session. This cannot be undone.</div>
+          <button class="btn btn-danger" (click)="clearAllData()">Clear all clients & sessions.</button>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========== BOOKING MODAL ========== -->
+<div class="overlay" [class.show]="showBookModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>{{ bookModalTitle }}</h3>
+      <button class="close-x" (click)="closeModal('book')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.
+      .</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Client</label>
+        <div class="seg">
+          <div [class.on]="clientMode === 'existing'" (click)="setClientMode('existing')">Existing client</div>
+          <div [class.on]="clientMode === 'new'" (click)="setClientMode('new')">New client</div>
+        </div>
+      </div>
+      <div class="field" *ngIf="clientMode === 'existing'">
+        <select class="input" [(ngModel)]="bkClientId" title="jk">
+          <option value="" disabled>Select client</option>
+          <option *ngFor="let c of clients | slice:0" [value]="c.id">{{ c.name }} — {{ remainingCount(c) }} left</option>
+        </select>
+      </div>
+      <div *ngIf="clientMode === 'new'">
+        <div class="field">
+          <label>Full name</label>
+          <input class="input" [(ngModel)]="bkNewName" placeholder="e.g. Sana Abbas Syed">
+        </div>
+        <div class="field">
+          <label>Phone number (with country code)</label>
+          <input class="input" [(ngModel)]="bkNewPhone" placeholder="+971 50 123 4567">
+        </div>
+        <div class="field">
+          <label>Package</label>
+          <div class="pkg-option" *ngFor="let p of packages"
+               [class.sel]="selectedPkgKey === p.key"
+               (click)="selectedPkgKey = p.key">
+            <div>
+              <div class="pn">{{ p.label }}</div>
+              <div style="font-size:11px;color:var(--muted);">{{ p.sessions }} sessions</div>
+            </div>
+            <div class="pp">AED {{ p.per }}/session</div>
+          </div>
+        </div>
+      </div>
+      <div class="field field-row">
+        <div>
+          <label>Date</label>
+          <input class="input" type="date" [(ngModel)]="bkDate" title="jk">
+        </div>
+        <div>
+          <label>Time</label>
+          <input class="input" type="time" [(ngModel)]="bkTime" title="jk">
+        </div>
+      </div>
+      <div class="field">
+        <label>Note (optional)</label>
+        <input class="input" [(ngModel)]="bkNote" placeholder="e.g. focus on lower body">
+      </div>
+      <div class="field-hint">This session is added to the calendar automatically the moment you confirm — nothing else to do.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="submitBooking()">Confirm booking.</button>
+      <button class="btn btn-ghost" (click)="closeModal('book')">Cancel.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SESSION DETAIL MODAL ========== -->
+<div class="overlay" [class.show]="showSessModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Session Details</h3>
+      <button class="close-x" (click)="closeModal('sess')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.
+      .</button>
+    </div>
+    <div class="modal-body" *ngIf="activeSession as s">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;" *ngIf="clientById(s.clientId) as cl">
+        <div class="avatar">{{ initials(cl.name) }}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">{{ cl.name }}</div>
+          <div class="sr-sub">{{ cl.phone }}</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Date</label>
+          <input class="input" type="date" [(ngModel)]="edDate" title="jk">
+        </div>
+        <div class="field">
+          <label>Time</label>
+          <input class="input" type="time" [(ngModel)]="edTime" title="jk">
+        </div>
+      </div>
+      <div class="field">
+        <label>Note</label>
+        <input class="input" [(ngModel)]="edNote" title="jk">
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <div class="seg">
+          <div [class.on]="edStatus === 'scheduled'" (click)="edStatus = 'scheduled'">Scheduled</div>
+          <div [class.on]="edStatus === 'completed'" (click)="edStatus = 'completed'">Completed</div>
+          <div [class.on]="edStatus === 'cancelled'" (click)="edStatus = 'cancelled'">Cancelled</div>
+        </div>
+      </div>
+      <div class="icon-row" style="margin-top:6px;" *ngIf="clientById(s.clientId) as cl">
+        <a [href]="telLink(cl.phone)" [innerHTML]="icoPhone"></a>
+        <a [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))" (click)="markReminded(s.id)" [innerHTML]="icoSMS"></a>
+      </div>
+      <div class="field-hint" *ngIf="s.remindedAt">
+        Reminder already sent {{ s.remindedAt | date:'MMM d, h:mm a' }}
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="saveSessionEdit()">Save changes.</button>
+      <button class="btn btn-danger" (click)="deleteSession()">Delete.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CLIENT DETAIL MODAL ========== -->
+<div class="overlay" [class.show]="showClientModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <h3>{{ activeClient?.name || 'Client' }}</h3>
+      <button class="close-x" (click)="closeModal('client')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      .</button>
+    </div>
+    <div class="modal-body" *ngIf="activeClient as cl">
+      <div class="icon-row" style="margin-bottom:16px;">
+        <a [href]="telLink(cl.phone)" class="btn btn-ghost btn-sm" style="width:auto;" [innerHTML]="icoPhone + ' Call'"></a>
+        <a [href]="smsLink(cl.phone)" class="btn btn-ghost btn-sm" style="width:auto;" [innerHTML]="icoSMS + ' SMS'"></a>
+      </div>
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
+        <div class="stat-card" style="padding:12px 14px;">
+          <div class="label">Package</div>
+          <div style="font-weight:700;font-size:14px;margin-top:4px;">{{ cl.packageLabel || 'Custom' }}</div>
+        </div>
+        <div class="stat-card" style="padding:12px 14px;">
+          <div class="label">Used</div>
+          <div class="value" style="font-size:22px;">{{ completedCount(cl.id) }}/{{ cl.totalSessions }}</div>
+        </div>
+        <div class="stat-card" style="padding:12px 14px;">
+          <div class="label">Remaining</div>
+          <div class="value" style="font-size:22px;color:var(--rust);">{{ remainingCount(cl) }}</div>
+        </div>
+      </div>
+      <div class="field" *ngIf="cl.notes">
+        <label>Notes</label>
+        <div style="font-size:13.5px;color:var(--ink-soft);">{{ cl.notes }}</div>
+      </div>
+      <div class="field">
+        <label>Session History ({{ clientHistory.length }})</label>
+        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--line-soft);border-radius:10px;">
+          <ng-container *ngIf="clientHistory.length; else noHist">
+            <div class="session-row" *ngFor="let s of clientHistory"
+                 (click)="closeModal('client'); openSessionDetail(s.id)">
+              <div class="time-chip">{{ s.date.slice(5) }}</div>
+              <span class="status-dot" [ngClass]="s.status"></span>
+              <div style="flex:1;">
+                <div class="sr-sub">{{ fmtTime12(s.time) }} · {{ capitalize(s.status) }}</div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noHist>
+            <div style="padding:16px;text-align:center;color:var(--muted);font-size:13px;">No sessions yet</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" *ngIf="activeClient">
+      <button class="btn btn-primary" (click)="closeModal('client'); openBookingModal({clientId: activeClient.id})">Book session.</button>
+      <button class="btn btn-ghost" (click)="openRenewInline()">Add sessions.</button>
+      <button class="btn btn-danger" (click)="deleteClient()">Delete client.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== NEW CLIENT MODAL ========== -->
+<div class="overlay" [class.show]="showNewClientModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>New Client</h3>
+      <button class="close-x" (click)="closeModal('newClient')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.
+      .</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Full name</label>
+        <input class="input" [(ngModel)]="ncName" placeholder="e.g. Sana Abbas Syed">
+      </div>
+      <div class="field">
+        <label>Phone number (with country code)</label>
+        <input class="input" [(ngModel)]="ncPhone" placeholder="+971 50 123 4567">
+      </div>
+      <div class="field">
+        <label>Package</label>
+        <div class="pkg-option" *ngFor="let p of packages"
+             [class.sel]="selectedPkgKeyNC === p.key"
+             (click)="selectedPkgKeyNC = p.key">
+          <div>
+            <div class="pn">{{ p.label }}</div>
+            <div style="font-size:11px;color:var(--muted);">{{ p.sessions }} sessions</div>
+          </div>
+          <div class="pp">AED {{ p.per }}/session</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Note (optional)</label>
+        <input class="input" [(ngModel)]="ncNote" placeholder="goals, medical notes...">
+      </div>
+      <div class="field-hint">Once added, book their first session and it will show on the calendar automatically.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" (click)="submitNewClient()">Add client.</button>
+      <button class="btn btn-ghost" (click)="closeModal('newClient')">Cancel.</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" [class.show]="toastVisible">{{ toastMessage }}</div>
