@@ -231,7 +231,7 @@ a {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: #cbb996;
+  color: #79591d;
   transition: background 0.15s, color 0.15s;
 }
 
@@ -244,12 +244,12 @@ a {
 
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.06);
-  color: #f6ecd8;
+  color: #bb9c46;
 }
 
 .nav-item.active {
   background: var(--rust);
-  color: #fff;
+  color: #000000;
 }
 
 .nav-item.active svg {
@@ -350,7 +350,7 @@ a {
 
 .btn-primary {
   background: var(--rust);
-  color: #fff;
+  color: #413a3a;
 }
 
 .btn-primary:hover {

@@ -1,14 +1,29 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection,
-  DocumentChangeAction
-} from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Subscription } from 'rxjs';
-import firebase from 'firebase/compat/app';
+
+import {
+  Auth,
+  authState,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  User
+} from '@angular/fire/auth';
+
+import {
+  Firestore,
+  collection,
+  collectionData,
+  doc,
+  docData,
+  setDoc,
+  deleteDoc,
+  writeBatch,
+  CollectionReference,
+  DocumentReference
+} from '@angular/fire/firestore';
 
 /* ========== INTERFACES ========== */
 export interface Package {
@@ -34,8 +49,8 @@ export interface Client {
 export interface Session {
   id: string;
   clientId: string;
-  date: string;       // YYYY-MM-DD
-  time: string;       // HH:mm
+  date: string;
+  time: string;
   status: 'scheduled' | 'completed' | 'cancelled';
   note: string;
   remindedAt: string | null;
@@ -59,6 +74,9 @@ export interface Settings {
 })
 export class AthleticaComponent implements OnInit, OnDestroy {
 
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+
   /* ---- Constants ---- */
   readonly packages: Package[] = [
     { key: 'consistency',    label: 'Consistency',    sessions: 8,   per: 270, total: 2160 },
@@ -70,8 +88,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     { key: 'platinum_elite', label: 'Platinum Elite', sessions: 100, per: 190, total: 19000 }
   ];
 
-  readonly hours = Array.from({ length: 16 }, (_, i) => i + 6); // 6am – 9pm
-  readonly dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  readonly hours: number[] = Array.from({ length: 16 }, (_, i) => i + 6);
+  readonly dayNames: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
   readonly defaultSettings: Settings = {
     coachName: 'Aymen Othmani',
     businessName: 'Carthage Athletica',
@@ -80,17 +99,42 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   };
 
   readonly navItems = [
-    { id: 'today',    label: 'Today',           icon: 'M8 2v3M16 2v3M3.5 9h17M4.5 5h15A1.5 1.5 0 0 1 21 6.5v13A1.5 1.5 0 0 1 19.5 21h-15A1.5 1.5 0 0 1 3 19.5v-13A1.5 1.5 0 0 1 4.5 5z' },
-    { id: 'calendar', label: 'Calendar',        icon: 'M8 2v3M16 2v3M3.5 9h17M4.5 5h15A1.5 1.5 0 0 1 21 6.5v13A1.5 1.5 0 0 1 19.5 21h-15A1.5 1.5 0 0 1 3 19.5v-13A1.5 1.5 0 0 1 4.5 5z' },
-    { id: 'clients',  label: 'Clients',         icon: 'M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
-    { id: 'tracker',  label: 'Session Tracker', icon: 'M3 3v18h18M7 15l4-5 3 3 5-7' },
-    { id: 'settings', label: 'Settings',        icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z' }
+    {
+      id: 'today',
+      label: 'Today',
+      icon: 'M8 2v3M16 2v3M3.5 9h17M4.5 5h15A1.5 1.5 0 0 1 21 6.5v13A1.5 1.5 0 0 1 19.5 21h-15A1.5 1.5 0 0 1 3 19.5v-13A1.5 1.5 0 0 1 4.5 5z'
+    },
+    {
+      id: 'calendar',
+      label: 'Calendar',
+      icon: 'M8 2v3M16 2v3M3.5 9h17M4.5 5h15A1.5 1.5 0 0 1 21 6.5v13A1.5 1.5 0 0 1 19.5 21h-15A1.5 1.5 0 0 1 3 19.5v-13A1.5 1.5 0 0 1 4.5 5z'
+    },
+    {
+      id: 'clients',
+      label: 'Clients',
+      icon: 'M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'
+    },
+    {
+      id: 'tracker',
+      label: 'Session Tracker',
+      icon: 'M3 3v18h18M7 15l4-5 3 3 5-7'
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'
+    }
   ];
 
   /* ---- State ---- */
   clients: Client[] = [];
   sessions: Session[] = [];
-  settings: Settings = { ...this.defaultSettings };
+  settings: Settings = {
+    coachName: 'Aymen Othmani',
+    businessName: 'Carthage Athletica',
+    coachPhone: '',
+    leadHours: 2
+  };
 
   isAuthenticated = false;
   authExists = false;
@@ -110,10 +154,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   // Calendar
   calendarMode: 'day' | 'week' | 'month' = 'week';
-  weekStart = this.startOfWeek(new Date());
-  selectedDay = new Date();
-  monthCursor = new Date();
-  today = new Date();
+  weekStart: Date = this.startOfWeek(new Date());
+  selectedDay: Date = new Date();
+  monthCursor: Date = new Date();
+  today: Date = new Date();
 
   // Booking modal
   showBookModal = false;
@@ -147,86 +191,76 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   ncNote = '';
   selectedPkgKeyNC = 'elite';
 
-  // Clients search
+  // Search
   clientSearch = '';
   filteredClients: Client[] = [];
 
   // Toast
   toastVisible = false;
   toastMessage = '';
-  private toastTimer: any;
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // Firebase
-  private clientsCol!: AngularFirestoreCollection<Client>;
-  private sessionsCol!: AngularFirestoreCollection<Session>;
-  private settingsDoc: any;
+  // Firebase refs
+  private clientsCol!: CollectionReference;
+  private sessionsCol!: CollectionReference;
+  private settingsRef!: DocumentReference;
   private subs: Subscription[] = [];
+  private dataLoaded = false;
 
-  // Icons (SVG strings for [innerHTML])
+  // Icons
   icoPhone = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
   icoSMS = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
   icoChevronLeft = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>`;
   icoChevronRight = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>`;
 
-  Math = Math; // expose for template
-
-  constructor(
-    private afs: AngularFirestore,
-    private afAuth: AngularFireAuth
-  ) {}
+  Math = Math;
 
   /* ========== LIFECYCLE ========== */
   ngOnInit(): void {
-    this.clientsCol = this.afs.collection<Client>('clients');
-    this.sessionsCol = this.afs.collection<Session>('sessions');
-    this.settingsDoc = this.afs.doc('settings/coach');
+    this.clientsCol = collection(this.firestore, 'clients');
+    this.sessionsCol = collection(this.firestore, 'sessions');
+    this.settingsRef = doc(this.firestore, 'settings/coach');
 
-    // Auth state
     this.subs.push(
-      this.afAuth.authState.subscribe(user => {
+      authState(this.auth).subscribe((user: User | null) => {
         this.isAuthenticated = !!user;
-        this.authExists = !!user; // simple check – in real app you may query a coach profile
         if (user) {
-          this.loadData();
+          this.authExists = true;
+          if (!this.dataLoaded) {
+            this.loadData();
+            this.dataLoaded = true;
+          }
         }
       })
     );
-
-    // Check if any auth user exists (for first-run setup UI)
-    // For simplicity we rely on Firebase Auth – first user creates the account
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
   }
 
-  /* ========== FIREBASE DATA ========== */
+  /* ========== FIREBASE ========== */
   private loadData(): void {
     this.subs.push(
-      this.clientsCol.snapshotChanges().subscribe(actions => {
-        this.clients = actions.map(a => {
-          const data = a.payload.doc.data() as Client;
-          const id = a.payload.doc.id;
-          return { ...data, id };
-        });
+      collectionData(this.clientsCol, { idField: 'id' }).subscribe((data) => {
+        this.clients = data as Client[];
         this.filterClients();
       })
     );
 
     this.subs.push(
-      this.sessionsCol.snapshotChanges().subscribe(actions => {
-        this.sessions = actions.map(a => {
-          const data = a.payload.doc.data() as Session;
-          const id = a.payload.doc.id;
-          return { ...data, id };
-        });
+      collectionData(this.sessionsCol, { idField: 'id' }).subscribe((data) => {
+        this.sessions = data as Session[];
       })
     );
 
     this.subs.push(
-      this.settingsDoc.valueChanges().subscribe((s: Settings | undefined) => {
+      docData(this.settingsRef).subscribe((s) => {
         if (s) {
-          this.settings = { ...this.defaultSettings, ...s };
+          this.settings = { ...this.defaultSettings, ...(s as Settings) };
         }
       })
     );
@@ -234,22 +268,20 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   private async saveClient(client: Client): Promise<void> {
     const { id, ...data } = client;
-    // include id in the stored data to satisfy the Client type
-    await this.clientsCol.doc(id).set({ ...data, id });
+    await setDoc(doc(this.firestore, 'clients', id), data);
   }
 
   private async saveSession(session: Session): Promise<void> {
     const { id, ...data } = session;
-    // include id in the stored data to satisfy the Session type
-    await this.sessionsCol.doc(id).set({ ...data, id });
+    await setDoc(doc(this.firestore, 'sessions', id), data);
   }
 
   private async deleteClientDoc(id: string): Promise<void> {
-    await this.clientsCol.doc(id).delete();
+    await deleteDoc(doc(this.firestore, 'clients', id));
   }
 
   private async deleteSessionDoc(id: string): Promise<void> {
-    await this.sessionsCol.doc(id).delete();
+    await deleteDoc(doc(this.firestore, 'sessions', id));
   }
 
   /* ========== HELPERS ========== */
@@ -299,7 +331,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   fmtTime12(t: string): string {
-    const [h, m] = t.split(':').map(Number);
+    const parts = t.split(':').map(Number);
+    const h = parts[0];
+    const m = parts[1] || 0;
     const ampm = h < 12 ? 'AM' : 'PM';
     let hh = h % 12;
     if (hh === 0) hh = 12;
@@ -307,7 +341,12 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   initials(name: string): string {
-    return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || '').join('');
+    return name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(w => (w[0] ? w[0].toUpperCase() : ''))
+      .join('');
   }
 
   cleanPhone(p: string): string {
@@ -340,6 +379,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   capitalize(s: string): string {
+    if (!s) return '';
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
 
@@ -352,12 +392,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   progressPct(client: Client): number {
-    return client.totalSessions
-      ? Math.round((this.completedCount(client.id) / client.totalSessions) * 100)
-      : 0;
+    if (!client.totalSessions) return 0;
+    return Math.round((this.completedCount(client.id) / client.totalSessions) * 100);
   }
 
-  pkgLabelSafe(cl: Client | undefined): string {
+  pkgLabelSafe(cl: Client | undefined | null): string {
     return cl?.packageLabel || 'Custom package';
   }
 
@@ -370,10 +409,16 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   reminderMsg(cl: Client, s: Session): string {
     const first = cl.name.trim().split(' ')[0];
-    const when = s.date === this.todayStr()
-      ? 'today'
-      : new Date(s.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    return `Hi ${first}, this is a reminder from Coach ${this.settings.coachName.split(' ')[0]} (Carthage Athletica) — your training session is ${when} at ${this.fmtTime12(s.time)}. See you there!`;
+    const when =
+      s.date === this.todayStr()
+        ? 'today'
+        : new Date(s.date + 'T00:00:00').toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+          });
+    const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
+    return `Hi ${first}, this is a reminder from Coach ${coachFirst} (Carthage Athletica) — your training session is ${when} at ${this.fmtTime12(s.time)}. See you there!`;
   }
 
   sessionDateTime(s: Session): Date {
@@ -402,7 +447,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   lowRemainingClients(): Client[] {
     return this.clients
-      .filter(c => this.remainingCount(c) > 0 && this.remainingCount(c) <= 3)
+      .filter(c => {
+        const rem = this.remainingCount(c);
+        return rem > 0 && rem <= 3;
+      })
       .sort((a, b) => this.remainingCount(a) - this.remainingCount(b));
   }
 
@@ -434,10 +482,17 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.currentView = v;
     this.sidebarOpen = false;
     const titles: Record<string, [string, string]> = {
-      today:    ['Today', new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })],
+      today: [
+        'Today',
+        new Date().toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric'
+        })
+      ],
       calendar: ['Calendar', 'Monday through Sunday, every session'],
-      clients:  ['Clients', 'Every client, one place'],
-      tracker:  ['Session Tracker', 'Who has sessions left to use'],
+      clients: ['Clients', 'Every client, one place'],
+      tracker: ['Session Tracker', 'Who has sessions left to use'],
       settings: ['Settings', 'Coach details & reminder timing']
     };
     this.pageTitle = titles[v][0];
@@ -448,14 +503,16 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
-  /* ========== CALENDAR HELPERS ========== */
+  /* ========== CALENDAR ========== */
   get weekDays(): Date[] {
     return Array.from({ length: 7 }, (_, i) => this.addDays(this.weekStart, i));
   }
 
   get weekRangeLabel(): string {
     const days = this.weekDays;
-    return `${days[0].toLocaleDateString('en-US', { month: 'short' })} ${days[0].getDate()} – ${days[6].toLocaleDateString('en-US', { month: 'short' })} ${days[6].getDate()}, ${days[6].getFullYear()}`;
+    const m0 = days[0].toLocaleDateString('en-US', { month: 'short' });
+    const m6 = days[6].toLocaleDateString('en-US', { month: 'short' });
+    return `${m0} ${days[0].getDate()} – ${m6} ${days[6].getDate()}, ${days[6].getFullYear()}`;
   }
 
   dayName(d: Date): string {
@@ -479,7 +536,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   get selectedDayLabel(): string {
-    return this.selectedDay.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    return this.selectedDay.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   shiftDay(n: number): void {
@@ -491,11 +552,24 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   get monthLabel(): string {
-    return this.monthCursor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return this.monthCursor.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    });
   }
 
-  get monthCells(): { day: number; dateStr: string; inMonth: boolean; isToday: boolean; count: number }[] {
-    const firstOfMonth = new Date(this.monthCursor.getFullYear(), this.monthCursor.getMonth(), 1);
+  get monthCells(): {
+    day: number;
+    dateStr: string;
+    inMonth: boolean;
+    isToday: boolean;
+    count: number;
+  }[] {
+    const firstOfMonth = new Date(
+      this.monthCursor.getFullYear(),
+      this.monthCursor.getMonth(),
+      1
+    );
     const gridStart = this.startOfWeek(firstOfMonth);
     const cells = [];
     for (let i = 0; i < 42; i++) {
@@ -503,14 +577,20 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       const dateStr = this.fmtDate(d);
       const inMonth = d.getMonth() === this.monthCursor.getMonth();
       const isToday = this.isSameDate(d, new Date());
-      const count = this.sessions.filter(s => s.date === dateStr && s.status !== 'cancelled').length;
+      const count = this.sessions.filter(
+        s => s.date === dateStr && s.status !== 'cancelled'
+      ).length;
       cells.push({ day: d.getDate(), dateStr, inMonth, isToday, count });
     }
     return cells;
   }
 
   shiftMonth(n: number): void {
-    this.monthCursor = new Date(this.monthCursor.getFullYear(), this.monthCursor.getMonth() + n, 1);
+    this.monthCursor = new Date(
+      this.monthCursor.getFullYear(),
+      this.monthCursor.getMonth() + n,
+      1
+    );
   }
 
   goTodayMonth(): void {
@@ -530,7 +610,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   filterClients(): void {
     const q = (this.clientSearch || '').toLowerCase();
     this.filteredClients = this.clients
-      .filter(c => c.name.toLowerCase().includes(q) || (c.phone || '').includes(q))
+      .filter(
+        c =>
+          c.name.toLowerCase().includes(q) || (c.phone || '').includes(q)
+      )
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -549,7 +632,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     if (which === 'newClient') this.showNewClientModal = false;
   }
 
-  openBookingModal(opts: { clientId?: string; date?: string; time?: string } = {}): void {
+  openBookingModal(
+    opts: { clientId?: string; date?: string; time?: string } = {}
+  ): void {
     this.bookModalTitle = 'Book a Session';
     this.bkClientId = opts.clientId || '';
     this.bkDate = opts.date || this.fmtDate(new Date());
@@ -571,6 +656,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       this.showToast('Pick a date and time');
       return;
     }
+
     let clientId = this.bkClientId;
 
     if (this.clientMode === 'new') {
@@ -578,7 +664,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
         this.showToast('Enter the client name and phone');
         return;
       }
-      const pkg = this.pkgByKey(this.selectedPkgKey)!;
+      const pkg = this.pkgByKey(this.selectedPkgKey);
+      if (!pkg) {
+        this.showToast('Invalid package');
+        return;
+      }
       const newClient: Client = {
         id: this.uid(),
         name: this.bkNewName.trim(),
@@ -625,7 +715,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       this.showToast('Enter the client name and phone');
       return;
     }
-    const pkg = this.pkgByKey(this.selectedPkgKeyNC)!;
+    const pkg = this.pkgByKey(this.selectedPkgKeyNC);
+    if (!pkg) {
+      this.showToast('Invalid package');
+      return;
+    }
     const client: Client = {
       id: this.uid(),
       name: this.ncName.trim(),
@@ -686,14 +780,20 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   async openRenewInline(): Promise<void> {
     if (!this.activeClient) return;
-    const extra = prompt(`How many extra sessions to add for ${this.activeClient.name}? (current total: ${this.activeClient.totalSessions})`, '10');
+    const extra = prompt(
+      `How many extra sessions to add for ${this.activeClient.name}? (current total: ${this.activeClient.totalSessions})`,
+      '10'
+    );
     if (extra === null) return;
     const n = parseInt(extra, 10);
     if (!n || n <= 0) {
       this.showToast('Enter a valid number');
       return;
     }
-    const updated = { ...this.activeClient, totalSessions: this.activeClient.totalSessions + n };
+    const updated: Client = {
+      ...this.activeClient,
+      totalSessions: this.activeClient.totalSessions + n
+    };
     await this.saveClient(updated);
     this.activeClient = updated;
     this.showToast(`${n} sessions added`);
@@ -701,12 +801,19 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   async deleteClient(): Promise<void> {
     if (!this.activeClient) return;
-    if (!confirm('Delete this client and all their session history? This cannot be undone.')) return;
+    if (
+      !confirm(
+        'Delete this client and all their session history? This cannot be undone.'
+      )
+    ) {
+      return;
+    }
+
     const id = this.activeClient.id;
-    // delete related sessions
     const related = this.sessions.filter(s => s.clientId === id);
     await Promise.all(related.map(s => this.deleteSessionDoc(s.id)));
     await this.deleteClientDoc(id);
+
     this.closeModal('client');
     this.showToast('Client deleted');
   }
@@ -714,32 +821,50 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   async markReminded(id: string): Promise<void> {
     const s = this.sessions.find(x => x.id === id);
     if (!s) return;
-    const updated = { ...s, remindedAt: new Date().toISOString() };
+    const updated: Session = {
+      ...s,
+      remindedAt: new Date().toISOString()
+    };
     await this.saveSession(updated);
   }
 
   /* ========== SETTINGS ========== */
   async saveSettings(): Promise<void> {
-    const payload = {
-      coachName: this.settings.coachName.trim() || this.defaultSettings.coachName,
-      businessName: this.settings.businessName.trim() || this.defaultSettings.businessName,
+    const payload: Settings = {
+      coachName:
+        this.settings.coachName.trim() || this.defaultSettings.coachName,
+      businessName:
+        this.settings.businessName.trim() || this.defaultSettings.businessName,
       coachPhone: this.settings.coachPhone.trim(),
-      leadHours: (this.settings.leadHours > 0 && this.settings.leadHours <= 48)
-        ? this.settings.leadHours
-        : this.defaultSettings.leadHours
+      leadHours:
+        this.settings.leadHours > 0 && this.settings.leadHours <= 48
+          ? this.settings.leadHours
+          : this.defaultSettings.leadHours
     };
-    await this.settingsDoc.set(payload, { merge: true });
+    await setDoc(this.settingsRef, payload, { merge: true });
     this.settings = { ...this.settings, ...payload };
     this.showToast('Settings saved');
   }
 
   async clearAllData(): Promise<void> {
-    if (!confirm('This deletes ALL clients and sessions permanently. Continue?')) return;
-    if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
-    const batch = this.afs.firestore.batch();
-    this.clients.forEach(c => batch.delete(this.clientsCol.doc(c.id).ref));
-    this.sessions.forEach(s => batch.delete(this.sessionsCol.doc(s.id).ref));
+    if (
+      !confirm('This deletes ALL clients and sessions permanently. Continue?')
+    ) {
+      return;
+    }
+    if (!confirm('Are you absolutely sure? This cannot be undone.')) {
+      return;
+    }
+
+    const batch = writeBatch(this.firestore);
+    this.clients.forEach(c =>
+      batch.delete(doc(this.firestore, 'clients', c.id))
+    );
+    this.sessions.forEach(s =>
+      batch.delete(doc(this.firestore, 'sessions', s.id))
+    );
     await batch.commit();
+
     this.showToast('All data cleared');
     this.switchView('today');
   }
@@ -749,6 +874,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.setupError = '';
     const email = this.setupEmail.trim().toLowerCase();
     const pass = this.setupPass;
+
     if (!email || !email.includes('@')) {
       this.setupError = 'Enter a valid email.';
       return;
@@ -761,11 +887,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       this.setupError = 'Passwords do not match.';
       return;
     }
+
     try {
-      await this.afAuth.createUserWithEmailAndPassword(email, pass);
-      // isAuthenticated will be set by the authState subscription
+      await createUserWithEmailAndPassword(this.auth, email, pass);
     } catch (e: any) {
-      this.setupError = e.message || 'Could not create account.';
+      this.setupError = e?.message || 'Could not create account.';
     }
   }
 
@@ -773,34 +899,42 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.loginError = '';
     const email = this.loginEmail.trim().toLowerCase();
     const pass = this.loginPass;
+
     try {
-      await this.afAuth.signInWithEmailAndPassword(email, pass);
+      await signInWithEmailAndPassword(this.auth, email, pass);
       this.loginEmail = '';
       this.loginPass = '';
-    } catch (e: any) {
+    } catch {
       this.loginError = 'Incorrect email or password.';
     }
   }
 
   async lockApp(): Promise<void> {
     this.sidebarOpen = false;
-    await this.afAuth.signOut();
+    await signOut(this.auth);
   }
 
   async resetAuth(): Promise<void> {
-    if (!confirm('This clears your saved login so you can set a new email & password. Your clients and sessions are not affected. Continue?')) return;
-    // In Firebase the user must be signed in to delete the account.
-    // For a true “reset” you would normally send a password-reset email.
-    // Here we just sign out and let the user create a new account if needed.
-    await this.afAuth.signOut();
-    this.authExists = false; // force setup UI
+    if (
+      !confirm(
+        'This will sign you out so you can create a new login. Your clients and sessions stay safe. Continue?'
+      )
+    ) {
+      return;
+    }
+    await signOut(this.auth);
+    this.authExists = false;
   }
 
   /* ========== TOAST ========== */
   showToast(msg: string): void {
     this.toastMessage = msg;
     this.toastVisible = true;
-    clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => this.toastVisible = false, 2600);
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    this.toastTimer = setTimeout(() => {
+      this.toastVisible = false;
+    }, 2600);
   }
 }
