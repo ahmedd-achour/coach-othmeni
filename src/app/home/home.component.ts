@@ -173,7 +173,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ];
 
   pricingTiers: PricingTier[] = [
-    {
+   /* {
       name: 'Standard Coaching',
       price: 150,
       features: [
@@ -187,7 +187,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       isPopular: false,
       ctaText: 'Apply For Standard Pack',
       stripePriceId: '1903957', // 👈 Remplace par ton ID Stripe mensuel
-      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
+      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'
+     }, */
     {
       name: 'Premium Coaching',
       price: 200,
@@ -198,13 +199,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
         'swappable meals and a ready-to-use grocery list',
         'weekly check-ins to track your progress',
         'progress photo review by your coach',
-        'direct whatsapp access to your coach',
+        'direct messaging support with your coach',
       ],
       isPopular: true,
       ctaText: 'Apply For Premium Pack',
       stripePriceId: '1903965', // 👈 Remplace par ton ID Stripe mensuel
       stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
-    {
+   /* {
       name: 'VIP Elite Coaching',
       price: 250,
       features: [
@@ -220,7 +221,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       isPopular: false,
       ctaText: 'Apply For VIP Elite Pack',
       stripePriceId: '1903973', // 👈 Remplace par ton ID Stripe mensuel
-      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    }
+      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    }*/
   ];
 
   isPopupVisible = false;
@@ -469,7 +470,7 @@ openApp(): void {
 });
 
 
-window.location.href = "https://wa.me/971526164854?text=can%20i%20purshase%20this%20pdf%20item%20found%20in%20your%20website%20%3F"
+window.location.href = "https://wa.me/971526164854"
 
 
       } else {

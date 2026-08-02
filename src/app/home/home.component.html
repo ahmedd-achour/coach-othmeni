@@ -25,7 +25,7 @@
       <h1>THE <span class="hl">#1</span> WEIGHT LOSS<br>COACH IN DUBAI.</h1>
       <p class="sub">+15 years of experience. 1000+ real transformations. One coach who builds a plan around YOU not the other way around.</p>
       <div class="hero-ctas">
-        <button (click)="scrollToSection('offers')" class="btn btn-outline">See Offers</button>
+        <button (click)="scrollToSection('offers')" class="btn btn-outline">See Offer</button>
         <button (click)="openApp()" class="btn btn-primary">See Me On DEWS LIFE</button>
       </div>
       <a routerLink="/admin" class="link-quiet">▦ Go to Dashboard</a>
@@ -55,12 +55,13 @@
   </div>
 </div>
 
-<section id="offers">
+<section id="offers" class="offers">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">Pricing</div>
       <h2>CHOOSE YOUR PACK. START YOUR<br>TRANSFORMATION.</h2>
     </div>
+
     <div class="pricing-grid">
       <div *ngFor="let tier of pricingTiers" class="plan reveal" [class.popular]="tier.isPopular">
         <div *ngIf="tier.isPopular" class="most-popular">Most Popular</div>
@@ -98,6 +99,8 @@
   </div>
 </section>
 
+<!--
+
 <section id="digital-products">
   <div class="wrap">
     <div class="section-head reveal">
@@ -118,6 +121,8 @@
     </a>
   </div>
 </section>
+
+-->
 
 <section id="method">
   <div class="wrap">
