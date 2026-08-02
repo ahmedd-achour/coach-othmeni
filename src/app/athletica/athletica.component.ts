@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription, firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import {
   Auth,
@@ -26,7 +26,6 @@ import {
   CollectionReference,
   DocumentReference
 } from '@angular/fire/firestore';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 /* ========== INTERFACES ========== */
 export interface Package {
@@ -85,8 +84,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   private firestore = inject(Firestore);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private sanitizer = inject(DomSanitizer);
 
-  /* ---- Constants & Token ---- */
+  /* ---- Constants ---- */
   readonly FIREBASE_SMS_JETON = 'AVweKohsMBhkVyLAk_zLvnAv09I-gT-SemKtUSjcyAL2J-1ZexLKMJh7-FbZDfclZV7qo35IKF2skkH5zu4JkMkSKzLk31moFHYWJVWrNv04ZhsI_5kPy_2po25P3_pUfc8V8LKK5agWiTEkNXqK87Y5';
 
   readonly packages: Package[] = [
@@ -102,7 +102,15 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   readonly hours: number[] = Array.from({ length: 16 }, (_, i) => i + 6);
   readonly dayNames: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-
+  readonly defaultSettings: Settings = {
+    coachName: 'Aymen Othmani',
+    businessName: 'Carthage Athletica',
+    coachPhone: '',
+    leadHours: 2,
+    smsMode: 'firebase',
+    brevoApiKey: '',
+    brevoSenderEmail: ''
+  };
 
   readonly navItems = [
     {
@@ -135,7 +143,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   /* ---- State ---- */
   clients: Client[] = [];
   sessions: Session[] = [];
-  settings = environment.apiConfig ;
+  settings: Settings = { ...this.defaultSettings };
 
   isAuthenticated = false;
   authExists = false;
@@ -218,28 +226,28 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   private settingsRef!: DocumentReference;
   private subs: Subscription[] = [];
   private dataLoaded = false;
-private sanitizer = inject(DomSanitizer);
-  // Icons
-// ========== SAFE ICONS ==========
-icoPhone: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`
-);
 
-icoSMS: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
-);
+  // Safe icons
+  icoPhone: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`
+  );
 
-icoEmail: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`
-);
+  icoSMS: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
+  );
 
-icoChevronLeft: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>`
-);
+  icoEmail: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`
+  );
 
-icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>`
-);
+  icoChevronLeft: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>`
+  );
+
+  icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>`
+  );
+
   Math = Math;
 
   /* ========== LIFECYCLE ========== */
@@ -271,6 +279,7 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
 
   /* ========== FIREBASE ========== */
   private loadData(): void {
+    // Clients
     this.subs.push(
       collectionData(this.clientsCol, { idField: 'id' }).subscribe((data) => {
         this.clients = data as Client[];
@@ -279,6 +288,7 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
       })
     );
 
+    // Sessions
     this.subs.push(
       collectionData(this.sessionsCol, { idField: 'id' }).subscribe((data) => {
         this.sessions = data as Session[];
@@ -286,10 +296,11 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
       })
     );
 
+    // Settings (includes brevoApiKey + brevoSenderEmail from Firestore)
     this.subs.push(
       docData(this.settingsRef).subscribe((s) => {
         if (s) {
-          this.settings = { ...this.settings, ...(s as Settings) };
+          this.settings = { ...this.defaultSettings, ...(s as Settings) };
           this.cdr.markForCheck();
         }
       })
@@ -815,7 +826,6 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
       status: this.edStatus
     };
 
-    // Optimistic update
     const idx = this.sessions.findIndex(x => x.id === updated.id);
     if (idx !== -1) {
       this.sessions[idx] = updated;
@@ -899,16 +909,18 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
   /* ========== SETTINGS ========== */
   async saveSettings(): Promise<void> {
     const payload: Settings = {
-      coachName: this.settings.coachName.trim() || this.settings.coachName,
-      businessName: this.settings.businessName.trim() || this.settings.businessName,
+      coachName: this.settings.coachName.trim() || this.defaultSettings.coachName,
+      businessName: this.settings.businessName.trim() || this.defaultSettings.businessName,
       coachPhone: this.settings.coachPhone.trim(),
       leadHours:
         this.settings.leadHours > 0 && this.settings.leadHours <= 48
           ? this.settings.leadHours
-          : this.settings.leadHours,
-      brevoApiKey: (this.settings.brevoApiKey || '').trim() || this.settings.brevoApiKey,
-      brevoSenderEmail: (this.settings.brevoSenderEmail || '').trim() || this.settings.brevoSenderEmail
+          : this.defaultSettings.leadHours,
+      smsMode: this.settings.smsMode || 'firebase',
+      brevoApiKey: (this.settings.brevoApiKey || '').trim(),
+      brevoSenderEmail: (this.settings.brevoSenderEmail || '').trim()
     };
+
     await setDoc(this.settingsRef, payload, { merge: true });
     this.settings = { ...this.settings, ...payload };
     this.showToast('Settings saved');
@@ -992,7 +1004,7 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
     this.closeModal('newClient');
   }
 
-  /* ========== EMAIL SENDER (pure client-side Brevo – NO mailto fallback) ========== */
+  /* ========== EMAIL SENDER (reads key from Firestore settings only) ========== */
   async sendEmailReminder(session: Session, client: Client): Promise<void> {
     if (!client?.email?.trim()) {
       this.showToast('Client email address missing', 'error');
@@ -1227,7 +1239,7 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
     }
   }
 
-  /* ========== QUICK STATUS TOGGLE (optimistic + ChangeDetectorRef) ========== */
+  /* ========== QUICK STATUS TOGGLE ========== */
   async quickToggleStatus(s: Session, newStatus: Session['status'], event?: Event): Promise<void> {
     if (event) {
       event.stopPropagation();
@@ -1248,7 +1260,6 @@ icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
       await this.saveSession({ ...s, status: newStatus });
       this.showToast(`Session marked as ${newStatus}`, 'success');
     } catch (err) {
-      // Revert on error
       this.sessions[idx] = { ...this.sessions[idx], status: previousStatus };
       this.sessions = [...this.sessions];
       this.cdr.detectChanges();
