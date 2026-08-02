@@ -126,25 +126,18 @@
               <span class="rt">{{ fmtTime12(s.time) }}</span>
               <div style="flex:1;min-width:140px;">
                 <div style="font-weight:600;font-size:13.5px;">{{ cl.name }}</div>
-                <div class="sr-sub">{{ s.date === todayStr() ? 'Today' : s.date }} · {{ cl.phone }}</div>
+                <div class="sr-sub">{{ s.date === todayStr() ? 'Today' : s.date }} · {{ cl.phone }} <span *ngIf="cl.email">· {{ cl.email }}</span></div>
               </div>
-             <!--
-
               <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                 <button class="btn btn-primary btn-sm"
-                        [disabled]="sendingSmsId === s.id"
-                        (click)="sendSMSReminder(s, cl)">
-                  <span *ngIf="sendingSmsId === s.id">Sending...</span>
-                  <span *ngIf="sendingSmsId !== s.id">Send Firebase SMS</span>
+                        [disabled]="sendingEmailId === s.id"
+                        (click)="sendEmailReminder(s, cl)"
+                        title="Send Email Reminder via Brevo API">
+                  <i class="fa-solid fa-envelope" style="margin-right:5px;"></i>
+                  <span *ngIf="sendingEmailId === s.id">Sending Email...</span>
+                  <span *ngIf="sendingEmailId !== s.id">Send Email Reminder</span>
                 </button>
-                <a class="btn btn-ghost btn-sm"
-                   [href]="smsHrefWithBody(cl.phone, reminderMsg(cl, s))"
-                   (click)="markReminded(s.id)"
-                   title="Open device Messages app">Device SMS</a>
               </div>
-
-
-             -->
             </ng-container>
           </div>
         </div>
@@ -340,6 +333,9 @@
               <div class="client-main">
                 <div class="nm">{{ cl.name }}</div>
                 <div class="pk">{{ cl.packageLabel || 'Custom' }} · {{ remainingCount(cl) }} of {{ cl.totalSessions }} sessions left</div>
+                <div class="sr-sub" *ngIf="cl.email" style="font-size:12px;color:var(--muted);margin-top:2px;">
+                  <i class="fa-solid fa-envelope" style="margin-right:4px;font-size:11px;"></i> {{ cl.email }}
+                </div>
               </div>
               <div class="ring-wrap">
                 <svg viewBox="0 0 46 46">
@@ -351,11 +347,11 @@
                 </svg>
                 <div class="rn">{{ progressPct(cl) }}%</div>
               </div>
-             <!--
-               <div class="icon-row" (click)="$event.stopPropagation()">
-                <a [href]="telLink(cl.phone)" title="Call client" [innerHTML]="icoPhone"></a>
-                <button class="icon-btn-action" (click)="sendDirectClientSMS(cl)" title="Send Firebase SMS" [innerHTML]="icoSMS"></button>
-              </div>-->
+              <div class="icon-row" (click)="$event.stopPropagation()">
+                <button class="icon-btn-action" (click)="sendDirectClientEmail(cl)" title="Send Email via Brevo API">
+                  <i class="fa-solid fa-envelope"></i>
+                </button>
+              </div>
             </div>
           </ng-container>
           <ng-template #noClients>
@@ -434,7 +430,28 @@
           </div>
           <div class="field">
             <label>Coach phone (shown to you only)</label>
-            <input class="input" [(ngModel)]="settings.coachPhone" placeholder="+971 50 000 0000">
+            <input class="input" [(ngModel)]="settings.coachPhone" placeholder="+971 52 616 4854">
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Email Reminders (Brevo API)</div>
+              <h2>Brevo Email Settings</h2>
+            </div>
+          </div>
+          <div class="banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+            <div>Brevo API sends session reminders directly to client email addresses.</div>
+          </div>
+          <div class="field">
+            <label>Brevo API Key</label>
+            <input class="input" type="text" [(ngModel)]="settings.brevoApiKey" placeholder="xsmtpsib-...">
+          </div>
+          <div class="field">
+            <label>Sender Email</label>
+            <input class="input" type="email" [(ngModel)]="settings.brevoSenderEmail" placeholder="7bf3b8001@smtp-brevo.com7">
           </div>
         </div>
 
@@ -501,12 +518,16 @@
       </div>
       <div *ngIf="clientMode === 'new'">
         <div class="field">
-          <label>Full name</label>
+          <label>Full name <span style="color:var(--danger)">*</span></label>
           <input class="input" [(ngModel)]="bkNewName" placeholder="e.g. Sana Abbas Syed">
         </div>
         <div class="field">
-          <label>Phone number (with country code)</label>
+          <label>Phone number (with country code) <span style="color:var(--danger)">*</span></label>
           <input class="input" [(ngModel)]="bkNewPhone" placeholder="+971 50 123 4567">
+        </div>
+        <div class="field">
+          <label>Email address <span style="color:var(--danger)">*</span></label>
+          <input class="input" type="email" [(ngModel)]="bkNewEmail" placeholder="client@example.com" required>
         </div>
         <div class="field">
           <label>Package</label>
@@ -583,16 +604,13 @@
           <div [class.on]="edStatus === 'cancelled'" (click)="edStatus = 'cancelled'">Cancelled</div>
         </div>
       </div>
-     <!--
-       <div class="icon-row" style="margin-top:10px;" *ngIf="clientById(s.clientId) as cl">
-        <a [href]="telLink(cl.phone)" class="btn btn-ghost btn-sm" [innerHTML]="icoPhone + ' Call'"></a>
-        <button class="btn btn-primary btn-sm" (click)="sendSMSReminder(s, cl)" [disabled]="sendingSmsId === s.id">
-          <span *ngIf="sendingSmsId === s.id">Sending...</span>
-          <span *ngIf="sendingSmsId !== s.id">Send Firebase SMS</span>
+      <div class="icon-row" style="margin-top:10px;" *ngIf="clientById(s.clientId) as cl">
+        <button class="btn btn-primary btn-sm" (click)="sendEmailReminder(s, cl)" [disabled]="sendingEmailId === s.id">
+          <i class="fa-solid fa-envelope" style="margin-right:6px;"></i>
+          <span *ngIf="sendingEmailId === s.id">Sending Email...</span>
+          <span *ngIf="sendingEmailId !== s.id">Send Email Reminder</span>
         </button>
       </div>
-
-     -->
       <div class="field-hint" *ngIf="s.remindedAt" style="margin-top:8px;">
         Reminder already sent {{ s.remindedAt | date:'MMM d, h:mm a' }}
       </div>
@@ -613,14 +631,16 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>.      </button>
     </div>
     <div class="modal-body" *ngIf="activeClient as cl">
-      <!--
-
       <div class="icon-row" style="margin-bottom:16px;">
+        <button class="btn btn-primary btn-sm" style="width:auto;" (click)="sendDirectClientEmail(cl)">
+          <i class="fa-solid fa-envelope" style="margin-right:6px;"></i> Send Email
+        </button>
         <a [href]="telLink(cl.phone)" class="btn btn-ghost btn-sm" style="width:auto;" [innerHTML]="icoPhone + ' Call'"></a>
-        <button class="btn btn-ghost btn-sm" style="width:auto;" (click)="sendDirectClientSMS(cl)">Send SMS</button>
       </div>
-
-      -->
+      <div class="field">
+        <label>Email address <span style="color:var(--danger)">*</span></label>
+        <input class="input" type="email" [(ngModel)]="cl.email" (change)="saveClient(cl)" placeholder="client@example.com">
+      </div>
       <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
         <div class="stat-card" style="padding:12px 14px;">
           <div class="label">Package</div>
@@ -682,12 +702,16 @@
     </div>
     <div class="modal-body">
       <div class="field">
-        <label>Full name</label>
+        <label>Full name <span style="color:var(--danger)">*</span></label>
         <input class="input" [(ngModel)]="ncName" placeholder="e.g. Sana Abbas Syed">
       </div>
       <div class="field">
-        <label>Phone number (with country code)</label>
+        <label>Phone number (with country code) <span style="color:var(--danger)">*</span></label>
         <input class="input" [(ngModel)]="ncPhone" placeholder="+971 50 123 4567">
+      </div>
+      <div class="field">
+        <label>Email address <span style="color:var(--danger)">*</span></label>
+        <input class="input" type="email" [(ngModel)]="ncEmail" placeholder="client@example.com" required>
       </div>
       <div class="field">
         <label>Package</label>

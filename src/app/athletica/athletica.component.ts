@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 import {
   Auth,
@@ -25,6 +26,7 @@ import {
   CollectionReference,
   DocumentReference
 } from '@angular/fire/firestore';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 /* ========== INTERFACES ========== */
 export interface Package {
@@ -39,6 +41,7 @@ export interface Client {
   id: string;
   name: string;
   phone: string;
+  email: string;
   packageKey: string;
   packageLabel: string;
   totalSessions: number;
@@ -64,6 +67,8 @@ export interface Settings {
   coachPhone: string;
   leadHours: number;
   smsMode?: 'firebase' | 'device';
+  brevoApiKey?: string;
+  brevoSenderEmail?: string;
 }
 
 /* ========== COMPONENT ========== */
@@ -79,6 +84,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   /* ---- Constants & Token ---- */
   readonly FIREBASE_SMS_JETON = 'AVweKohsMBhkVyLAk_zLvnAv09I-gT-SemKtUSjcyAL2J-1ZexLKMJh7-FbZDfclZV7qo35IKF2skkH5zu4JkMkSKzLk31moFHYWJVWrNv04ZhsI_5kPy_2po25P3_pUfc8V8LKK5agWiTEkNXqK87Y5';
@@ -96,13 +102,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   readonly hours: number[] = Array.from({ length: 16 }, (_, i) => i + 6);
   readonly dayNames: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  readonly defaultSettings: Settings = {
-    coachName: 'Aymen Othmani',
-    businessName: 'Carthage Athletica',
-    coachPhone: '',
-    leadHours: 2,
-    smsMode: 'firebase'
-  };
+
 
   readonly navItems = [
     {
@@ -135,13 +135,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   /* ---- State ---- */
   clients: Client[] = [];
   sessions: Session[] = [];
-  settings: Settings = {
-    coachName: 'Aymen Othmani',
-    businessName: 'Carthage Athletica',
-    coachPhone: '',
-    leadHours: 2,
-    smsMode: 'firebase'
-  };
+  settings = environment.apiConfig ;
 
   isAuthenticated = false;
   authExists = false;
@@ -153,6 +147,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   isLoadingData = true;
   isSaving = false;
   sendingSmsId: string | null = null;
+  sendingEmailId: string | null = null;
 
   // Auth forms
   setupEmail = '';
@@ -177,6 +172,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   bkClientId = '';
   bkNewName = '';
   bkNewPhone = '';
+  bkNewEmail = '';
   bkDate = '';
   bkTime = '09:00';
   bkNote = '';
@@ -201,6 +197,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   showNewClientModal = false;
   ncName = '';
   ncPhone = '';
+  ncEmail = '';
   ncNote = '';
   selectedPkgKeyNC = 'elite';
 
@@ -221,13 +218,28 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   private settingsRef!: DocumentReference;
   private subs: Subscription[] = [];
   private dataLoaded = false;
-
+private sanitizer = inject(DomSanitizer);
   // Icons
-  icoPhone = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
-  icoSMS = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
-  icoChevronLeft = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>`;
-  icoChevronRight = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>`;
+// ========== SAFE ICONS ==========
+icoPhone: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`
+);
 
+icoSMS: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
+);
+
+icoEmail: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`
+);
+
+icoChevronLeft: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>`
+);
+
+icoChevronRight: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>`
+);
   Math = Math;
 
   /* ========== LIFECYCLE ========== */
@@ -249,6 +261,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       })
     );
   }
+
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
     if (this.toastTimer) {
@@ -262,25 +275,28 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       collectionData(this.clientsCol, { idField: 'id' }).subscribe((data) => {
         this.clients = data as Client[];
         this.filterClients();
+        this.cdr.markForCheck();
       })
     );
 
     this.subs.push(
       collectionData(this.sessionsCol, { idField: 'id' }).subscribe((data) => {
         this.sessions = data as Session[];
+        this.cdr.markForCheck();
       })
     );
 
     this.subs.push(
       docData(this.settingsRef).subscribe((s) => {
         if (s) {
-          this.settings = { ...this.defaultSettings, ...(s as Settings) };
+          this.settings = { ...this.settings, ...(s as Settings) };
+          this.cdr.markForCheck();
         }
       })
     );
   }
 
-  private async saveClient(client: Client): Promise<void> {
+  async saveClient(client: Client): Promise<void> {
     const { id, ...data } = client;
     await setDoc(doc(this.firestore, 'clients', id), data);
   }
@@ -534,7 +550,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   cellSessions(dateStr: string, hour: number): Session[] {
-    return this.sessions.filter(s => s.date === dateStr && this.timeToHour(s.time) === hour);
+    return this.sessions.filter(
+      s => s.date === dateStr &&
+           this.timeToHour(s.time) === hour &&
+           s.status !== 'cancelled'
+    );
   }
 
   setCalMode(m: 'day' | 'week' | 'month'): void {
@@ -630,7 +650,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     const q = (this.clientSearch || '').toLowerCase().trim();
     this.filteredClients = this.clients
       .filter(c => {
-        const matchesSearch = c.name.toLowerCase().includes(q) || (c.phone || '').includes(q) || (c.packageLabel || '').toLowerCase().includes(q);
+        const matchesSearch =
+          c.name.toLowerCase().includes(q) ||
+          (c.phone || '').includes(q) ||
+          (c.email || '').toLowerCase().includes(q) ||
+          (c.packageLabel || '').toLowerCase().includes(q);
         if (!matchesSearch) return false;
         const rem = this.remainingCount(c);
         if (this.clientFilterTab === 'low') return rem > 0 && rem <= 3;
@@ -655,9 +679,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     if (which === 'newClient') this.showNewClientModal = false;
   }
 
-  openBookingModal(
-    opts: { clientId?: string; date?: string; time?: string } = {}
-  ): void {
+  openBookingModal(opts: { clientId?: string; date?: string; time?: string } = {}): void {
     this.bookModalTitle = 'Book a Session';
     this.bkClientId = opts.clientId || '';
     this.bkDate = opts.date || this.fmtDate(new Date());
@@ -665,6 +687,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.bkNote = '';
     this.bkNewName = '';
     this.bkNewPhone = '';
+    this.bkNewEmail = '';
     this.selectedPkgKey = 'elite';
     this.clientMode = this.clients.length ? 'existing' : 'new';
     this.showBookModal = true;
@@ -687,6 +710,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
         this.showToast('Enter the client name and phone');
         return;
       }
+      if (!this.bkNewEmail.trim() || !this.bkNewEmail.includes('@')) {
+        this.showToast('Enter a valid client email (Required)', 'error');
+        return;
+      }
       const pkg = this.pkgByKey(this.selectedPkgKey);
       if (!pkg) {
         this.showToast('Invalid package');
@@ -696,6 +723,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
         id: this.uid(),
         name: this.bkNewName.trim(),
         phone: this.bkNewPhone.trim(),
+        email: this.bkNewEmail.trim().toLowerCase(),
         packageKey: pkg.key,
         packageLabel: pkg.label,
         totalSessions: pkg.sessions,
@@ -728,6 +756,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   openNewClientModal(): void {
     this.ncName = '';
     this.ncPhone = '';
+    this.ncEmail = '';
     this.ncNote = '';
     this.selectedPkgKeyNC = 'elite';
     this.showNewClientModal = true;
@@ -736,6 +765,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   async submitNewClient(): Promise<void> {
     if (!this.ncName.trim() || !this.ncPhone.trim()) {
       this.showToast('Enter the client name and phone');
+      return;
+    }
+    if (!this.ncEmail.trim() || !this.ncEmail.includes('@')) {
+      this.showToast('Enter a valid client email (Required)', 'error');
       return;
     }
     const pkg = this.pkgByKey(this.selectedPkgKeyNC);
@@ -747,6 +780,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       id: this.uid(),
       name: this.ncName.trim(),
       phone: this.ncPhone.trim(),
+      email: this.ncEmail.trim().toLowerCase(),
       packageKey: pkg.key,
       packageLabel: pkg.label,
       totalSessions: pkg.sessions,
@@ -772,6 +806,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   async saveSessionEdit(): Promise<void> {
     if (!this.activeSession) return;
+
     const updated: Session = {
       ...this.activeSession,
       date: this.edDate,
@@ -779,9 +814,23 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       note: this.edNote.trim(),
       status: this.edStatus
     };
-    await this.saveSession(updated);
-    this.closeModal('sess');
-    this.showToast('Session updated');
+
+    // Optimistic update
+    const idx = this.sessions.findIndex(x => x.id === updated.id);
+    if (idx !== -1) {
+      this.sessions[idx] = updated;
+      this.sessions = [...this.sessions];
+      this.cdr.detectChanges();
+    }
+
+    try {
+      await this.saveSession(updated);
+      this.closeModal('sess');
+      this.showToast('Session updated');
+    } catch (err) {
+      console.error(err);
+      this.showToast('Failed to update session', 'error');
+    }
   }
 
   async deleteSession(): Promise<void> {
@@ -824,11 +873,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
   async deleteClient(): Promise<void> {
     if (!this.activeClient) return;
-    if (
-      !confirm(
-        'Delete this client and all their session history? This cannot be undone.'
-      )
-    ) {
+    if (!confirm('Delete this client and all their session history? This cannot be undone.')) {
       return;
     }
 
@@ -854,15 +899,15 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   /* ========== SETTINGS ========== */
   async saveSettings(): Promise<void> {
     const payload: Settings = {
-      coachName:
-        this.settings.coachName.trim() || this.defaultSettings.coachName,
-      businessName:
-        this.settings.businessName.trim() || this.defaultSettings.businessName,
+      coachName: this.settings.coachName.trim() || this.settings.coachName,
+      businessName: this.settings.businessName.trim() || this.settings.businessName,
       coachPhone: this.settings.coachPhone.trim(),
       leadHours:
         this.settings.leadHours > 0 && this.settings.leadHours <= 48
           ? this.settings.leadHours
-          : this.defaultSettings.leadHours
+          : this.settings.leadHours,
+      brevoApiKey: (this.settings.brevoApiKey || '').trim() || this.settings.brevoApiKey,
+      brevoSenderEmail: (this.settings.brevoSenderEmail || '').trim() || this.settings.brevoSenderEmail
     };
     await setDoc(this.settingsRef, payload, { merge: true });
     this.settings = { ...this.settings, ...payload };
@@ -870,9 +915,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   async clearAllData(): Promise<void> {
-    if (
-      !confirm('This deletes ALL clients and sessions permanently. Continue?')
-    ) {
+    if (!confirm('This deletes ALL clients and sessions permanently. Continue?')) {
       return;
     }
     if (!confirm('Are you absolutely sure? This cannot be undone.')) {
@@ -880,12 +923,8 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     }
 
     const batch = writeBatch(this.firestore);
-    this.clients.forEach(c =>
-      batch.delete(doc(this.firestore, 'clients', c.id))
-    );
-    this.sessions.forEach(s =>
-      batch.delete(doc(this.firestore, 'sessions', s.id))
-    );
+    this.clients.forEach(c => batch.delete(doc(this.firestore, 'clients', c.id)));
+    this.sessions.forEach(s => batch.delete(doc(this.firestore, 'sessions', s.id)));
     await batch.commit();
 
     this.showToast('All data cleared');
@@ -938,11 +977,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   async resetAuth(): Promise<void> {
-    if (
-      !confirm(
-        'This will sign you out so you can create a new login. Your clients and sessions stay safe. Continue?'
-      )
-    ) {
+    if (!confirm('This will sign you out so you can create a new login. Your clients and sessions stay safe. Continue?')) {
       return;
     }
     await signOut(this.auth);
@@ -957,7 +992,161 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.closeModal('newClient');
   }
 
-  /* ========== SMS SENDER (FIREBASE & JETON) ========== */
+  /* ========== EMAIL SENDER (pure client-side Brevo – NO mailto fallback) ========== */
+  async sendEmailReminder(session: Session, client: Client): Promise<void> {
+    if (!client?.email?.trim()) {
+      this.showToast('Client email address missing', 'error');
+      return;
+    }
+
+    const emailAddr = client.email.trim();
+    const apiKey = (this.settings.brevoApiKey || '').trim();
+    const senderEmail = (this.settings.brevoSenderEmail || '').trim();
+    const senderName = this.settings.businessName || 'Carthage Athletica';
+
+    if (!apiKey) {
+      this.showToast('Brevo API key is missing in Settings', 'error');
+      return;
+    }
+    if (!senderEmail) {
+      this.showToast('Brevo sender email is missing in Settings', 'error');
+      return;
+    }
+
+    const when = session.date === this.todayStr()
+      ? 'Today'
+      : new Date(session.date + 'T00:00:00').toLocaleDateString('en-US', {
+          weekday: 'long', month: 'short', day: 'numeric'
+        });
+    const timeFormatted = this.fmtTime12(session.time);
+    const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
+    const subject = `Training Session Reminder - ${senderName}`;
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; background-color: #f3ead9; padding: 24px; color: #241a12;">
+        <div style="max-width: 520px; margin: 0 auto; background-color: #fbf6ec; border-radius: 12px; padding: 30px; border: 1px solid #ddc9a3; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          <div style="border-bottom: 2px solid #a3572e; padding-bottom: 12px; margin-bottom: 20px;">
+            <h2 style="color: #a3572e; margin: 0; font-size: 22px;">${senderName}</h2>
+            <p style="margin: 4px 0 0; color: #7a6852; font-size: 13px;">Coach ${this.settings.coachName}</p>
+          </div>
+          <p style="font-size: 16px; margin-bottom: 16px;">Hi <strong>${client.name}</strong>,</p>
+          <p style="font-size: 15px; line-height: 1.5; color: #3b2b1e;">
+            This is a friendly reminder for your upcoming training session!
+          </p>
+          <div style="background-color: #eee3cd; padding: 16px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #a3572e;">
+            <p style="margin: 0 0 6px; font-weight: bold; font-size: 16px; color: #241a12;">📅 Session Details:</p>
+            <p style="margin: 4px 0; font-size: 14px; color: #3b2b1e;"><strong>Date:</strong> ${when} (${session.date})</p>
+            <p style="margin: 4px 0; font-size: 14px; color: #3b2b1e;"><strong>Time:</strong> ${timeFormatted}</p>
+            ${session.note ? `<p style="margin: 4px 0; font-size: 14px; color: #3b2b1e;"><strong>Note:</strong> ${session.note}</p>` : ''}
+          </div>
+          <p style="font-size: 14px; color: #3b2b1e; line-height: 1.5;">
+            Please let us know in advance if you need to reschedule. See you at the session!
+          </p>
+          <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #e8dabd; font-size: 12px; color: #7a6852; text-align: center;">
+            Sent by Coach ${coachFirst} via ${senderName} Console
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.sendingEmailId = session.id;
+
+    try {
+      const payload = {
+        sender: { name: senderName, email: senderEmail },
+        to: [{ email: emailAddr, name: client.name }],
+        subject,
+        htmlContent
+      };
+
+      const headers = new HttpHeaders({
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json'
+      });
+
+      const res = await firstValueFrom(
+        this.http.post<any>('https://api.brevo.com/v3/smtp/email', payload, { headers })
+      );
+
+      if (res && (res.messageId || res.id)) {
+        await this.markReminded(session.id);
+        this.showToast(`Email reminder sent to ${client.name}!`, 'success');
+      } else {
+        this.showToast('Brevo did not accept the email. Check console.', 'error');
+      }
+    } catch (err: any) {
+      console.error('Brevo sendEmailReminder error:', err);
+      const msg = err?.error?.message || err?.message || 'Network / Auth error';
+      this.showToast(`Email failed: ${msg}`, 'error');
+    } finally {
+      this.sendingEmailId = null;
+    }
+  }
+
+  async sendDirectClientEmail(client: Client): Promise<void> {
+    if (!client?.email?.trim()) {
+      this.showToast('Client email address missing', 'error');
+      return;
+    }
+
+    const emailAddr = client.email.trim();
+    const apiKey = (this.settings.brevoApiKey || '').trim();
+    const senderEmail = (this.settings.brevoSenderEmail || '').trim();
+    const senderName = this.settings.businessName || 'Carthage Athletica';
+    const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
+
+    if (!apiKey || !senderEmail) {
+      this.showToast('Brevo API key or sender email missing in Settings', 'error');
+      return;
+    }
+
+    const subject = `Message from Coach ${coachFirst} - ${senderName}`;
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; background-color: #f3ead9; padding: 24px; color: #241a12;">
+        <div style="max-width: 520px; margin: 0 auto; background-color: #fbf6ec; border-radius: 12px; padding: 30px; border: 1px solid #ddc9a3;">
+          <h2 style="color: #a3572e; margin-top: 0;">${senderName}</h2>
+          <p style="font-size: 16px;">Hi <strong>${client.name}</strong>,</p>
+          <p style="font-size: 15px; line-height: 1.5; color: #3b2b1e;">
+            This is Coach ${coachFirst} reaching out from ${senderName}.
+            You currently have <strong>${this.remainingCount(client)}</strong> of <strong>${client.totalSessions}</strong> training sessions remaining.
+          </p>
+          <p style="font-size: 14px; color: #7a6852;">Keep up the great effort!</p>
+        </div>
+      </div>
+    `;
+
+    try {
+      const payload = {
+        sender: { name: senderName, email: senderEmail },
+        to: [{ email: emailAddr, name: client.name }],
+        subject,
+        htmlContent
+      };
+
+      const headers = new HttpHeaders({
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json'
+      });
+
+      const res = await firstValueFrom(
+        this.http.post<any>('https://api.brevo.com/v3/smtp/email', payload, { headers })
+      );
+
+      if (res && (res.messageId || res.id)) {
+        this.showToast(`Email sent to ${client.name}`, 'success');
+      } else {
+        this.showToast('Brevo did not accept the email. Check console.', 'error');
+      }
+    } catch (err: any) {
+      console.error('Brevo sendDirectClientEmail error:', err);
+      const msg = err?.error?.message || err?.message || 'Network / Auth error';
+      this.showToast(`Email failed: ${msg}`, 'error');
+    }
+  }
+
+  /* ========== SMS SENDER ========== */
   async sendSMSReminder(session: Session, client: Client): Promise<void> {
     if (!client || !client.phone) {
       this.showToast('Client phone number missing', 'error');
@@ -968,7 +1157,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     this.sendingSmsId = session.id;
 
     try {
-      // 1. Primary path: Send via Firebase Cloud Function using Firebase phone jeton
       const payload = {
         phone: this.cleanPhone(client.phone),
         message: msg,
@@ -984,9 +1172,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       });
 
       const endpoint = 'https://us-central1-coach-othmeni.cloudfunctions.net/sendSMS';
-      
+
       const res = await firstValueFrom(this.http.post<any>(endpoint, payload, { headers })).catch(err => {
-        console.warn('Firebase SMS API direct endpoint response/error:', err);
+        console.warn('Firebase SMS API error:', err);
         return null;
       });
 
@@ -994,7 +1182,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
         await this.markReminded(session.id);
         this.showToast(`Firebase SMS sent to ${client.name}!`, 'success');
       } else {
-        // Fallback: Trigger device SMS pre-filled message & mark reminded
         const smsUrl = this.smsHrefWithBody(client.phone, msg);
         window.location.href = smsUrl;
         await this.markReminded(session.id);
@@ -1017,7 +1204,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     }
     const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
     const msg = customMsg || `Hi ${client.name.split(' ')[0]}, this is Coach ${coachFirst} (${this.settings.businessName || 'Carthage Athletica'}).`;
-    
+
     try {
       const payload = {
         phone: this.cleanPhone(client.phone),
@@ -1030,7 +1217,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       });
       const endpoint = 'https://us-central1-coach-othmeni.cloudfunctions.net/sendSMS';
       await firstValueFrom(this.http.post<any>(endpoint, payload, { headers })).catch(() => null);
-      
+
       const smsUrl = this.smsHrefWithBody(client.phone, msg);
       window.location.href = smsUrl;
       this.showToast(`SMS sent to ${client.name}`, 'success');
@@ -1040,11 +1227,34 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     }
   }
 
+  /* ========== QUICK STATUS TOGGLE (optimistic + ChangeDetectorRef) ========== */
   async quickToggleStatus(s: Session, newStatus: Session['status'], event?: Event): Promise<void> {
-    if (event) event.stopPropagation();
-    const updated: Session = { ...s, status: newStatus };
-    await this.saveSession(updated);
-    this.showToast(`Session marked as ${newStatus}`, 'success');
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    const idx = this.sessions.findIndex(x => x.id === s.id);
+    if (idx === -1) return;
+
+    const previousStatus = this.sessions[idx].status;
+
+    // Optimistic update
+    this.sessions[idx] = { ...this.sessions[idx], status: newStatus };
+    this.sessions = [...this.sessions];
+    this.cdr.detectChanges();
+
+    try {
+      await this.saveSession({ ...s, status: newStatus });
+      this.showToast(`Session marked as ${newStatus}`, 'success');
+    } catch (err) {
+      // Revert on error
+      this.sessions[idx] = { ...this.sessions[idx], status: previousStatus };
+      this.sessions = [...this.sessions];
+      this.cdr.detectChanges();
+      console.error(err);
+      this.showToast('Failed to update session', 'error');
+    }
   }
 
   async addExtraSessions(cl: Client, count: number): Promise<void> {
