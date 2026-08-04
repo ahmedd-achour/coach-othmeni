@@ -9,28 +9,8 @@
       </div>
     </div>
 
-    <!-- SETUP FORM -->
-    <div *ngIf="!authExists">
-      <h2>Create your coach login</h2>
-      <div class="sub">Set an email and password so only you can open this console. This is a device-level lock — keep this link private.</div>
-      <div class="field">
-        <label>Email</label>
-        <input class="input" type="email" [(ngModel)]="setupEmail" placeholder="aymen@carthageathletica.com">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input class="input" type="password" [(ngModel)]="setupPass" placeholder="At least 4 characters">
-      </div>
-      <div class="field">
-        <label>Confirm password</label>
-        <input class="input" type="password" [(ngModel)]="setupPass2" placeholder="Repeat password">
-      </div>
-      <div class="auth-err" [class.show]="setupError">{{ setupError }}</div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;" (click)="submitSetup()">Create login.</button>
-    </div>
-
     <!-- LOGIN FORM -->
-    <div *ngIf="authExists">
+    <div>
       <h2>Coach login</h2>
       <div class="sub">Enter your email and password to open the console.</div>
       <div class="field">
@@ -43,7 +23,6 @@
       </div>
       <div class="auth-err" [class.show]="loginError">{{ loginError }}</div>
       <button class="btn btn-primary" style="width:100%;justify-content:center;" (click)="submitLogin()">Log in.</button>
-      <div class="auth-switch">Forgot password? <a (click)="resetAuth()">Reset login</a></div>
     </div>
   </div>
 </div>
@@ -475,6 +454,20 @@
 
         <div class="panel">
           <button class="btn btn-primary" (click)="saveSettings()">Save settings.</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow" style="color:var(--gold);">Account Session</div>
+              <h2>Sign Out</h2>
+            </div>
+          </div>
+          <div class="sr-sub" style="margin-bottom:12px;">Sign out of the coach console and return to the main website home page.</div>
+          <button class="btn btn-secondary" (click)="signOutAndRedirect()" style="display:inline-flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
         </div>
 
         <div class="panel" style="border-color:#e0b8ac;">

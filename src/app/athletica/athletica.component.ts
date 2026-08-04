@@ -5,10 +5,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+import { Router } from '@angular/router';
+
 import {
   Auth,
   authState,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   User
@@ -85,6 +86,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private sanitizer = inject(DomSanitizer);
+  private router = inject(Router);
 
   /* ---- Constants ---- */
   readonly FIREBASE_SMS_JETON = 'AVweKohsMBhkVyLAk_zLvnAv09I-gT-SemKtUSjcyAL2J-1ZexLKMJh7-FbZDfclZV7qo35IKF2skkH5zu4JkMkSKzLk31moFHYWJVWrNv04ZhsI_5kPy_2po25P3_pUfc8V8LKK5agWiTEkNXqK87Y5';
@@ -146,7 +148,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   settings: Settings = { ...this.defaultSettings };
 
   isAuthenticated = false;
-  authExists = false;
   sidebarOpen = false;
   currentView = 'today';
   pageTitle = 'Today';
@@ -158,10 +159,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   sendingEmailId: string | null = null;
 
   // Auth forms
-  setupEmail = '';
-  setupPass = '';
-  setupPass2 = '';
-  setupError = '';
   loginEmail = '';
   loginPass = '';
   loginError = '';
@@ -260,7 +257,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
       authState(this.auth).subscribe((user: User | null) => {
         this.isAuthenticated = !!user;
         if (user) {
-          this.authExists = true;
           if (!this.dataLoaded) {
             this.loadData();
             this.dataLoaded = true;
@@ -345,7 +341,16 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   fmtDate(d: Date): string {
-    return d.toISOString().slice(0, 10);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  parseLocalDate(dateStr: string): Date {
+    if (!dateStr) return new Date();
+    const parts = dateStr.split('-').map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2] || 1);
   }
 
   isSameDate(a: Date, b: Date): boolean {
@@ -453,7 +458,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     const when =
       s.date === this.todayStr()
         ? 'today'
-        : new Date(s.date + 'T00:00:00').toLocaleDateString('en-US', {
+        : this.parseLocalDate(s.date).toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'short',
             day: 'numeric'
@@ -463,7 +468,9 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   sessionDateTime(s: Session): Date {
-    return new Date(s.date + 'T' + s.time + ':00');
+    const [y, m, d] = s.date.split('-').map(Number);
+    const [hh, mm] = (s.time || '00:00').split(':').map(Number);
+    return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
   }
 
   /* ========== QUERIES ========== */
@@ -477,7 +484,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     const start = this.startOfWeek(new Date());
     const end = this.addDays(start, 7);
     return this.sessions.filter(s => {
-      const d = new Date(s.date + 'T00:00:00');
+      const d = this.parseLocalDate(s.date);
       return d >= start && d < end && s.status !== 'cancelled';
     });
   }
@@ -643,7 +650,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   jumpToDay(dateStr: string): void {
-    this.selectedDay = new Date(dateStr + 'T00:00:00');
+    this.selectedDay = this.parseLocalDate(dateStr);
     this.calendarMode = 'day';
   }
 
@@ -944,31 +951,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   /* ========== AUTH ========== */
-  async submitSetup(): Promise<void> {
-    this.setupError = '';
-    const email = this.setupEmail.trim().toLowerCase();
-    const pass = this.setupPass;
-
-    if (!email || !email.includes('@')) {
-      this.setupError = 'Enter a valid email.';
-      return;
-    }
-    if (pass.length < 4) {
-      this.setupError = 'Password must be at least 4 characters.';
-      return;
-    }
-    if (pass !== this.setupPass2) {
-      this.setupError = 'Passwords do not match.';
-      return;
-    }
-
-    try {
-      await createUserWithEmailAndPassword(this.auth, email, pass);
-    } catch (e: any) {
-      this.setupError = e?.message || 'Could not create account.';
-    }
-  }
-
   async submitLogin(): Promise<void> {
     this.loginError = '';
     const email = this.loginEmail.trim().toLowerCase();
@@ -988,12 +970,10 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     await signOut(this.auth);
   }
 
-  async resetAuth(): Promise<void> {
-    if (!confirm('This will sign you out so you can create a new login. Your clients and sessions stay safe. Continue?')) {
-      return;
-    }
+  async signOutAndRedirect(): Promise<void> {
+    this.sidebarOpen = false;
     await signOut(this.auth);
-    this.authExists = false;
+    this.router.navigate(['/']);
   }
 
   @HostListener('document:keydown.escape')
@@ -1027,7 +1007,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
 
     const when = session.date === this.todayStr()
       ? 'Today'
-      : new Date(session.date + 'T00:00:00').toLocaleDateString('en-US', {
+      : this.parseLocalDate(session.date).toLocaleDateString('en-US', {
           weekday: 'long', month: 'short', day: 'numeric'
         });
     const timeFormatted = this.fmtTime12(session.time);
