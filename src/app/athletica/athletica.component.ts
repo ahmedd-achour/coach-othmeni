@@ -464,7 +464,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
             day: 'numeric'
           });
     const coachFirst = (this.settings.coachName || 'Aymen').split(' ')[0];
-    return `Hi ${first}, this is a reminder from Coach ${coachFirst} (Carthage Athletica) — your training session is ${when} at ${this.fmtTime12(s.time)}. See you there!`;
+    return `Hi ${first}, this is a reminder from Coach ${coachFirst} (Carthage Athletica) — your training session is ${when} at ${this.fmtTime12(s.time)}.`;
   }
 
   sessionDateTime(s: Session): Date {
@@ -1035,7 +1035,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
             Please let us know in advance if you need to reschedule. See you at the session!
           </p>
           <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #e8dabd; font-size: 12px; color: #7a6852; text-align: center;">
-            Sent by Coach ${coachFirst} via ${senderName} Console
+            Sent by Coach ${coachFirst} via ${senderName}
           </div>
         </div>
       </div>
