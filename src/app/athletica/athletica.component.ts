@@ -399,9 +399,6 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     return (p || '').replace(/[^\d+]/g, '');
   }
 
-  telLink(p: string): string {
-    return 'tel:' + this.cleanPhone(p);
-  }
 
   smsLink(p: string): string {
     return 'sms:' + this.cleanPhone(p);
@@ -568,12 +565,11 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   cellSessions(dateStr: string, hour: number): Session[] {
-    return this.sessions.filter(
-      s => s.date === dateStr &&
-           this.timeToHour(s.time) === hour &&
-           s.status !== 'cancelled'
-    );
-  }
+  return this.sessions.filter(
+    s => s.date === dateStr &&
+         this.timeToHour(s.time) === hour
+  );
+}
 
   setCalMode(m: 'day' | 'week' | 'month'): void {
     this.calendarMode = m;
@@ -1032,7 +1028,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
             ${session.note ? `<p style="margin: 4px 0; font-size: 14px; color: #3b2b1e;"><strong>Note:</strong> ${session.note}</p>` : ''}
           </div>
           <p style="font-size: 14px; color: #3b2b1e; line-height: 1.5;">
-            Please let us know in advance if you need to reschedule. See you at the session!
+            Please let us know 24 hours before the session if you need to reschedule.
           </p>
           <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #e8dabd; font-size: 12px; color: #7a6852; text-align: center;">
             Sent by Coach ${coachFirst} via ${senderName}

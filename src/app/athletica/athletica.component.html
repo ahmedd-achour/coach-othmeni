@@ -208,7 +208,7 @@
           <div class="cal-wrap">
             <div class="cal-grid">
               <div class="cal-head-cell"></div>
-              <div class="cal-head-cell" *ngFor="let d of weekDays" [class.today]="isSameDate(d, today)">
+              <div class="cal-cell" *ngFor="let d of weekDays" [class.today]="isSameDate(d, today)">
                 <div class="d">{{ dayName(d) }}</div>
                 <div class="n">{{ d.getDate() }}</div>
               </div>
@@ -348,7 +348,7 @@
         <div class="panel" style="padding-top:16px;">
           <ng-container *ngIf="clients.length; else noTracker">
             <div style="overflow-x:auto;">
-              <table class="tracker">
+              <table class="tracker" border="2" cellspacing="0" cellpadding="0">
                 <thead>
                   <tr>
                     <th>Client</th>

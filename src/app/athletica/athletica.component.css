@@ -678,6 +678,7 @@ a {
   text-align: center;
   border-bottom: 2px solid var(--line);
   border-left: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line);
   position: sticky;
   top: 0;
   background: var(--card);
@@ -718,8 +719,10 @@ a {
 }
 
 .cal-cell {
-  border-top: 1px solid var(--line-soft);
-  border-left: 1px solid var(--line-soft);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   min-height: 46px;
   padding: 2px;
   position: relative;
@@ -786,7 +789,11 @@ a {
 
 .sess-block.cancelled .n {
   text-decoration: line-through;
+  color: var(--muted-2);
+    text-decoration: line-through;
+
 }
+
 
 .day-row {
   display: flex;
@@ -805,6 +812,7 @@ a {
   flex-shrink: 0;
   padding: 12px 10px;
   text-align: right;
+  border-right: 1px solid var(--line);
 }
 
 .day-slot {
@@ -812,35 +820,37 @@ a {
   padding: 8px 10px;
   cursor: pointer;
   min-height: 40px;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 .day-slot:hover {
   background: #f8f1e2;
 }
-
 .month-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  border-top: 1px solid var(--line-soft);
-  border-left: 1px solid var(--line-soft);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border: 1px solid #d9dee7;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
 }
 
-.month-head {
-  text-align: center;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  padding: 8px 0;
-  border-bottom: 2px solid var(--line);
+.month-head,
+.month-cell {
+    border: 1px solid var(--line);
 }
 
 .month-cell {
-  min-height: 88px;
-  border-right: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-  padding: 6px;
-  cursor: pointer;
+    min-height: 120px;
+    padding: 8px;
+    border: 1px solid var(--line);
+}
+
+.month-head:nth-child(7),
+.month-cell:nth-child(7n) {
+    border-right: none;
 }
 
 .month-cell:hover {
@@ -1113,6 +1123,31 @@ table.tracker tr:hover td {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border: 1px solid #d9dee7;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.week-head,
+.week-cell {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.week-cell {
+    min-height: 120px;
+    padding: 8px;
+}
+
+.month-head:nth-child(7),
+.month-cell:nth-child(7n) {
+    border-right: none;
 }
 
 .modal-head {
@@ -1428,10 +1463,14 @@ table.tracker tr:hover td {
 
   .cal-head-cell .d {
     font-size: 7.5px;
+    border-color: #000;
+    border-width: 1px;
   }
 
   .cal-head-cell .n {
     font-size: 12px;
+    border-color: #000;
+    border-width: 1px;
   }
 
   .cal-time-label {
@@ -1448,7 +1487,17 @@ table.tracker tr:hover td {
     display: none;
   }
 
-  .cal-cell {
-    min-height: 38px;
-  }
+ /* Week calendar */
+.cal-cell {
+    border: 1px solid #000;      /* Thin black line */
+    box-sizing: border-box;
+}
+
+/* Month calendar */
+.month-cell {
+    border: 1px solid #000;      /* Thin black line */
+    box-sizing: border-box;
+}
+
+
 }
