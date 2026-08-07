@@ -33,6 +33,7 @@
   color: var(--ink);
   font-family: 'Work Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
+  font-size: 150%;
   min-height: 100vh;
 }
 
@@ -228,8 +229,8 @@ a {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 11px 12px;
+  gap: 18px;
+  padding: 18px 12px;
   border-radius: 9px;
   cursor: pointer;
   font-size: 14px;
@@ -275,7 +276,7 @@ a {
 .sidebar-foot {
   padding: 16px 20px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 11px;
+  font-size: 18px;
   color: #9c8a6b;
 }
 
@@ -398,7 +399,7 @@ a {
 }
 
 .stat-card .label {
-  font-size: 11px;
+  font-size: 18px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -740,7 +741,7 @@ a {
   top: 2px;
   right: 3px;
   color: var(--muted-2);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -749,7 +750,7 @@ a {
   border-left: 3px solid var(--rust);
   border-radius: 5px;
   padding: 3px 4px;
-  font-size: 9.5px;
+  font-size: 13px;
   line-height: 1.25;
   cursor: pointer;
   margin-bottom: 2px;
@@ -806,7 +807,7 @@ a {
 
 .day-time {
   font-family: 'Space Mono', monospace;
-  font-size: 11px;
+  font-size: 24px;
   color: var(--muted-2);
   width: 70px;
   flex-shrink: 0;
@@ -898,12 +899,12 @@ a {
 
 .input {
   width: 100%;
-  padding: 11px 14px;
+  padding: 18px 14px;
   border-radius: 9px;
   border: 1.5px solid var(--line);
   background: var(--card);
   font-family: 'Work Sans', sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--ink);
 }
 
@@ -991,7 +992,7 @@ select.input {
   align-items: center;
   justify-content: center;
   font-family: 'Space Mono', monospace;
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -1028,7 +1029,7 @@ table.tracker {
 
 table.tracker th {
   text-align: left;
-  font-size: 11px;
+  font-size: 18px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -1064,7 +1065,7 @@ table.tracker tr:hover td {
 
 .pill {
   font-family: 'Space Mono', monospace;
-  font-size: 11px;
+  font-size: 18px;
   padding: 3px 8px;
   border-radius: 20px;
   font-weight: 700;
@@ -1310,7 +1311,7 @@ table.tracker tr:hover td {
 
 .btn-xs {
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 600;
   border-radius: 6px;
   border: none;
@@ -1479,7 +1480,7 @@ table.tracker tr:hover td {
   }
 
   .sess-block {
-    font-size: 8px;
+    font-size: 16px;
     padding: 2px 3px;
   }
 
@@ -1491,12 +1492,15 @@ table.tracker tr:hover td {
 .cal-cell {
     border: 1px solid #000;      /* Thin black line */
     box-sizing: border-box;
+    font-size: 24px;              /* Smaller font size */
 }
 
 /* Month calendar */
 .month-cell {
     border: 1px solid #000;      /* Thin black line */
     box-sizing: border-box;
+    font-size: 24px;              /* Smaller font size */
+
 }
 
 
