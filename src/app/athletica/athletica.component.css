@@ -750,7 +750,7 @@ a {
   border-left: 3px solid var(--rust);
   border-radius: 5px;
   padding: 3px 4px;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.25;
   cursor: pointer;
   margin-bottom: 2px;
@@ -767,6 +767,10 @@ a {
   display: block;
 }
 
+.sess-block.completed .n {
+  color: var(--success);
+}
+
 .sess-block .p {
   color: var(--rust-dark);
   font-family: 'Space Mono', monospace;
@@ -774,8 +778,8 @@ a {
 }
 
 .sess-block.completed {
-  background: var(--success-bg);
-  border-left-color: var(--success);
+  background: var(--success-bg) !important;
+  border-left-color: var(--success) !important;
 }
 
 .sess-block.completed .p {

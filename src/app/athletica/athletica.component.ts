@@ -565,11 +565,12 @@ export class AthleticaComponent implements OnInit, OnDestroy {
   }
 
   cellSessions(dateStr: string, hour: number): Session[] {
-  return this.sessions.filter(
-    s => s.date === dateStr &&
-         this.timeToHour(s.time) === hour
-  );
-}
+    return this.sessions.filter(
+      s => s.date === dateStr &&
+           this.timeToHour(s.time) === hour &&
+           s.status !== 'cancelled'
+    );
+  }
 
   setCalMode(m: 'day' | 'week' | 'month'): void {
     this.calendarMode = m;
