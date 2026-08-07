@@ -746,7 +746,7 @@ a {
 }
 
 .sess-block {
-  background: #f3d9ca;
+  background: #755e1071;
   border-left: 3px solid var(--rust);
   border-radius: 5px;
   padding: 3px 4px;
