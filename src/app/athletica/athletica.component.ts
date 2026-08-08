@@ -101,7 +101,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     { key: 'platinum_elite', label: 'Platinum Elite', sessions: 100, per: 190, total: 19000 }
   ];
 
-  readonly hours: number[] = Array.from({ length: 16 }, (_, i) => i + 6);
+  //readonly hours: number[] = Array.from({ length: 16 }, (_, i) => i + 6);
   readonly dayNames: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   readonly defaultSettings: Settings = {
@@ -113,7 +113,7 @@ export class AthleticaComponent implements OnInit, OnDestroy {
     brevoApiKey: '',
     brevoSenderEmail: ''
   };
-
+hours: number[] = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5];
   readonly navItems = [
     {
       id: 'today',

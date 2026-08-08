@@ -1,4 +1,4 @@
-root {
+:root {
   --ink: #241a12;
   --ink-soft: #3b2b1e;
   --cream: #f3ead9;
@@ -20,6 +20,7 @@ root {
   --accent: #B5895A;
   --today-tint: #FBF3E4;
 }
+
 .book-btn {
   background: var(--ink);
   color: #fff;
@@ -43,6 +44,7 @@ root {
 .book-btn:hover {
   background: #1a120c;
 }
+
 * { box-sizing: border-box; }
 
 :host {
@@ -265,9 +267,9 @@ a { color: inherit; text-decoration: none; }
   border-radius: 7px; font-size: 11.5px;
 }
 
-/* ========== CALENDAR — styled to match screenshot, same class names ========== */
+/* ========== CALENDAR ========== */
 
-/* Mode tabs → Day / Week / Month pill switcher */
+/* Mode tabs */
 .cal-tabs {
   display: flex;
   background: var(--cream-2);
@@ -319,7 +321,7 @@ a { color: inherit; text-decoration: none; }
   height: 29px;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--cream-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -327,15 +329,15 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted);
   padding: 0;
 }
-.icon-btn:hover { background: var(--cream-2); }
+.icon-btn:hover { background: #e8d9b8; }
 .icon-btn svg { width: 14px; height: 14px; }
 
-/* Week grid card */
+/* Week grid card – filled */
 .cal-wrap {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: #fff;
+  background: var(--cream-2);
   box-shadow: none;
 }
 
@@ -343,22 +345,10 @@ a { color: inherit; text-decoration: none; }
   display: grid;
   grid-template-columns: 36px repeat(7, minmax(0, 1fr));
   width: 100%;
-  background: #fff;
+  background: var(--cream-2);
 }
 
-/* Header cells (day names + numbers) */
-.cal-head-cell,
-.cal-grid > .cal-cell:nth-child(-n+8) {
-  /* first row is head: empty + 7 days — handled via structure */
-}
-
-.cal-grid > .cal-head-cell,
-.cal-grid > .cal-cell.today,
-.cal-grid > .cal-cell:not(.cal-time-label) {
-  /* base */
-}
-
-/* First row: blank + day headers (they use .cal-cell with .d / .n) */
+/* Header cells */
 .cal-grid > .cal-head-cell,
 .cal-grid > .cal-cell:nth-child(-n+8):not(.cal-time-label) {
   padding: 10px 2px 9px;
@@ -412,6 +402,7 @@ a { color: inherit; text-decoration: none; }
   border-top: 1.5px solid var(--line-soft);
   white-space: nowrap;
   font-family: 'Work Sans', sans-serif;
+  background: var(--cream-2);
 }
 .legend {
   display: flex;
@@ -434,19 +425,22 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
   display: inline-block;
 }
-/* Hour cells */
+
+/* Hour cells – always filled + multi-person support */
 .cal-cell {
   border-top: 1.5px solid #b3afb373;
   border-left: 1.5px solid #b3afb373;
   min-height: 52px;
-  padding: 2px;
+  padding: 0;
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  background: #fff;
+  background: var(--cream-2);
+  display: flex;
+  flex-direction: column;
 }
 .cal-cell:hover {
-  background: #f8f1e2;
+  background: #e8d9b8;
 }
 .cal-cell:hover::after {
   content: "+";
@@ -457,6 +451,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 14px;
   font-weight: 700;
   pointer-events: none;
+  z-index: 2;
 }
 /* Don't show + on header cells */
 .cal-grid > .cal-cell:nth-child(-n+8):hover::after {
@@ -465,27 +460,32 @@ a { color: inherit; text-decoration: none; }
 .cal-grid > .cal-cell:nth-child(-n+8) {
   cursor: default;
   min-height: auto;
+  padding: 10px 2px 9px;
+  display: block;
 }
 
-/* Session blocks → coral / gray event pills like screenshot */
+/* Session blocks – fill whole cell, share space when 2+ people */
 .sess-block {
   background: #FBDEDB;
   color: #A5372E;
   border-left: none;
-  border-radius: 7px;
+  border-radius: 0;
   padding: 4px 3px;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.15;
   cursor: pointer;
-  margin-bottom: 2px;
+  margin: 0;
   overflow: hidden;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 24px;
+  box-sizing: border-box;
 }
 .sess-block:hover { filter: brightness(0.97); }
 .sess-block .n {
@@ -516,7 +516,6 @@ a { color: inherit; text-decoration: none; }
 .sess-block.completed {
   background: #E5E2DA !important;
   color: #68655C !important;
-  border-left-color: transparent !important;
 }
 .sess-block.completed .n,
 .sess-block.completed .p {
@@ -532,10 +531,11 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted-2);
 }
 
-/* Day view */
+/* Day view – filled + multi-person */
 .day-row {
   display: flex;
   border-top: 1.5px solid var(--line-soft);
+  background: var(--cream-2);
 }
 .day-row:first-child { border-top: none; }
 .day-time {
@@ -548,41 +548,44 @@ a { color: inherit; text-decoration: none; }
   text-align: right;
   border-right: none;
   font-family: 'Work Sans', sans-serif;
+  background: var(--cream-2);
 }
 .day-slot {
   flex: 1;
-  padding: 4px;
+  padding: 0;
   cursor: pointer;
   min-height: 52px;
   border-left: 1.5px solid var(--line-soft);
   border-right: none;
   border-bottom: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-content: flex-start;
+  flex-direction: column;
+  gap: 0;
+  background: var(--cream-2);
 }
-.day-slot:hover { background: #f8f1e2; }
+.day-slot:hover { background: #e8d9b8; }
 .day-slot .sess-block {
-  display: inline-flex;
-  margin-right: 0;
-  min-width: 80px;
+  display: flex;
+  margin: 0;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 24px;
+  border-radius: 0;
 }
 
-/* Month grid */
+/* Month grid – filled */
 .month-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   border: none;
   border-radius: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--cream-2);
 }
 .month-head {
   padding: 10px 1px 9px;
   text-align: center;
   border-bottom: 1.5px solid var(--line);
-  border-right: #4554;
   background: #FBF6EB;
   font-size: 10.5px;
   color: var(--muted);
@@ -597,9 +600,9 @@ a { color: inherit; text-decoration: none; }
   border-top: 1.5px solid var(--line-soft);
   border-left: 1.5px solid var(--line-soft);
   cursor: pointer;
-  background: #fff;
+  background: var(--cream-2);
 }
-.month-cell:hover { background: #f8f1e2; }
+.month-cell:hover { background: #e8d9b8; }
 .month-cell .mn {
   font-size: 14px;
   font-weight: 700;
@@ -831,4 +834,3 @@ table.tracker tr:hover td { background: #f8f1e2; cursor: pointer; }
   .sess-block .p { font-size: 8px; }
   .month-cell { min-height: 70px; padding: 4px; }
 }
-
