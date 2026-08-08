@@ -58,21 +58,22 @@
   </nav>
 
   <div class="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button class="menu-btn" (click)="toggleSidebar()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-        .</button>
-        <div>
-          <h1>{{ pageTitle }}</h1>
-          <div class="sub">{{ pageSub }}</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" (click)="openBookingModal({})">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        Book Session
-      .</button>
+   <div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="menu-btn" (click)="toggleSidebar()">
+      ...
+    </button>
+    <div>
+      <h1>{{ pageTitle }}</h1>
+      <div class="sub">{{ pageSub }}</div>
     </div>
+  </div>
+
+  <!-- REPLACE THIS ↓ -->
+  <button class="book-btn" (click)="openBookingModal({})">
+    <span class="plus">+</span> Book session
+  </button>
+</div>
     <div class="content">
 
       <!-- ========== TODAY VIEW ========== -->
@@ -195,9 +196,12 @@
           <div class="cal-tab" [class.on]="calendarMode === 'month'" (click)="setCalMode('month')">Month</div>
         </div>
 
+
+
         <!-- WEEK -->
         <ng-container *ngIf="calendarMode === 'week'">
           <div class="cal-toolbar">
+
             <div class="cal-nav">
               <button class="icon-btn" (click)="shiftWeek(-1)" [innerHTML]="icoChevronLeft">.</button>
               <div class="cal-range">{{ weekRangeLabel }}</div>
@@ -205,6 +209,10 @@
             </div>
             <button class="btn btn-ghost btn-sm" (click)="goTodayWeek()">Today.</button>
           </div>
+          <div class="legend">
+  <div class="legend-item"><span class="dot" style="background:#E8938C;"></span>Scheduled</div>
+  <div class="legend-item"><span class="dot" style="background:#A8A59C;"></span>Completed</div>
+</div>
           <div class="cal-wrap">
             <div class="cal-grid">
               <div class="cal-head-cell"></div>
@@ -414,23 +422,7 @@
         </div>
 
 
-        <div class="panel">
-          <div class="panel-head">
-            <div>
-              <div class="eyebrow">Reminders</div>
-              <h2>SMS Reminder Timing</h2>
-            </div>
-          </div>
-          <div class="banner">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
-            <div>No website — this one included — can silently text a client from a phone or browser; iOS and Android both block that to stop spam. What this app <em>can</em> do: watch the calendar and surface every client who needs a reminder, with the message already written, so sending is one tap instead of typing from scratch.</div>
-          </div>
-          <div class="field">
-            <label>Remind clients this many hours before their session</label>
-            <input class="input" type="number" min="1" max="48" [(ngModel)]="settings.leadHours" title="jk">
-            <div class="field-hint">Example: set to 2 and a client with a 6pm session will appear in your Today reminders from 4pm onward.</div>
-          </div>
-        </div>
+
 
         <div class="panel">
           <button class="btn btn-primary" (click)="saveSettings()">Save settings.</button>
