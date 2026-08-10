@@ -50,7 +50,7 @@
 :host {
   display: block;
   margin: 0;
-  background: var(--cream);
+  background: #FAF7ED ;
   color: var(--ink);
   font-family: 'Work Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
