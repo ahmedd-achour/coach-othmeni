@@ -305,12 +305,7 @@
           <button class="filter-tab" [class.active]="clientFilterTab === 'all'" (click)="setClientFilterTab('all')">
             All Clients ({{ clients.length }})
           </button>
-          <button class="filter-tab" [class.active]="clientFilterTab === 'low'" (click)="setClientFilterTab('low')">
-            Running Low (<= 3 left)
-          </button>
-          <button class="filter-tab" [class.active]="clientFilterTab === 'empty'" (click)="setClientFilterTab('empty')">
-            Out of Sessions (0 left)
-          </button>
+        
         </div>
 
         <div class="client-list">
