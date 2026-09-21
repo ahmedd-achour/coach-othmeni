@@ -24,6 +24,13 @@ h1{
   border: none;
   font-family: inherit;
 }
+.booking-actions {
+  position: sticky;
+  bottom: 0;
+  padding: 15px;
+  background: #fff;
+  z-index: 10;
+}
 
 .btn-solid {
   background-color: var(--co-sage, #ff5722); /* High-Intensity Neon Orange */
