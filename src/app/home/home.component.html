@@ -66,7 +66,7 @@
       <div *ngFor="let tier of pricingTiers" class="plan reveal" [class.popular]="tier.isPopular">
         <div *ngIf="tier.isPopular" class="most-popular">Most Popular</div>
         <div class="plan-name">{{ tier.name }}</div>
-        <div class="plan-price"><span class="cur">$</span>{{ tier.price }}<small>/mo</small></div>
+        <div class="plan-price"><span class="cur">$</span>{{ tier.price }}<small>one-time</small></div>
         <ul>
           <li *ngFor="let feature of tier.features">{{ feature }}</li>
         </ul>
@@ -99,30 +99,26 @@
   </div>
 </section>
 
-<!--
-
 <section id="digital-products">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">Digital Blueprint Vault</div>
       <h2>PREMIUM GUIDE LISTING.<br><span style="color:var(--coral)">ACCELERATE YOUR KNOWLEDGE.</span></h2>
     </div>
-    <a class="vault-card reveal" href="https://wa.me/971526164854?text=can%20i%20purshase%20this%20pdf%20item%20found%20in%20your%20website%20%3F" target="_blank" rel="noopener">
+    <a class="vault-card reveal" href="#" (click)="$event.preventDefault(); buyEbook()" [style.pointer-events]="isProcessingEbook ? 'none' : null">
       <div class="vault-thumb"></div>
       <div class="vault-info">
-        <div class="name">Elite Performance Nutrition &amp; Training Guide
+        <div class="name">{{ ebook.name }}
           <div class="buy-tag">
-            <svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.34.66 4.523 1.804 6.383L4 29l7.79-1.77A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.6a9.55 9.55 0 0 1-4.87-1.33l-.35-.21-4.62 1.05 1.07-4.5-.23-.37A9.55 9.55 0 1 1 25.55 15a9.56 9.56 0 0 1-9.546 9.6Zm5.24-7.17c-.29-.14-1.7-.84-1.96-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.33.21-.62.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.6-2-.17-.29-.02-.45.13-.6.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.81 1.17 3 .14.19 2.02 3.08 4.9 4.32.68.3 1.22.47 1.63.6.69.22 1.31.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.33Z"/></svg>
-            Order on WhatsApp
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM1 2h3.27l.94 2H22l-3.6 8.4A2 2 0 0 1 16.56 14H8.1l-.9 1.6-.03.12a.25.25 0 0 0 .25.25H20v2H7a2 2 0 0 1-1.75-2.97L6.6 12.6 3 4H1V2Z"/></svg>
+            {{ isProcessingEbook ? 'Opening checkout...' : 'Buy Now - Instant Download' }}
           </div>
         </div>
-        <div class="price">$30<small></small></div>
+        <div class="price">${{ ebook.price }}<small></small></div>
       </div>
     </a>
   </div>
 </section>
-
--->
 
 <section id="method">
   <div class="wrap">
@@ -759,7 +755,7 @@
         <div class="step-actions">
           <button type="button" class="btn btn-outline" (click)="goToStep(6)" [disabled]="isProcessingPayment">Back</button>
           <button type="button" class="btn btn-primary" (click)="handlePaymentSubmit()" [disabled]="isProcessingPayment">
-            {{ isProcessingPayment ? 'Saving Application...' : 'Proceed to Checkout' }}
+            {{ isProcessingPayment ? 'Redirecting to secure payment...' : 'Pay $' + (selectedPlan?.price || '') + ' Securely' }}
           </button>
         </div>
       </div>

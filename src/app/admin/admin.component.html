@@ -350,15 +350,7 @@
                 🔍 View Questionnaire
               </button>
 
-              <!-- ACTION 2: FIRE STRIPE SUBSCRIPTION GRACEFUL CANCELLATION ENGINE -->
-              <button
-                *ngIf="app.payment?.status === 'paid'"
-                (click)="cancelSubscription(app.id)"
-                [disabled]="isCancelingMap[app.id]"
-                class="btn btn-small btn-outline btn-cancel">
-                {{ isCancelingMap[app.id] ? 'Stopping...' : 'Stop Auto-Renew' }}
-              </button>
-
+              <!-- One-time purchases: nothing to auto-renew, so no cancel button -->
               <span *ngIf="app.payment?.status !== 'paid'" class="action-divider">
                 —
               </span>

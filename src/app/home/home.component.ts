@@ -23,8 +23,7 @@ interface PricingTier {
   features: string[];
   isPopular?: boolean;
   ctaText: string;
-  stripePriceId: string;    // 👈 Ajouté pour l'abonnement récurrent mensuel
-  stripePdfPriceId: string; // 👈 Ajouté pour le frais unique du PDF à 1$
+  productKey: string;       // basic | advanced | vip | test (price is set on the server)
 }
 
 interface NutritionLeaf {
@@ -173,25 +172,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ];
 
   pricingTiers: PricingTier[] = [
-   /* {
-      name: 'Standard Coaching',
-      price: 150,
+    {
+      name: 'Basic Pack',
+      price: 50,
       features: [
         'custom training program built around your goals',
         'weekly check-ins to track your progress',
         'progress photo review by your coach',
         'full plan review every month',
         'email support whenever you need it',
-
       ],
       isPopular: false,
-      ctaText: 'Apply For Standard Pack',
-      stripePriceId: '1903957', // 👈 Remplace par ton ID Stripe mensuel
-      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'
-     }, */
+      ctaText: 'Get The Basic Pack',
+      productKey: 'basic'
+    },
     {
-      name: 'Premium Coaching',
-      price: 200,
+      name: 'Advanced Pack',
+      price: 100,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -202,12 +199,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
         'direct messaging support with your coach',
       ],
       isPopular: true,
-      ctaText: 'Apply For Premium Pack',
-      stripePriceId: '1903965', // 👈 Remplace par ton ID Stripe mensuel
-      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    },
-   /* {
-      name: 'VIP Elite Coaching',
-      price: 250,
+      ctaText: 'Get The Advanced Pack',
+      productKey: 'advanced'
+    },
+    {
+      name: 'VIP Pack',
+      price: 150,
       features: [
         'custom training program built around your goals',
         'personalized nutrition plan for how you actually eat',
@@ -219,10 +216,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
         'a monthly video call with your coach'
       ],
       isPopular: false,
-      ctaText: 'Apply For VIP Elite Pack',
-      stripePriceId: '1903973', // 👈 Remplace par ton ID Stripe mensuel
-      stripePdfPriceId: 'price_1TqZnSQBeLJr5RNosJjONDSr'    }*/
+      ctaText: 'Get The VIP Pack',
+      productKey: 'vip'
+    }
   ];
+
+  // $1 test product — only shown when the page is opened with ?stripetest=1
+  private readonly testTier: PricingTier = {
+    name: 'Test Pack (internal)',
+    price: 1,
+    features: ['internal test of the real Stripe payment flow ($1)'],
+    isPopular: false,
+    ctaText: 'Run $1 Test',
+    productKey: 'test'
+  };
+
+  ebook = { name: 'Elite Performance Nutrition & Training Guide', price: 15 };
+  isProcessingEbook = false;
 
   isPopupVisible = false;
   currentStep = 1;
@@ -437,59 +447,78 @@ openApp(): void {
 
   },
 
-  subscription: {
-
-    plan_name: this.selectedPlan.name,
-
-    amount: Number(this.selectedPlan.price),
-
-    stripePriceId: this.selectedPlan.stripePriceId,
-
-    stripePdfPriceId: this.selectedPlan.stripePdfPriceId
-
-  }
+  // Only the product key is sent — the real price is decided by the server.
+  productKey: this.selectedPlan.productKey
 
 };
 
-      console.log('🔄 Payload sent to Firebase:', payload);
       const result = await createCheckoutSessionFn(payload);
-      console.log('✅ Response received from Firebase:', result);
 
       if (result?.data?.checkoutUrl) {
-        // 📢 ALERT DEBUG 2 : Succès de la fonction, redirection imminente
-       // alert(`✅ [DEBUG 2/3] Success! Application ID created: ${result.data.applicationId}. Redirecting to Stripe URL...`);
-
-
-       //kif traja3 hethi chekout temchiiiiii
-       // window.location.href = result.data.checkoutUrl;
-       this.closePopup();
-       Swal.fire({
-  title: "Application sent!",
-  text: "Coach Aymen Othmeni would contact you soon!",
-  icon: "success"
-});
-
-
-window.location.href = "https://wa.me/971526164854"
-
-
-      } else {
-      //  throw new Error('The Cloud Function executed but returned an empty checkout URL.');
+        // Go to the secure Stripe payment page
+        window.location.href = result.data.checkoutUrl;
+        return; // keep the button disabled while the browser leaves the page
       }
+      throw new Error('No checkout URL returned.');
 
     } catch (err: any) {
-      console.error('❌ Cloud Function Crash Log:', err);
+      console.error('Checkout error:', err);
+      this.stripeErrorMessage = err?.message
+        ? `Payment could not start: ${err.message}`
+        : 'Payment could not start. Please try again.';
+    }
+    this.isProcessingPayment = false;
+  }
 
-      // Extraction du message d'erreur interne renvoyé par Node.js
-      const backendErrorDetails = err.details ? JSON.stringify(err.details) : '';
-      const exactErrorMessage = err.message || 'Unknown network error';
+  /** E-book: no form needed, Stripe collects the email. */
+  async buyEbook(): Promise<void> {
+    if (this.isProcessingEbook) return;
+    this.isProcessingEbook = true;
+    try {
+      const fn = httpsCallable<{ productKey: string }, { checkoutUrl: string }>(this.functions, 'createCheckoutSession');
+      const result = await fn({ productKey: 'ebook' });
+      if (!result?.data?.checkoutUrl) throw new Error('No checkout URL returned.');
+      window.location.href = result.data.checkoutUrl;
+      return;
+    } catch (err: any) {
+      console.error('E-book checkout error:', err);
+      Swal.fire({ title: 'Payment could not start', text: err?.message || 'Please try again.', icon: 'error' });
+    }
+    this.isProcessingEbook = false;
+  }
 
-      // 📢 ALERT DEBUG 3 : Erreur Interne interceptée avec détails réels
-     // alert(`❌ [DEBUG 3/3] INTERNAL ERROR DETECTED!\n\nMessage: ${exactErrorMessage}\n\nDetails: ${backendErrorDetails}\n\nPlease check firebase functions:log.`);
+  /** Called when Stripe sends the customer back with ?session_id=... */
+  private async confirmPayment(sessionId: string): Promise<void> {
+    try {
+      const fn = httpsCallable<{ sessionId: string }, { paid: boolean; kind: string | null; ebookUrl: string | null }>(
+        this.functions,
+        'verifyCheckoutSession'
+      );
+      const { data } = await fn({ sessionId });
 
-      this.stripeErrorMessage = `Backend Error: ${exactErrorMessage}. Check console logs.`;
-    } finally {
-      this.isProcessingPayment = false;
+      if (!data.paid) {
+        Swal.fire({ title: 'Payment not completed', text: 'Your payment was not confirmed. No charge was made.', icon: 'warning' });
+        return;
+      }
+
+      if (data.kind === 'ebook') {
+        if (data.ebookUrl) {
+          const r = await Swal.fire({
+            title: 'Thank you for your purchase!',
+            text: 'Your e-book is ready. Click below to download it.',
+            icon: 'success',
+            confirmButtonText: 'Download E-Book'
+          });
+          if (r.isConfirmed) window.open(data.ebookUrl, '_blank');
+        } else {
+          Swal.fire({ title: 'Payment received!', text: 'Your e-book will be sent to your email shortly.', icon: 'success' });
+        }
+      } else {
+        Swal.fire({ title: 'Payment received!', text: 'Coach Aymen Othmani will contact you very soon.', icon: 'success' });
+      }
+    } catch (err) {
+      console.error('Verify payment error:', err);
+      Swal.fire({ title: 'Payment received', text: 'We are confirming your payment. You will be contacted shortly.', icon: 'info' });
     }
   }
   constructor(
@@ -500,11 +529,18 @@ window.location.href = "https://wa.me/971526164854"
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      const sessionId = params['session_id'] || params['sessionId'];
+      if (params['stripetest'] === '1' && !this.pricingTiers.includes(this.testTier)) {
+        this.pricingTiers = [...this.pricingTiers, this.testTier];
+      }
+
+      const sessionId = params['session_id'];
       if (sessionId) {
-        alert('🎉 Payment Succeeded & Application Finalized! Coach Aymen will contact you shortly.');
         this.closePopup();
         window.history.replaceState({}, document.title, window.location.pathname);
+        this.confirmPayment(sessionId);
+      } else if (params['checkout'] === 'cancelled') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        Swal.fire({ title: 'Payment cancelled', text: 'No charge was made. You can try again anytime.', icon: 'info' });
       }
     });
   }
@@ -662,7 +698,7 @@ isStep7Valid(): boolean {
 }
 
   openPopup(plan?: PricingTier): void {
-    this.selectedPlan = plan || this.pricingTiers[1];
+    this.selectedPlan = plan || this.pricingTiers.find(t => t.isPopular) || this.pricingTiers[0];
     this.currentStep = 1;
     this.isPopupVisible = true;
     this.stripeErrorMessage = '';
