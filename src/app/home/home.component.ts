@@ -324,7 +324,7 @@ openApp(): void {
     this.stripeErrorMessage = '';
 
 
-    try {
+    try { 
       const createCheckoutSessionFn = httpsCallable<any, { checkoutUrl: string; applicationId: string }>(
         this.functions,
         'createCheckoutSession'
@@ -696,6 +696,12 @@ isStep6Valid(): boolean {
 isStep7Valid(): boolean {
   return true;
 }
+
+
+
+
+
+ 
 
   openPopup(plan?: PricingTier): void {
     this.selectedPlan = plan || this.pricingTiers.find(t => t.isPopular) || this.pricingTiers[0];

@@ -1,42 +1,49 @@
-<div class="grain"></div>
+<!-- =====================================================================
+  HOME PAGE: new design (grain -> footer)
+  In YOUR home.component.html: replace everything from  <div class="grain">  down to  </footer>  with this file.
+  KEEP your existing modal code (from <div class="modal-overlay" ...> to the end of the file) exactly as it is.
+====================================================================== -->
+<div class="grain" aria-hidden="true"></div>
+<div class="bg-fx" aria-hidden="true"><i class="fx-grid"></i><i class="fx-glow"></i></div>
 
 <nav class="nav">
   <div class="wrap">
-    <div class="brand">COACH<span>AYMENOTHMANI</span></div>
+    <div class="brand">COACH <span>AYMEN OTHMANI</span></div>
+
+    <input type="checkbox" id="navToggle" class="nav-check" #navT aria-hidden="true" tabindex="-1">
+
     <div class="nav-links">
-      <a href="javascript:void(0)" (click)="scrollToSection('offers')">See Offers</a>
-      <a href="javascript:void(0)" (click)="scrollToSection('method')">The Method</a>
-      <a href="javascript:void(0)" (click)="scrollToSection('results')">Results</a>
-      <a href="javascript:void(0)" (click)="scrollToSection('contact')">Contact</a>
-
-            <a href="/athletica" >Athletica</a>
-
+      <a href="#offers" (click)="$event.preventDefault(); navT.checked = false; scrollToSection('offers')">See Offers</a>
+      <a href="#method" (click)="$event.preventDefault(); navT.checked = false; scrollToSection('method')">The Method</a>
+      <a href="#results" (click)="$event.preventDefault(); navT.checked = false; scrollToSection('results')">Results</a>
+      <a href="#contact" (click)="$event.preventDefault(); navT.checked = false; scrollToSection('contact')">Contact</a>
+      <a href="/athletica" (click)="navT.checked = false">Athletica</a>
     </div>
-    <div style="display:flex; align-items:center; gap:14px;">
-      <button (click)="openPopup()" class="btn btn-primary" style="padding:10px 22px; font-size:13px;">Apply Now</button>
+
+    <div class="nav-right">
+      <button type="button" (click)="navT.checked = false; openPopup()" class="btn btn-primary btn-sm">Apply Now</button>
+      <label for="navToggle" class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></label>
     </div>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap hero-grid">
-    <div class="reveal">
+    <div class="hero-copy reveal">
       <div class="eyebrow">Dubai · Transformation Coaching</div>
       <h1>THE <span class="hl">#1</span> WEIGHT LOSS<br>COACH IN DUBAI.</h1>
       <p class="sub">+15 years of experience. 1000+ real transformations. One coach who builds a plan around YOU not the other way around.</p>
       <div class="hero-ctas">
-        <button (click)="scrollToSection('offers')" class="btn btn-outline">See Offer</button>
-        <button (click)="openApp()" class="btn btn-primary">See Me On DEWS LIFE</button>
+        <button type="button" (click)="scrollToSection('offers')" class="btn btn-outline">See Offer</button>
+        <button type="button" (click)="openApp()" class="btn btn-primary">See Me On DEWS LIFE</button>
       </div>
       <a routerLink="/admin" class="link-quiet">▦ Go to Dashboard</a>
     </div>
+
     <div class="hero-media reveal">
       <div class="blob-glow"></div>
       <div class="hero-photo-frame">
-        <img src="assets/facenew1.jpeg" alt="Coach Aymen Othmani">
-        <a class="whatsapp-float" href="https://wa.me/971526164854?text=Hi%20Coach%20Aymen%2C%20I%27d%20like%20to%20start%20my%20transformation" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-          <svg viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.34.66 4.523 1.804 6.383L4 29l7.79-1.77A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.6a9.55 9.55 0 0 1-4.87-1.33l-.35-.21-4.62 1.05 1.07-4.5-.23-.37A9.55 9.55 0 1 1 25.55 15a9.56 9.56 0 0 1-9.546 9.6Zm5.24-7.17c-.29-.14-1.7-.84-1.96-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.33.21-.62.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.6-2-.17-.29-.02-.45.13-.6.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.81 1.17 3 .14.19 2.02 3.08 4.9 4.32.68.3 1.22.47 1.63.6.69.22 1.31.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.33Z"/></svg>
-        </a>
+        <img src="assets/facenew1.jpeg" alt="Coach Aymen Othmani" width="520" height="650">
       </div>
       <div class="badge-float">
         <div class="num">1000+</div>
@@ -70,13 +77,13 @@
         <ul>
           <li *ngFor="let feature of tier.features">{{ feature }}</li>
         </ul>
-        <button (click)="openPopup(tier)" class="btn btn-block" [ngClass]="tier.isPopular ? 'btn-primary' : 'btn-outline'">{{ tier.ctaText }}</button>
+        <button type="button" (click)="openPopup(tier)" class="btn btn-block" [ngClass]="tier.isPopular ? 'btn-primary' : 'btn-outline'">{{ tier.ctaText }}</button>
       </div>
     </div>
   </div>
 </section>
 
-<section style="padding-top:0;">
+<section class="quote-section">
   <div class="wrap">
     <div class="quote-card reveal">
       <p>"I've coached hundreds of people through the same struggle you're facing right now and I've learned one thing: the plan was never the problem. Give me your habits, your schedule, your food, your restrictions, and I'll build the one plan that actually works for YOUR life."</p>
@@ -85,7 +92,7 @@
   </div>
 </section>
 
-<div class="ribbon">
+<div class="ribbon" aria-hidden="true">
   <div class="ribbon-inner">
     <span>Transformation + Nutrition + Mindset + Follow-Up + Transformation + Nutrition + Mindset + Follow-Up +</span>
     <span>Transformation + Nutrition + Mindset + Follow-Up + Transformation + Nutrition + Mindset + Follow-Up +</span>
@@ -103,18 +110,17 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">Digital Blueprint Vault</div>
-      <h2>PREMIUM GUIDE LISTING.<br><span style="color:var(--coral)">ACCELERATE YOUR KNOWLEDGE.</span></h2>
+      <h2>PREMIUM GUIDE LISTING.<br><span class="accent">ACCELERATE YOUR KNOWLEDGE.</span></h2>
     </div>
     <a class="vault-card reveal" href="#" (click)="$event.preventDefault(); buyEbook()" [style.pointer-events]="isProcessingEbook ? 'none' : null">
       <div class="vault-thumb"></div>
       <div class="vault-info">
-        <div class="name">{{ ebook.name }}
-          <div class="buy-tag">
-            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM1 2h3.27l.94 2H22l-3.6 8.4A2 2 0 0 1 16.56 14H8.1l-.9 1.6-.03.12a.25.25 0 0 0 .25.25H20v2H7a2 2 0 0 1-1.75-2.97L6.6 12.6 3 4H1V2Z"/></svg>
-            {{ isProcessingEbook ? 'Opening checkout...' : 'Buy Now - Instant Download' }}
-          </div>
+        <div class="name">{{ ebook.name }}</div>
+        <div class="buy-tag">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM1 2h3.27l.94 2H22l-3.6 8.4A2 2 0 0 1 16.56 14H8.1l-.9 1.6-.03.12a.25.25 0 0 0 .25.25H20v2H7a2 2 0 0 1-1.75-2.97L6.6 12.6 3 4H1V2Z"/></svg>
+          {{ isProcessingEbook ? 'Opening checkout...' : 'Buy Now - Instant Download' }}
         </div>
-        <div class="price">${{ ebook.price }}<small></small></div>
+        <div class="price">${{ ebook.price }}</div>
       </div>
     </a>
   </div>
@@ -145,21 +151,21 @@
     <div class="results-grid">
       <div class="result-card reveal">
         <div class="result-half a">
-          <img src="assets/beforenew.jpeg" alt="Before Transformation">
+          <img src="assets/beforenew.jpeg" alt="Before Transformation" loading="lazy">
           <span>BEFORE</span>
         </div>
         <div class="result-half b">
-          <img src="assets/afternew.jpeg" alt="After Transformation">
+          <img src="assets/afternew.jpeg" alt="After Transformation" loading="lazy">
           <span>AFTER</span>
         </div>
       </div>
       <div class="result-card reveal">
         <div class="result-half a">
-          <img src="assets/beforenew1.jpeg" alt="Before Transformation">
+          <img src="assets/beforenew1.jpeg" alt="Before Transformation" loading="lazy">
           <span>BEFORE</span>
         </div>
         <div class="result-half b">
-          <img src="assets/afternew1.jpeg" alt="After Transformation">
+          <img src="assets/afternew1.jpeg" alt="After Transformation" loading="lazy">
           <span>AFTER</span>
         </div>
       </div>
@@ -171,7 +177,7 @@
   <div class="wrap">
     <div class="section-head reveal">
       <div class="eyebrow">Tailored Nutrition Architecture</div>
-      <h2>EVERY DIET. EVERY RESTRICTION.<br><span style="color:var(--coral)">ONE PLAN THAT ACTUALLY FITS YOU.</span></h2>
+      <h2>EVERY DIET. EVERY RESTRICTION.<br><span class="accent">ONE PLAN THAT ACTUALLY FITS YOU.</span></h2>
     </div>
     <div class="nutri-grid">
       <div class="nutri-card center reveal">
@@ -181,7 +187,9 @@
       </div>
       <div class="nutri-card reveal">
         <div class="nutri-h">Supported Frameworks</div>
-        <div *ngFor="let leaf of nutritionLeaves" class="tag-pill">{{ leaf.name }}</div>
+        <div class="pill-wrap">
+          <div *ngFor="let leaf of nutritionLeaves" class="tag-pill">{{ leaf.name }}</div>
+        </div>
       </div>
       <div class="nutri-card reveal">
         <div class="nutri-h">Core Systems Integrated</div>
@@ -199,7 +207,7 @@
     <div class="final-cta reveal">
       <h2>STOP STARTING OVER. START FINISHING.</h2>
       <p>1000+ people already trusted this method to transform their body for good. Your plan is one form away.</p>
-      <button (click)="openPopup()" class="btn btn-primary">Apply For Transformation</button>
+      <button type="button" (click)="openPopup()" class="btn btn-primary">Apply For Transformation</button>
     </div>
   </div>
 </section>
@@ -221,8 +229,6 @@
       <div class="map-box">
         <iframe
           src="https://www.google.com/maps?q=Dubai,United%20Arab%20Emirates&output=embed"
-          width="100%"
-          height="100%"
           style="border:0;"
           allowfullscreen
           loading="lazy"
@@ -234,20 +240,18 @@
   </div>
 </footer>
 
+<a class="whatsapp-float" href="https://wa.me/971526164854?text=Hi%20Coach%20Aymen%2C%20I%27d%20like%20to%20start%20my%20transformation" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.34.66 4.523 1.804 6.383L4 29l7.79-1.77A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.6a9.55 9.55 0 0 1-4.87-1.33l-.35-.21-4.62 1.05 1.07-4.5-.23-.37A9.55 9.55 0 1 1 25.55 15a9.56 9.56 0 0 1-9.546 9.6Zm5.24-7.17c-.29-.14-1.7-.84-1.96-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.33.21-.62.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.6-2-.17-.29-.02-.45.13-.6.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.81 1.17 3 .14.19 2.02 3.08 4.9 4.32.68.3 1.22.47 1.63.6.69.22 1.31.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.33Z"/></svg>
+</a>
+
+<!-- ⬇⬇⬇ KEEP YOUR EXISTING MODAL CODE FROM HERE:  <div class="modal-overlay" ...> ... (unchanged) ⬇⬇⬇ -->
+
 <div class="modal-overlay" [class.open]="isPopupVisible" id="applyModal" (click)="closeOnBackdrop($event)">
   <div class="modal-box">
     <button type="button" class="modal-close" id="modalClose" aria-label="Close" (click)="closePopup()">✕</button>
     <div class="modal-plan">Selected Plan: <span id="modalPlanName">{{ selectedPlan?.name || 'Premium Coaching' }}</span></div>
     <h2 class="modal-title">Apply For Coaching</h2>
-    <div class="step-dots" id="stepDots">
-      <div *ngFor="let stepNum of [1,2,3,4,5,6,7]"
-           class="step-dot"
-           [class.active]="currentStep === stepNum"
-           [class.done]="currentStep > stepNum"
-           (click)="goToStep(stepNum)">
-        {{ stepNum }}
-      </div>
-    </div>
+    
 
     <form id="applyForm" (ngSubmit)="$event.preventDefault()">
       <!-- Step 1: Personal Information -->
@@ -501,264 +505,23 @@
           </div>
         </div>
         <div class="step-actions">
-          <button type="button" class="btn btn-primary btn-block" [disabled]="!isStep1Valid()" (click)="goToStep(2)">Continue</button>
-        </div>
-      </div>
+  <button
+    type="button"
+    class="btn btn-primary btn-block"
+    [disabled]="!isStep1Valid() || isProcessingPayment"
+    (click)="handlePaymentSubmit()">
 
-      <!-- Step 2: Goals & History -->
-      <div class="form-step" [class.active]="currentStep === 2">
-        <h3>Goals &amp; History</h3>
-        <p class="step-sub">Understanding your previous journey helps create a realistic transformation plan.</p>
-        <div class="field">
-          <label>How much weight do you want to lose?</label>
-          <input type="text" [(ngModel)]="formData.weightGoal" name="weightGoal" placeholder="Example: Lose 15kg">
-        </div>
-        <div class="field">
-          <label>Realistic target timeframe</label>
-          <input  title="j" type="date" [(ngModel)]="formData.targetDate" name="targetDate">
-        </div>
-        <div class="field">
-          <label>Have you tried losing weight before?</label>
-          <textarea [(ngModel)]="formData.previousAttempts" name="previousAttempts" placeholder="Tell us about your previous attempts..."></textarea>
-        </div>
-        <div class="field">
-          <label>What worked before?</label>
-          <textarea title="j"  [(ngModel)]="formData.workedBefore" name="workedBefore"></textarea>
-        </div>
-        <div class="field">
-          <label>What didn't work?</label>
-          <textarea title="j"  [(ngModel)]="formData.didntWorkBefore" name="didntWorkBefore"></textarea>
-        </div>
-        <div class="field">
-          <label>History of yo-yo dieting</label>
-          <select  title="j" [(ngModel)]="formData.yoyoDieting" name="yoyoDieting">
-            <option value="">Select</option>
-            <option>Never</option>
-            <option>Once or twice</option>
-            <option>Frequently</option>
-          </select>
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(1)">Back</button>
-          <button type="button" class="btn btn-primary" [disabled]="!isStep2Valid()" (click)="goToStep(3)">Continue</button>
-        </div>
-      </div>
+    {{ isProcessingPayment ? 'Opening Stripe...' : 'Continue to Payment' }}
 
-      <!-- Step 3: Training -->
-      <div class="form-step" [class.active]="currentStep === 3">
-        <h3>Training</h3>
-        <p class="step-sub">Tell us about your training experience and available resources.</p>
-        <div class="field-row">
-          <div class="field">
-            <label>Experience Level</label>
-            <select  title="j" [(ngModel)]="formData.experience" name="experience">
-              <option value="">Select</option>
-              <option>Beginner</option>
-              <option>Intermediate</option>
-              <option>Advanced</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Available Equipment</label>
-            <select  title="j" [(ngModel)]="formData.equipment" name="equipment">
-              <option value="">Select</option>
-              <option>Full Gym</option>
-              <option>Home Equipment</option>
-              <option>No Equipment</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Training Days Per Week</label>
-            <select title="j"  [(ngModel)]="formData.trainingDays" name="trainingDays">
-              <option value="">Select</option>
-              <option>1-2 Days</option>
-              <option>3-4 Days</option>
-              <option>5+ Days</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Preferred Training Time</label>
-            <select  title="j" [(ngModel)]="formData.preferredTrainingTime" name="preferredTrainingTime">
-              <option value="">Select</option>
-              <option>Morning</option>
-              <option>Afternoon</option>
-              <option>Evening</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label>Any injuries or joint problems?</label>
-          <textarea [(ngModel)]="formData.injuries" name="injuries" placeholder="Knee, back, shoulder problems..."></textarea>
-        </div>
-        <div class="field">
-          <label>Current activity level outside workouts</label>
-          <select title="j"  [(ngModel)]="formData.activityLevel" name="activityLevel">
-            <option value="">Select</option>
-            <option>Sedentary / Desk job</option>
-            <option>Lightly active</option>
-            <option>Active lifestyle</option>
-            <option>Very active</option>
-          </select>
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(2)">Back</button>
-          <button type="button" class="btn btn-primary" [disabled]="!isStep3Valid()" (click)="goToStep(4)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 4: Nutrition -->
-      <div class="form-step" [class.active]="currentStep === 4">
-        <h3>Nutrition</h3>
-        <p class="step-sub">Your nutrition habits help us build a sustainable plan.</p>
-        <div class="field">
-          <label>Dietary Preference</label>
-          <select title="j"  [(ngModel)]="formData.dietPreference" name="dietPreference">
-            <option value="">Select</option>
-            <option>Non-vegetarian</option>
-            <option>Vegetarian</option>
-            <option>Vegan</option>
-            <option>Keto</option>
-            <option>Halal</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Food allergies or intolerances</label>
-          <textarea  title="j" [(ngModel)]="formData.allergies" name="allergies"></textarea>
-        </div>
-        <div class="field">
-          <label>Foods you dislike or refuse to eat</label>
-          <textarea title="j"  [(ngModel)]="formData.dislikedFoods" name="dislikedFoods"></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Do you cook yourself?</label>
-            <select title="j"  [(ngModel)]="formData.cookingHabits" name="cookingHabits">
-              <option value="">Select</option>
-              <option>Mostly cook</option>
-              <option>Mix cooking/eating out</option>
-              <option>Mostly order food</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Approximate daily food budget</label>
-            <input type="text" [(ngModel)]="formData.foodBudget" name="foodBudget" placeholder="Example: 20 USD/day">
-          </div>
-        </div>
-        <div class="field">
-          <label>Current eating pattern</label>
-          <textarea [(ngModel)]="formData.eatingPattern" name="eatingPattern" placeholder="Snacking, late meals, skipping meals..."></textarea>
-        </div>
-        <div class="field">
-          <label>Alcohol / Sugary Drinks</label>
-          <select  title="j" [(ngModel)]="formData.alcoholConsumption" name="alcoholConsumption">
-            <option value="">Select</option>
-            <option>Never</option>
-            <option>Sometimes</option>
-            <option>Frequently</option>
-          </select>
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(3)">Back</button>
-          <button type="button" class="btn btn-primary" (click)="goToStep(5)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 5: Lifestyle -->
-      <div class="form-step" [class.active]="currentStep === 5">
-        <h3>Lifestyle</h3>
-        <p class="step-sub">Your daily routine plays a major role in your transformation success.</p>
-        <div class="field">
-          <label>Occupation and daily routine</label>
-          <textarea [(ngModel)]="formData.occupation" name="occupation" placeholder="Describe your work and typical day..."></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Hours of sleep per night</label>
-            <select  title="j" [(ngModel)]="formData.sleepHours" name="sleepHours">
-              <option value="">Select</option>
-              <option>Less than 5 hours</option>
-              <option>5-7 hours</option>
-              <option>7-9 hours</option>
-              <option>9+ hours</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Stress Level</label>
-            <select title="j"  [(ngModel)]="formData.stressLevel" name="stressLevel">
-              <option value="">Select</option>
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label>Daily Water Intake</label>
-          <select title="j"  [(ngModel)]="formData.waterIntake" name="waterIntake">
-            <option value="">Select</option>
-            <option>Less than 1L</option>
-            <option>1-2L</option>
-            <option>2-3L</option>
-            <option>3L+</option>
-          </select>
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(4)">Back</button>
-          <button type="button" class="btn btn-primary" (click)="goToStep(6)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 6: Mindset -->
-      <div class="form-step" [class.active]="currentStep === 6">
-        <h3>Mindset &amp; Commitment</h3>
-        <p class="step-sub">Understanding your mindset helps your coach support you beyond just workouts.</p>
-        <div class="field">
-          <label>What has stopped your progress in the past?</label>
-          <textarea [(ngModel)]="formData.biggestObstacle" name="biggestObstacle" placeholder="Motivation, cravings, lack of time..."></textarea>
-        </div>
-        <div class="field">
-          <label>How do you currently handle cravings or setbacks?</label>
-          <textarea title="j"  [(ngModel)]="formData.cravingsManagement" name="cravingsManagement"></textarea>
-        </div>
-        <div class="field">
-          <label>Preferred check-in frequency</label>
-          <select title="j" [(ngModel)]="formData.checkInFrequency" name="checkInFrequency">
-            <option value="">Select</option>
-            <option>Daily</option>
-            <option>Weekly</option>
-            <option>Every 2 weeks</option>
-          </select>
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(5)">Back</button>
-          <button type="button" class="btn btn-primary" (click)="goToStep(7)">Continue</button>
-        </div>
-      </div>
-
-      <!-- Step 7: Medical & Checkout -->
-      <div class="form-step" [class.active]="currentStep === 7">
-        <h3>Medical Information</h3>
-        <p class="step-sub">This information helps your coach design a safe and appropriate plan.</p>
-        <div class="field">
-          <label>Medical conditions related to weight loss</label>
-          <textarea [(ngModel)]="formData.medicalConditions" name="medicalConditions" placeholder="Thyroid, PCOS, diabetes, etc."></textarea>
-        </div>
-        <div class="field">
-          <label>Current medications</label>
-          <textarea [(ngModel)]="formData.medications" name="medications" placeholder="List any medications that may affect weight"></textarea>
-        </div>
-        <div *ngIf="stripeErrorMessage" class="stripe-error-message" style="margin-top:15px;color:#ff4d4d;text-align:center;">
-          {{ stripeErrorMessage }}
-        </div>
-        <div class="step-actions">
-          <button type="button" class="btn btn-outline" (click)="goToStep(6)" [disabled]="isProcessingPayment">Back</button>
-          <button type="button" class="btn btn-primary" (click)="handlePaymentSubmit()" [disabled]="isProcessingPayment">
-            {{ isProcessingPayment ? 'Redirecting to secure payment...' : 'Pay $' + (selectedPlan?.price || '') + ' Securely' }}
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
+  </button>
 </div>
+
+<div *ngIf="stripeErrorMessage" class="error-message">
+  {{ stripeErrorMessage }}
+</div>
+      </div>
+
+  
+        
+        <div class="field-row">
+          
