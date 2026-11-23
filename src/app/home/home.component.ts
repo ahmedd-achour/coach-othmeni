@@ -786,7 +786,7 @@ this.formData = {
   }
 
   closeOnBackdrop(event: MouseEvent): void {
-    if ((event.target as HTMLElement).classList.contains('popup-overlay')) {
+    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
       this.closePopup();
     }
   }
